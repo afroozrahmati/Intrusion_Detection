@@ -5,6 +5,7 @@ from sklearn.metrics.cluster import normalized_mutual_info_score
 from sklearn.metrics import accuracy_score
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics.cluster import adjusted_rand_score
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from ClusteringLayer import *
 
 def target_distribution(q):  # target distribution P which enhances the discrimination of soft label Q
@@ -38,14 +39,16 @@ def get_model(timesteps , n_features ):
 def model_training(model,epochs,batch_size):
     print('Model compiled.')
     print('Training Starting:')
+    callbacks = EarlyStopping(monitor='val_clustering_accuracy', mode='max', verbose=2, patience=800,
+                              restore_best_weights=True)
     train_history = model.fit(x_train,
                               y={'clustering': y_train, 'decoder_out': x_train},
                               epochs=epochs,
                               validation_split=0.2,
                               # validation_data=(x_test, (y_test, x_test)),
                               batch_size=batch_size,
-                              verbose=2
-                              )
+                              verbose=2,
+                              callbacks=callbacks)
     return train_history
 
 def model_evaluate(model,x_train,y_train,x_test,y_test):
@@ -86,9 +89,16 @@ def model_evaluate(model,x_train,y_train,x_test,y_test):
 
 
 model= get_model(1,23)
-file_path_normal = './data/normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
-file_path_abnormal = './data/abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
+file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+data_processing= data_processing()
 x_train,y_train,x_test,y_test = data_processing.load_data(file_path_normal,file_path_abnormal)
+
+print("train shape: ", np.shape(x_train))
+print("test shape: ", np.shape(x_test))
+print("train label shape: ", y_train.shape)
+print("test label shape: ", y_test.shape)
+
 n_classes = 2
 batch_size = 64
 epochs = 1000
