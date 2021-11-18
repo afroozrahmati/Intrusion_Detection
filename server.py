@@ -72,19 +72,15 @@ def main() -> None:
     fl.server.start_server("172.18.80.1:8080", config={"num_rounds": 4}, strategy=strategy)
 
 
-
-
-
-
-
 def get_eval_fn(model):
     """Return an evaluation function for server-side evaluation."""
 
     # Load data and model here to avoid the overhead of doing it in `evaluate` itself
     (x_train, y_train), _ = data_processing.load_data()
 
-    # Use the last 5k training examples as a validation set
-    x_val, y_val = x_train[45000:50000], y_train[45000:50000]
+    # Use the last 2k training examples as a validation set
+    start=len(x_train)-2000
+    x_val, y_val = x_train[start:len(x_train)], y_train[start:len(x_train)]
 
     # The `evaluate` function will be called after every round
     def evaluate(
