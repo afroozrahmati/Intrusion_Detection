@@ -10,6 +10,7 @@ import flwr as fl
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Activation, Dropout, LSTM, RepeatVector, TimeDistributed
+from data_processing import *
 import pandas as pd
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -80,7 +81,7 @@ def get_eval_fn(model):
     """Return an evaluation function for server-side evaluation."""
 
     # Load data and model here to avoid the overhead of doing it in `evaluate` itself
-    (x_train, y_train), _ = tf.keras.datasets.cifar10.load_data()
+    (x_train, y_train), _ = data_processing.load_data()
 
     # Use the last 5k training examples as a validation set
     x_val, y_val = x_train[45000:50000], y_train[45000:50000]

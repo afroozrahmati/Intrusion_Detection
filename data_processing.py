@@ -82,4 +82,4 @@ class data_processing:
         y_test = np.array(keras.utils.to_categorical(y_test, len(CLASSES)))
         y_train = np.asarray(y_train)
         y_test = np.asarray(y_test)
-        return x_train,x_test
+        return x_train,y_train,x_test,y_test
