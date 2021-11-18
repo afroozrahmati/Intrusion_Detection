@@ -1,5 +1,6 @@
 import sys
 import os
+import argparse
 import flwr as fl
 import tensorflow as tf
 import pandas as pd
@@ -54,11 +55,93 @@ from ClusteringLayer import *
 #path = os.getcwd()+'/Intrusion_Detection'
 #os.chdir(path)
 #file name as an input argument for each client
-file_path_normal= sys.argv[1] # './data/normal.csv'   #+ sys.argv[0]
-file_path_abnormal= sys.argv[2] #'./data/abnormal.csv'  #+ sys.argv[1]
+
 # Make TensorFlow log less verbose
 #os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 #tensorflow version shoudl be 2.4.0
+
+# Define Flower client
+class CifarClient(fl.client.NumPyClient):
+
+    def __init__(self, model, x_train, y_train, x_test, y_test):
+        self.model = model
+        self.x_train, self.y_train = x_train, y_train
+        self.x_test, self.y_test = x_test, y_test
+
+    def get_parameters(self):  # type: ignore
+        return self.model.get_weights()
+
+    def fit(self, parameters, config):  # type: ignore
+        self.model.set_weights(parameters)
+        print('Model compiled.')
+        print('Training Starting:')
+        train_history = self.model.fit(self.x_train,
+                                  y={'clustering': self.y_train, 'decoder_out': self.x_train},
+                                  epochs=config["local_epochs"],
+                                  validation_split=0.2,
+                                  # validation_data=(x_test, (y_test, x_test)),
+                                  batch_size=config["batch_size"],
+                                       )
+        # Return updated model parameters and results
+        parameters_prime = self.model.get_weights()
+        num_examples_train = len(self.x_train)
+        results = {
+            "clustering_loss": train_history.history["clustering_loss"][0],
+            "decoder_out_loss": train_history.history["decoder_out_loss"][0],
+            "clustering_accuracy": train_history.history["clustering_accuracy"][0],
+            "decoder_out_mse": train_history.history["decoder_out_mse"][0],
+            "val_clustering_loss": train_history.history["val_clustering_loss"][0],
+            "val_decoder_out_loss": train_history.history["val_decoder_out_loss"][0],
+            "val_clustering_accuracy": train_history.history["val_clustering_accuracy"][0],
+        }
+
+        return parameters_prime, num_examples_train, results
+
+    def evaluate(self, parameters, config):
+        # Update local model with global parameters
+        self.model.set_weights(parameters)
+
+
+        # Get config values
+        steps: int = config["val_steps"]
+        q, _ = self.model.predict(self.x_train, verbose=0)
+        q_t, _ = self.model.predict(self.x_test, verbose=0)
+        p = target_distribution(q)
+
+        y_pred = np.argmax(q, axis=1)
+        y_arg = np.argmax(self.y_train, axis=1)
+        y_pred_test = np.argmax(q_t, axis=1)
+        y_arg_test = np.argmax(self.y_test, axis=1)
+        # acc = np.sum(y_pred == y_arg).astype(np.float32) / y_pred.shape[0]
+        # testAcc = np.sum(y_pred_test == y_arg_test).astype(np.float32) / y_pred_test.shape[0]
+        acc = np.round(accuracy_score(y_arg, y_pred), 5)
+        testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
+
+        nmi = np.round(normalized_mutual_info_score(y_arg, y_pred), 5)
+        nmi_test = np.round(normalized_mutual_info_score(y_arg_test, y_pred_test), 5)
+        ari = np.round(adjusted_rand_score(y_arg, y_pred), 5)
+        ari_test = np.round(adjusted_rand_score(y_arg_test, y_pred_test), 5)
+        print('====================')
+        print('====================')
+        print('====================')
+        print('====================')
+        print('Train accuracy')
+        print(acc)
+        print('Test accuracy')
+        print(testAcc)
+
+        print('NMI')
+        print(nmi)
+        print('ARI')
+        print(ari)
+        print('====================')
+        print('====================')
+        print('====================')
+        print('====================')
+        num_examples_test = len(self.x_test)
+        return _, num_examples_test, {"accuracy": testAcc}
+
+
 
 def normalize(img):
     '''
@@ -90,7 +173,10 @@ def target_distribution(q):  # target distribution P which enhances the discrimi
     return (weight.T / weight.sum(1)).T
 
 
-if __name__ == "__main__":
+def main() -> None:
+    # Parse command line argument `partition`
+    file_path_normal = './data/normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
+    file_path_abnormal = './data/abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
     # Load dataset
     print(file_path_normal)
     print(file_path_abnormal)
@@ -141,7 +227,7 @@ if __name__ == "__main__":
     x_train = np.nan_to_num(x_train)
     x_train = normalize_dataset(x_train)
     x_test = np.array(x_test)
-    x_test = np.nan_to_num(x_test) 
+    x_test = np.nan_to_num(x_test)
     x_test = normalize_dataset(x_test)
 
     del df
@@ -158,12 +244,12 @@ if __name__ == "__main__":
     #model = tf.keras.applications.MobileNetV2((32, 32, 3), classes=10, weights=None)
     #model.compile("adam", "sparse_categorical_crossentropy", metrics=["accuracy"])
 
-    optimizer = Adam(0.005, beta_1=0.1, beta_2=0.001, amsgrad=True)
+
     tf.keras.backend.clear_session()
     optimizer = Adam(0.005, beta_1=0.1, beta_2=0.001, amsgrad=True)
     n_classes = 2
     batch_size = 64
-    epochs = 1000
+    epochs = 10
     callbacks = EarlyStopping(monitor='val_clustering_accuracy', mode='max', verbose=2, patience=800,
                               restore_best_weights=True)
     model_dir = './model/'
@@ -235,76 +321,13 @@ if __name__ == "__main__":
                   loss_weights=[gamma, 1], optimizer='adam',
                   metrics={'clustering': 'accuracy', 'decoder_out': 'mse'})
 
-    # Define Flower client
-    class CifarClient(fl.client.NumPyClient):
-        def get_parameters(self):  # type: ignore
-            return model.get_weights()
-
-        def fit(self, parameters, config):  # type: ignore
-            model.set_weights(parameters)
-            print('Model compiled.')
-            print('Training Starting:')
-            train_history = model.fit(x_train,
-                                      y={'clustering': y_train, 'decoder_out': x_train},
-                                      epochs=epochs,
-                                      validation_split=0.2,
-                                      # validation_data=(x_test, (y_test, x_test)),
-                                      batch_size=batch_size,
-                                      verbose=2,
-                                      callbacks=callbacks)
-            #model.fit(x_train, y_train, epochs=1, batch_size=32)
-            results = {
-                "clustering_loss": train_history.history["clustering_loss"][0],
-                "decoder_out_loss": train_history.history["decoder_out_loss"][0],
-                "clustering_accuracy": train_history.history["clustering_accuracy"][0],
-                "decoder_out_mse": train_history.history["decoder_out_mse"][0],
-                "val_clustering_loss": train_history.history["val_clustering_loss"][0],
-                "val_decoder_out_loss": train_history.history["val_decoder_out_loss"][0],
-                "val_clustering_accuracy": train_history.history["val_clustering_accuracy"][0],
-            }
-
-            return model.get_weights(), len(x_train), results
-
-        def evaluate(self, parameters, config):  # type: ignore
-            model.set_weights(parameters)
-            #loss, accuracy = model.evaluate(x_test, y_test)
-
-            q, _ = model.predict(x_train, verbose=0)
-            q_t, _ = model.predict(x_test, verbose=0)
-            p = target_distribution(q)
-
-            y_pred = np.argmax(q, axis=1)
-            y_arg = np.argmax(y_train, axis=1)
-            y_pred_test = np.argmax(q_t, axis=1)
-            y_arg_test = np.argmax(y_test, axis=1)
-            # acc = np.sum(y_pred == y_arg).astype(np.float32) / y_pred.shape[0]
-            # testAcc = np.sum(y_pred_test == y_arg_test).astype(np.float32) / y_pred_test.shape[0]
-            acc = np.round(accuracy_score(y_arg, y_pred), 5)
-            testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
-
-            nmi = np.round(normalized_mutual_info_score(y_arg, y_pred), 5)
-            nmi_test = np.round(normalized_mutual_info_score(y_arg_test, y_pred_test), 5)
-            ari = np.round(adjusted_rand_score(y_arg, y_pred), 5)
-            ari_test = np.round(adjusted_rand_score(y_arg_test, y_pred_test), 5)
-            print('====================')
-            print('====================')
-            print('====================')
-            print('====================')
-            print('Train accuracy')
-            print(acc)
-            print('Test accuracy')
-            print(testAcc)
-
-            print('NMI')
-            print(nmi)
-            print('ARI')
-            print(ari)
-            print('====================')
-            print('====================')
-            print('====================')
-            print('====================')
-            num_examples_test = len(self.x_test)
-            return  _,num_examples_test, {"accuracy": testAcc}
-
     # Start Flower client
-    fl.client.start_numpy_client("172.18.80.1:8080", client=CifarClient())
+    client = CifarClient(model, x_train, y_train, x_test, y_test)
+    fl.client.start_numpy_client("172.18.80.1:8080", client=client)
+
+if __name__ == "__main__":
+
+    main()
+
+
+
