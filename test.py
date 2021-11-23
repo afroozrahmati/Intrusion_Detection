@@ -9,31 +9,19 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from ClusteringLayer import *
 from datetime import datetime
 
+
 def target_distribution(q):  # target distribution P which enhances the discrimination of soft label Q
     weight = q ** 2 / q.sum(0)
     return (weight.T / weight.sum(1)).T
 
 def get_model(x_train,y_train,x_test,y_test):
-    x_train = np.asarray(x_train)
-    x_test = np.nan_to_num(x_test)
-    x_test = np.asarray(x_test)
 
-    # now = datetime.now()  # current date and time
-    # now = now.strftime("%m") + '_' + now.strftime("%d") + '_' + now.strftime("%Y") + '_' + now.strftime(
-    #     "%H") + '_' + now.strftime("%M") + '_' + now.strftime("%S")
-    # now
     timesteps = np.shape(x_train)[1]
     n_features = np.shape(x_train)[2]
     gamma = 1
     # tf.keras.backend.clear_session()
     print('Setting Up Model for training')
     print(gamma)
-    # model_name = now + '_' + 'Gamma(' + str(gamma) + ')-Optim(' + "Adam" + ')'
-    # print(model_name)
-
-    model = 0
-
-    inputs = encoder = decoder = hidden = clustering = output = 0
 
     inputs = keras.Input(shape=(timesteps, n_features))
     encoder = LSTM(32, activation='tanh')(inputs)
@@ -49,9 +37,6 @@ def get_model(x_train,y_train,x_test,y_test):
     decoder = Dense(64, activation='relu')(decoder)
     decoder = LSTM(32, activation='tanh', return_sequences=True)(decoder)
     output = TimeDistributed(Dense(n_features), name='decoder_out')(decoder)
-
-    # kmeans = KMeans(n_clusters=2, n_init=100)
-
     encoder_model = Model(inputs=inputs, outputs=encoder_out)
     # kmeans.fit(encoder_model.predict(x_train))
 
@@ -86,6 +71,9 @@ def get_model(x_train,y_train,x_test,y_test):
                   metrics={'clustering': 'accuracy', 'decoder_out': 'mse'})
 
     print('Model compiled.           ')
+    return model
+
+def model_training(model,x_train,y_train):
     print('Training Starting:')
 
     print("train shape: ", np.shape(x_train))
@@ -93,9 +81,8 @@ def get_model(x_train,y_train,x_test,y_test):
 
     callbacks = EarlyStopping(monitor='val_clustering_accuracy', mode='max', verbose=2, patience=800,
                               restore_best_weights=True)
-    n_classes = 2
     batch_size = 64
-    epochs = 100
+    epochs = 10
 
     train_history = model.fit(x_train,
                               y={'clustering': y_train, 'decoder_out': x_train},
@@ -104,19 +91,13 @@ def get_model(x_train,y_train,x_test,y_test):
                               # validation_data=(x_test, (y_test, x_test)),
                               batch_size=batch_size,
                               verbose=2,
-                              callbacks=callbacks)
-    return model,train_history
-
-
-# def model_training(model,epochs,batch_size,x_train,y_train):
-#
-#     return train_history
-
+                              callbacks=callbacks
+                              )
+    return model
 def model_evaluate(model,x_train,y_train,x_test,y_test):
-    q, k = model.predict(x_train, verbose=0)
-    print("secnd k x",k)
-    q_t, h = model.predict(x_test, verbose=0)
-    print("second h test",h)
+    q,_ = model.predict(x_train, verbose=0)
+    q_t, _ = model.predict(x_test, verbose=0)
+
     p = target_distribution(q)
 
     y_pred = np.argmax(q, axis=1)
@@ -150,23 +131,26 @@ def model_evaluate(model,x_train,y_train,x_test,y_test):
     print('====================')
     print('====================')
 
+if __name__ == '__main__':
+    file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
+    file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+    data_processing= data_processing()
+    x_train,y_train,x_test,y_test = data_processing.load_data(file_path_normal,file_path_abnormal)
 
+    print("train shape: ", np.shape(x_train))
+    print("test shape: ", np.shape(x_test))
+    print("train label shape: ", y_train.shape)
+    print("test label shape: ", y_test.shape)
 
-file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
-file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
-data_processing= data_processing()
-x_train,y_train,x_test,y_test = data_processing.load_data(file_path_normal,file_path_abnormal)
+    x_train = np.asarray(x_train)
+    x_test = np.nan_to_num(x_test)
+    x_test = np.asarray(x_test)
 
-print("train shape: ", np.shape(x_train))
-print("test shape: ", np.shape(x_test))
-print("train label shape: ", y_train.shape)
-print("test label shape: ", y_test.shape)
-
-model,train_history= get_model(x_train,y_train,x_test,y_test)
-
-model_evaluate(model,x_train,y_train,x_test,y_test)
-# Use the last 2k training examples as a validation set
-start = len(x_train) - 2000
-x_val, y_val = x_train[start:len(x_train)], y_train[start:len(x_train)]
-loss, accuracy = model.evaluate(x_val, y_val)
-print("loss",loss,"acc= ", accuracy)
+    model= get_model(x_train,y_train,x_test,y_test)
+    model = model_training(model,x_train,y_train)
+    model_evaluate(model,x_train,y_train,x_test,y_test)
+    # Use the last 2k training examples as a validation set
+    start = len(x_train) - 2000
+    x_val, y_val = x_train[start:len(x_train)], y_train[start:len(x_train)]
+    loss, accuracy = model.evaluate(x_val, y_val)
+    print("loss",loss,"acc= ", accuracy)
