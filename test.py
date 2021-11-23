@@ -81,11 +81,11 @@ def get_model(x_train,y_train,x_test,y_test):
     print('====================')
 
     optimizer = Adam(0.005, beta_1=0.1, beta_2=0.001, amsgrad=True)
-    model.compile(loss={'clustering': 'kld', 'decoder_out': 'mse'},
+    model.compile(loss={'clustering':           'kld', 'decoder_out': 'mse'},
                   loss_weights=[gamma, 1], optimizer=optimizer,
                   metrics={'clustering': 'accuracy', 'decoder_out': 'mse'})
 
-    print('Model compiled.')
+    print('Model compiled.           ')
     print('Training Starting:')
 
     print("train shape: ", np.shape(x_train))
@@ -95,7 +95,7 @@ def get_model(x_train,y_train,x_test,y_test):
                               restore_best_weights=True)
     n_classes = 2
     batch_size = 64
-    epochs = 10
+    epochs = 100
 
     train_history = model.fit(x_train,
                               y={'clustering': y_train, 'decoder_out': x_train},
