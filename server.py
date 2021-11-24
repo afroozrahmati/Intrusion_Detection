@@ -1,21 +1,8 @@
 from typing import Any, Callable, Dict, List, Optional, Tuple
 import flwr as fl
-import tensorflow as tf
-from tensorflow import keras
 from tensorflow.keras.layers import Dense, Activation, Dropout, LSTM, RepeatVector, TimeDistributed
-from data_processing import *
-import pandas as pd
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-from tensorflow.keras.callbacks import Callback
-from tensorflow.keras.models import Model
-from tensorflow.keras.utils import plot_model
 from tensorflow.keras.optimizers import Adam
-from sklearn.metrics.cluster import normalized_mutual_info_score
 from sklearn.metrics import accuracy_score
-from sklearn.metrics.cluster import adjusted_rand_score
-from ClusteringLayer import *
-from sklearn.model_selection import train_test_split
 from data_processing import *
 
 def target_distribution(q):  # target distribution P which enhances the discrimination of soft label Q
@@ -80,7 +67,7 @@ def main() -> None:
     )
 
     # Start Flower server for four rounds of federated learning
-    fl.server.start_server("172.18.80.1:8080", config={"num_rounds": 4}, strategy=strategy)
+    fl.server.start_server("172.29.80.1:8080", config={"num_rounds": 4}, strategy=strategy)
 
 def load_processed_data():
     file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
