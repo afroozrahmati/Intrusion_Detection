@@ -82,7 +82,7 @@ def model_training(model,x_train,y_train):
     callbacks = EarlyStopping(monitor='val_clustering_accuracy', mode='max', verbose=2, patience=800,
                               restore_best_weights=True)
     batch_size = 64
-    epochs = 10
+    epochs = 3
 
     train_history = model.fit(x_train,
                               y={'clustering': y_train, 'decoder_out': x_train},
@@ -151,6 +151,11 @@ if __name__ == '__main__':
     model_evaluate(model,x_train,y_train,x_test,y_test)
     # Use the last 2k training examples as a validation set
     start = len(x_train) - 2000
+
     x_val, y_val = x_train[start:len(x_train)], y_train[start:len(x_train)]
-    loss, accuracy = model.evaluate(x_val, y_val)
-    print("loss",loss,"acc= ", accuracy)
+
+    q_t, _ = model.predict(x_val, verbose=0)
+    y_pred_test = np.argmax(q_t, axis=1)
+    y_arg_test = np.argmax(y_val, axis=1)
+    testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
+    print("acc= ", testAcc)
