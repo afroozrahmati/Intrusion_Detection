@@ -158,4 +158,8 @@ if __name__ == '__main__':
     y_pred_test = np.argmax(q_t, axis=1)
     y_arg_test = np.argmax(y_val, axis=1)
     testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
+
+    score = model.evaluate(x_val, y_val, batch_size=64, verbose=0)
+    print(' Validation accuracy:', score[1])
+
     print("acc= ", testAcc)
