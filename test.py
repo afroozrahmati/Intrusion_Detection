@@ -82,7 +82,7 @@ def model_training(model,x_train,y_train):
     callbacks = EarlyStopping(monitor='val_clustering_accuracy', mode='max', verbose=2, patience=800,
                               restore_best_weights=True)
     batch_size = 64
-    epochs = 3
+    epochs = 1000
 
     train_history = model.fit(x_train,
                               y={'clustering': y_train, 'decoder_out': x_train},
