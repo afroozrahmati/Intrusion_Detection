@@ -2,7 +2,7 @@
 from tensorflow.keras.layers import Dense, Activation, Dropout, LSTM, RepeatVector, TimeDistributed
 from data_processing import *
 from sklearn.metrics.cluster import normalized_mutual_info_score
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score,mean_squared_error,mutual_info_score
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics.cluster import adjusted_rand_score
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -66,7 +66,7 @@ def get_model(x_train,y_train,x_test,y_test):
     print('====================')
 
     optimizer = Adam(0.005, beta_1=0.1, beta_2=0.001, amsgrad=True)
-    model.compile(loss={'clustering':           'kld', 'decoder_out': 'mse'},
+    model.compile(loss={'clustering':  'kld', 'decoder_out': 'mse'},
                   loss_weights=[gamma, 1], optimizer=optimizer,
                   metrics={'clustering': 'accuracy', 'decoder_out': 'mse'})
 
@@ -154,10 +154,12 @@ if __name__ == '__main__':
 
     x_val, y_val = x_train[start:len(x_train)], y_train[start:len(x_train)]
 
-    q_t, _ = model.predict(x_val, verbose=0)
-    y_pred_test = np.argmax(q_t, axis=1)
-    y_arg_test = np.argmax(y_val, axis=1)
-    testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
+    q_v, _ = model.predict(x_val, verbose=0)
+    y_pred_val = np.argmax(q_v, axis=1)
+    y_arg_val = np.argmax(y_val, axis=1)
 
-    print('Test accuracy')
-    print(testAcc)
+    accuracy = np.round(accuracy_score(y_arg_val, y_pred_val), 5)
+    mse_loss = np.round(mean_squared_error(y_arg_val, y_pred_val),5)
+    kld_loss = np.round(mutual_info_score(y_arg_val, y_pred_val), 5)
+    print('Test accuracy , mse loss , kld_loss')
+    print(accuracy , mse_loss,kld_loss )

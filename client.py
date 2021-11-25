@@ -10,7 +10,7 @@ import tensorflow as tf
 from sklearn.metrics import accuracy_score
 from tensorflow.keras.layers import Dense, Activation, Dropout, LSTM, RepeatVector, TimeDistributed
 from tensorflow.keras.optimizers import Adam
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score,mean_squared_error,mutual_info_score
 from data_processing import *
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
@@ -111,11 +111,14 @@ if __name__ == "__main__":
             y_pred_test = np.argmax(q_t, axis=1)
             y_arg_test = np.argmax(y_test, axis=1)
             accuracy = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
+            #mse_loss = np.round(mean_squared_error(y_arg_test, y_pred_test), 5)
+            kld_loss = np.round(mutual_info_score(y_arg_test, y_pred_test), 5)
+
             loss=0.01
             print(len(x_test))
             print(accuracy)
             #loss, accuracy = model.evaluate(x_test, y_test)
-            return loss, len(x_test), {"accuracy": accuracy}
+            return kld_loss, len(x_test), {"accuracy": accuracy}
 
     # Start Flower client
     fl.client.start_numpy_client("172.29.80.1:8080", client=CifarClient())
