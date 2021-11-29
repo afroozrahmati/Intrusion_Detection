@@ -26,15 +26,16 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.metrics.cluster import adjusted_rand_score
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from ClusteringLayer import *
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def load_processed_data(file_path_normal,file_path_abnormal):
     data_process= data_processing()
     x_train,y_train,x_test,y_test = data_process.load_data(file_path_normal,file_path_abnormal)
 
-    print("train shape: ", np.shape(x_train))
-    print("test shape: ", np.shape(x_test))
-    print("train label shape: ", y_train.shape)
-    print("test label shape: ", y_test.shape)
+    # print("train shape: ", np.shape(x_train))
+    # print("test shape: ", np.shape(x_test))
+    # print("train label shape: ", y_train.shape)
+    # print("test label shape: ", y_test.shape)
 
     x_train = np.asarray(x_train)
     x_test = np.nan_to_num(x_test)
@@ -86,8 +87,8 @@ def get_model(timesteps,n_features):
 
     gamma = 1
     # tf.keras.backend.clear_session()
-    print('Setting Up Model for training')
-    print(gamma)
+    # print('Setting Up Model for training')
+    # print(gamma)
 
     inputs = keras.Input(shape=(timesteps, n_features))
     encoder = LSTM(32, activation='tanh')(inputs)
@@ -117,14 +118,14 @@ def get_model(timesteps,n_features):
                   loss_weights=[gamma, 1], optimizer=optimizer,
                   metrics={'clustering': 'accuracy', 'decoder_out': 'mse'})
 
-    print('Model compiled.           ')
+    # print('Model compiled.           ')
     return model
 
 def model_training(model,x_train,y_train,epochs=1000):
-    print('Training Starting:')
-
-    print("train shape: ", np.shape(x_train))
-    print("train label shape: ", y_train.shape)
+    # print('Training Starting:')
+    #
+    # print("train shape: ", np.shape(x_train))
+    # print("train label shape: ", y_train.shape)
 
     callbacks = EarlyStopping(monitor='val_clustering_accuracy', mode='max', verbose=2, patience=800,
                               restore_best_weights=True)
@@ -137,7 +138,7 @@ def model_training(model,x_train,y_train,epochs=1000):
                               validation_split=0.2,
                               # validation_data=(x_test, (y_test, x_test)),
                               batch_size=batch_size,
-                              verbose=2,
+                              verbose=0,
                               callbacks=callbacks
                               )
     return model
@@ -197,23 +198,23 @@ def model_evaluate(model,x_train,y_train,x_test,y_test,epochs):
     nmi_test = np.round(normalized_mutual_info_score(y_arg_test, y_pred_test), 5)
     ari = np.round(adjusted_rand_score(y_arg, y_pred), 5)
     ari_test = np.round(adjusted_rand_score(y_arg_test, y_pred_test), 5)
-    print('====================')
-    print('====================')
-    print('====================')
-    print('====================')
-    print('Train accuracy')
-    print(acc)
-    print('Test accuracy')
-    print(testAcc)
-
-    print('NMI')
-    print(nmi)
-    print('ARI')
-    print(ari)
-    print('====================')
-    print('====================')
-    print('====================')
-    print('====================')
+    # print('====================')
+    # print('====================')
+    # print('====================')
+    # print('====================')
+    # print('Train accuracy')
+    # print(acc)
+    # print('Test accuracy')
+    # print(testAcc)
+    #
+    # print('NMI')
+    # print(nmi)
+    # print('ARI')
+    # print(ari)
+    # print('====================')
+    # print('====================')
+    # print('====================')
+    # print('====================')
 
     print('comm_round: {} | global_acc: {:.3%} | global_nmi: {} | global_ari: {}'.format(epochs, testAcc, nmi,ari))
 
@@ -248,7 +249,7 @@ comms_round = 100
 
 # commence global training loop
 for comm_round in range(comms_round):
-
+    print("start round" ,comm_round )
     # get the global model's weights - will serve as the initial weights for all local models
     global_weights = global_model.get_weights()
 
