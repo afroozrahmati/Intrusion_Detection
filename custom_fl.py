@@ -111,7 +111,7 @@ def get_model(timesteps,n_features):
     clustering_model = Model(inputs=inputs, outputs=clustering)
 
     # plot_model(model, show_shapes=True)
-    model.summary()
+    #model.summary()
     optimizer = Adam(0.005, beta_1=0.1, beta_2=0.001, amsgrad=True)
     model.compile(loss={'clustering':  'kld', 'decoder_out': 'mse'},
                   loss_weights=[gamma, 1], optimizer=optimizer,
@@ -177,6 +177,46 @@ def sum_scaled_weights(scaled_weight_list):
 
     return avg_grad
 
+
+def model_evaluate(model,x_train,y_train,x_test,y_test,epochs):
+    q,_ = model.predict(x_train, verbose=0)
+    q_t, _ = model.predict(x_test, verbose=0)
+
+    p = target_distribution(q)
+
+    y_pred = np.argmax(q, axis=1)
+    y_arg = np.argmax(y_train, axis=1)
+    y_pred_test = np.argmax(q_t, axis=1)
+    y_arg_test = np.argmax(y_test, axis=1)
+    # acc = np.sum(y_pred == y_arg).astype(np.float32) / y_pred.shape[0]
+    # testAcc = np.sum(y_pred_test == y_arg_test).astype(np.float32) / y_pred_test.shape[0]
+    acc = np.round(accuracy_score(y_arg, y_pred), 5)
+    testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
+
+    nmi = np.round(normalized_mutual_info_score(y_arg, y_pred), 5)
+    nmi_test = np.round(normalized_mutual_info_score(y_arg_test, y_pred_test), 5)
+    ari = np.round(adjusted_rand_score(y_arg, y_pred), 5)
+    ari_test = np.round(adjusted_rand_score(y_arg_test, y_pred_test), 5)
+    print('====================')
+    print('====================')
+    print('====================')
+    print('====================')
+    print('Train accuracy')
+    print(acc)
+    print('Test accuracy')
+    print(testAcc)
+
+    print('NMI')
+    print(nmi)
+    print('ARI')
+    print(ari)
+    print('====================')
+    print('====================')
+    print('====================')
+    print('====================')
+
+    print('comm_round: {} | global_acc: {:.3%} | global_nmi: {} | global_ari: {}'.format(epochs, testAcc, nmi,ari))
+
 file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
 file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
 x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal)  # args.partition)
@@ -203,7 +243,7 @@ timesteps = np.shape(x_train)[1]
 n_features = np.shape(x_train)[2]
 
 global_model = get_model(timesteps, n_features)
-comms_round = 1000
+comms_round = 100
 
 
 # commence global training loop
@@ -243,6 +283,5 @@ for comm_round in range(comms_round):
     global_model.set_weights(average_weights)
 
     # test global model and print out metrics after each communications round
-    for (X_test, Y_test) in test_batched:
-        global_acc, global_loss = test_model(X_test, Y_test, global_model, comm_round)
-        SGD_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).shuffle(len(y_train)).batch(320)
+
+    model_evaluate(global_model,x_train,y_train,x_test,y_test,comm_round)
