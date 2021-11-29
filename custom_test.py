@@ -42,7 +42,7 @@ def load_processed_data(file_path_normal,file_path_abnormal):
     return x_train,y_train,x_test, y_test
 
 
-def create_clients(x_train, y_train, num_clients=10, initial='clients'):
+def create_clients(image_list, label_list, num_clients=10, initial='clients'):
     ''' return: a dictionary with keys clients' names and value as
                 data shards - tuple of images and label lists.
         args:
@@ -56,13 +56,18 @@ def create_clients(x_train, y_train, num_clients=10, initial='clients'):
     # create a list of client names
     client_names = ['{}_{}'.format(initial, i + 1) for i in range(num_clients)]
 
-    # shard data and place at each client
-    size = len(x_train) // num_clients
-    client_dict={}
-    for i in range(num_clients):
-        client_dict[client_names[i]]= [x_train[i:i + size], y_train[i:i + size]]
+    # randomize the data
+    data = list(zip(image_list, label_list))
+    random.shuffle(data)
 
-    return client_dict
+    # shard data and place at each client
+    size = len(data) // num_clients
+    shards = [data[i:i + size] for i in range(0, size * num_clients, size)]
+
+    # number of clients must equal number of shards
+    assert (len(shards) == len(client_names))
+
+    return {client_names[i]: shards[i] for i in range(len(client_names))}
 
 
 def batch_data(data_shard, bs=32):
@@ -124,7 +129,7 @@ def model_training(model,x_train,y_train,epochs=1000):
     print('Training Starting:')
 
     print("train shape: ", np.shape(x_train))
-    print("train label shape: ", y_train.shape)
+    print("train label shape: ",np.shape( y_train.shape))
 
     callbacks = EarlyStopping(monitor='val_clustering_accuracy', mode='max', verbose=2, patience=800,
                               restore_best_weights=True)
@@ -142,21 +147,29 @@ def model_training(model,x_train,y_train,epochs=1000):
                               )
     return model
 
-def weight_scalling_factor(clients_trn_data, client_name):
-    # client_names = list(clients_trn_data.keys())
-    # #get the bs
-    # #bs = list(clients_trn_data[client_name])[0][0].shape[0]
-    #
-    # bs = np.shape(clients_trn_data[client_name][0])[0]
-    #
-    # #first calculate the total training data points across clinets
-    # global_count = sum([tf.data.experimental.cardinality(clients_trn_data[client_name]).numpy() for client_name in client_names])*bs
-    # # get the total number of data points held by a client
-    # local_count = tf.data.experimental.cardinality(clients_trn_data[client_name]).numpy()*bs
+# def weight_scalling_factor(clients_trn_data, client_name):
+#     client_names = list(clients_trn_data.keys())
+#     #get the bs
+#     #bs = list(clients_trn_data[client_name])[0][0].shape[0]
+#
+#     bs = np.shape(clients_trn_data[client_name][0])[0]
+#
+#     #first calculate the total training data points across clinets
+#     global_count = sum([tf.data.experimental.cardinality(clients_trn_data[client_name]).numpy() for client_name in client_names])*bs
+#     # get the total number of data points held by a client
+#     local_count = tf.data.experimental.cardinality(clients_trn_data[client_name]).numpy()*bs
+#     return local_count/global_count
 
-    local_count = 1
-    global_count = len(clients_trn_data)
+def weight_scalling_factor(clients_trn_data, client_name):
+    client_names = list(clients_trn_data.keys())
+    #get the bs
+    bs = list(clients_trn_data[client_name])[0][0].shape[0]
+    #first calculate the total training data points across clinets
+    global_count = sum([tf.data.experimental.cardinality(clients_trn_data[client_name]).numpy() for client_name in client_names])*bs
+    # get the total number of data points held by a client
+    local_count = tf.data.experimental.cardinality(clients_trn_data[client_name]).numpy()*bs
     return local_count/global_count
+
 
 def scale_model_weights(weight, scalar):
     '''function for scaling a models weights'''
@@ -167,16 +180,6 @@ def scale_model_weights(weight, scalar):
     return weight_final
 
 
-def sum_scaled_weights(scaled_weight_list):
-    '''Return the sum of the listed scaled weights. The is equivalent to scaled avg of the weights'''
-    avg_grad = list()
-    # get the average grad accross all client gradients
-    for grad_list_tuple in zip(*scaled_weight_list):
-        layer_mean = tf.math.reduce_sum(grad_list_tuple, axis=0)
-        avg_grad.append(layer_mean)
-
-    return avg_grad
-
 file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
 file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
 x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal)  # args.partition)
@@ -186,15 +189,19 @@ x_test = np.nan_to_num(x_test)
 x_test = np.asarray(x_test)
 
 
+
+
 #create clients
 clients = create_clients(x_train, y_train, num_clients=10, initial='client')
 
 # process and batch the training data for each client
-client_names=[]
+# process and batch the training data for each client
+clients_batched = dict()
 for (client_name, data) in clients.items():
-    print("x_train", np.shape(data[0]))
-    print("y_train", np.shape(data[1]))
-    client_names.append(client_name)
+    clients_batched[client_name] = batch_data(data)
+
+# process and batch the test set
+test_batched = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(len(y_test))
 
 
 # process and batch the test set
@@ -202,7 +209,7 @@ for (client_name, data) in clients.items():
 timesteps = np.shape(x_train)[1]
 n_features = np.shape(x_train)[2]
 
-global_model = get_model(timesteps, n_features)
+model = get_model(timesteps, n_features)
 comms_round = 1000
 
 
@@ -210,39 +217,47 @@ comms_round = 1000
 for comm_round in range(comms_round):
 
     # get the global model's weights - will serve as the initial weights for all local models
-    global_weights = global_model.get_weights()
+    global_weights = model.get_weights()
 
     # initial list to collect local model weights after scalling
     scaled_local_weight_list = list()
 
+    # randomize client data - using keys
+    client_names = list(clients_batched.keys())
+    random.shuffle(client_names)
+
+
 
     # loop through each client and create new local model
-    for (client_name, data) in clients.items():
+    for client in client_names:
 
         local_model = get_model(timesteps, n_features)
 
         # set local model weight to the weight of the global model
         local_model.set_weights(global_weights)
 
-        local_model = model_training(local_model, data[0], data[1],epochs=1)
+
+        #model = model_training(local_model, x_data,y_data,epochs=1)
         # fit local model with client's data
         #local_model.fit(clients_batched[client], epochs=1, verbose=0)
 
         # scale the model weights and add to list
-        scaling_factor = weight_scalling_factor(clients, client_name)
+        scaling_factor = weight_scalling_factor(clients_batched, client)
         scaled_weights = scale_model_weights(local_model.get_weights(), scaling_factor)
         scaled_local_weight_list.append(scaled_weights)
-
-        # clear session to free memory after each communication round
-        K.clear_session()
-
-    # to get the average over all the local model, we simply take the sum of the scaled weights
-    average_weights = sum_scaled_weights(scaled_local_weight_list)
-
-    # update global model
-    global_model.set_weights(average_weights)
-
-    # test global model and print out metrics after each communications round
-    for (X_test, Y_test) in test_batched:
-        global_acc, global_loss = test_model(X_test, Y_test, global_model, comm_round)
-        SGD_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).shuffle(len(y_train)).batch(320)
+    #     scaled_weights = scale_model_weights(local_model.get_weights(), scaling_factor)
+    #     scaled_local_weight_list.append(scaled_weights)
+    #
+    #     # clear session to free memory after each communication round
+    #     K.clear_session()
+    #
+    # # to get the average over all the local model, we simply take the sum of the scaled weights
+    # average_weights = sum_scaled_weights(scaled_local_weight_list)
+    #
+    # # update global model
+    # global_model.set_weights(average_weights)
+    #
+    # # test global model and print out metrics after each communications round
+    # for (X_test, Y_test) in test_batched:
+    #     global_acc, global_loss = test_model(X_test, Y_test, global_model, comm_round)
+#         SGD_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).shuffle(len(y_train)).batch(320)
