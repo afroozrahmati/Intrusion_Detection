@@ -255,11 +255,11 @@ def foolsgold(grads):
 def aggregate_gradients(client_grads):
     num_clients = len(client_grads)
 
-    grad_len = np.array(client_grads[0][-1].data.shape).prod()
+    grad_len = np.array(client_grads[0][-2].data.shape).prod()
 
     grads = np.zeros((num_clients, grad_len))
     for i in range(len(client_grads)):
-        grads[i] = np.reshape(client_grads[i][-1].data, (grad_len))
+        grads[i] = np.reshape(client_grads[i][-2].data, (grad_len))
 
     wv = foolsgold(grads)  # Use FG
 
