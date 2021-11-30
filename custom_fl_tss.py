@@ -226,6 +226,7 @@ def model_evaluate(model,x_train,y_train,x_test,y_test,epochs):
 # Get weightings
 def foolsgold(grads):
     n_clients = len(grads)
+
     cs = smp.cosine_similarity(grads) - np.eye(n_clients)
     maxcs = np.max(cs, axis=1)
     # pardoning
@@ -253,20 +254,21 @@ def foolsgold(grads):
 # client_grads = Compute gradients from all the clients
 def aggregate_gradients(client_grads):
     num_clients = len(client_grads)
-    grad_len = len(client_grads[0])
+
+    grad_len = np.array(client_grads[0][-1].data.shape).prod()
 
     grads = np.zeros((num_clients, grad_len))
     for i in range(len(client_grads)):
-        grads[i] = np.reshape(client_grads[i], (grad_len))
+        grads[i] = np.reshape(client_grads[i][-1].data, (grad_len))
+
     wv = foolsgold(grads)  # Use FG
 
     print(wv)
 
-
     agg_grads = []
     # Iterate through each layer
     for i in range(len(client_grads[0])):
-        temp = wv[0] * client_grads[0][i].cpu().clone()
+        temp = wv[0] * client_grads[0][i]
         # Aggregate gradients for a layer
         for c, client_grad in enumerate(client_grads):
             if c == 0:
