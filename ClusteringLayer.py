@@ -80,7 +80,7 @@ class ClusteringLayer(Layer):
         q = 1.0 / (1.0 + (K.sum(K.square(K.expand_dims(inputs, axis=1) - self.clusters), axis=2) / self.alpha))
         q **= (self.alpha + 1.0) / 2.0
         q = K.transpose(K.transpose(q) / K.sum(q, axis=1))
-        print(self.set_weights)
+        #print(self.set_weights)
         return q
 
     def compute_output_shape(self, input_shape):

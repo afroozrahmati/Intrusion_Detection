@@ -1,23 +1,7 @@
 #reference to this intresting artile to create a simple custom FL model
 #https://towardsdatascience.com/federated-learning-a-step-by-step-implementation-in-tensorflow-aac568283399
-import numpy as np
-import random
-import os
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelBinarizer
-from sklearn.model_selection import train_test_split
-from sklearn.utils import shuffle
-from sklearn.metrics import accuracy_score
 
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D
-from tensorflow.keras.layers import MaxPooling2D
-from tensorflow.keras.layers import Activation
-from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.optimizers import SGD
-from tensorflow.keras import backend as K
+import os
 from tensorflow.keras.layers import Dense, Activation, Dropout, LSTM, RepeatVector, TimeDistributed
 from data_processing import *
 from sklearn.metrics.cluster import normalized_mutual_info_score
@@ -27,6 +11,8 @@ from sklearn.metrics.cluster import adjusted_rand_score
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from ClusteringLayer import *
 import sklearn.metrics.pairwise as smp
+import math
+import torch
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -251,17 +237,86 @@ def foolsgold(grads):
 
     return wv
 
+def ts_ss_(v, eps=1e-15, eps2=1e-4):
+    # reusable compute
+    v_inner = torch.mm(v, v.t())
+    vs = v.norm(dim=-1, keepdim=True)
+    vs_dot = vs.mm(vs.t())
+
+    # compute triangle(v)
+    v_cos = v_inner / vs_dot
+    v_cos = v_cos.clamp(-1. + eps2, 1. - eps2)  # clamp to avoid backprop instability
+    theta_ = torch.acos(v_cos) + math.radians(10)
+    theta_rad = theta_ * math.pi / 180.
+    tri = (vs_dot * torch.sin(theta_rad)) / 2.
+
+    # compute sector(v)
+    v_norm = (v ** 2).sum(-1, keepdim=True)
+    euc_dist = v_norm + v_norm.t() - 2.0 * v_inner
+    euc_dist = torch.sqrt(torch.abs(euc_dist) + eps)  # add epsilon to avoid srt(0.)
+    magnitude_diff = (vs - vs.t()).abs()
+    sec = math.pi * (euc_dist + magnitude_diff) ** 2 * theta_ / 360.
+
+    return tri * sec
+
+def asf(grads):
+    """
+    :param grads:
+    :return: compute similatiry and return weightings
+    """
+    n_clients = grads.shape[0]
+
+    #    3.  TS-SS Triangle Area Similarity - Sector Area Similarity
+    v = torch.tensor(grads)
+
+    # TS-SS normalized
+    distance_calc = ts_ss_(v).numpy()
+    normalized = 2. * (distance_calc - np.min(distance_calc)) / np.ptp(distance_calc) - 1
+    sm = normalized - np.eye(n_clients)
+    prc = 0.05
+
+    maxsm = np.max(sm, axis=1)
+
+    # pardoning
+    for i in range(n_clients):
+        for j in range(n_clients):
+            if i == j:
+                continue
+            if maxsm[i] < maxsm[j]:
+                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+    wv = 1 - (np.max(sm, axis=1))
+
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    wv = (np.log(wv / (1 - wv)) + 0.5)
+    wv[(np.isinf(wv) + wv > 1)] = 1
+    wv[(wv < 0)] = 0
+
+    # wv is the weight
+    return wv, alpha
+
+
+
+
 # client_grads = Compute gradients from all the clients
 def aggregate_gradients(client_grads):
     num_clients = len(client_grads)
 
-    grad_len = np.array(client_grads[0][-2].data.shape).prod()
+    grad_len = np.array(client_grads[0][-1].data.shape).prod()
 
     grads = np.zeros((num_clients, grad_len))
     for i in range(len(client_grads)):
-        grads[i] = np.reshape(client_grads[i][-2].data, (grad_len))
+        grads[i] = np.reshape(client_grads[i][-1].data, (grad_len))
 
-    wv = foolsgold(grads)  # Use FG
+    wv,_ = asf(grads)  # Use FG
 
     print(wv)
 
