@@ -368,7 +368,7 @@ comms_round = 100
 
 # commence global training loop
 for comm_round in range(comms_round):
-    print("start round" ,comm_round )
+
     # get the global model's weights - will serve as the initial weights for all local models
     global_weights = global_model.get_weights()
 
@@ -378,7 +378,7 @@ for comm_round in range(comms_round):
     client_grads = []
     # loop through each client and create new local model
     for (client_name, data) in clients.items():
-
+        print("round=", comm_round , "client_name=",client_name)
         local_model = get_model(timesteps, n_features)
 
         # set local model weight to the weight of the global model
