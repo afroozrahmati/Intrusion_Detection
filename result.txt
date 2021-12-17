@@ -1,0 +1,12 @@
+Gamma=0, Epochs=1000, Lr=0.0001, NMI=0.09766, ARI=0.04209, Train accuracy=0.61583, Test accuracy=0.60199
+Gamma=0.5, Epochs=1000, Lr=0.0001, NMI=0.00272, ARI=-0.0024, Train accuracy=0.44506, Test accuracy=0.45789
+Gamma=1, Epochs=1000, Lr=0.0001, NMI=0.69369, ARI=0.78072, Train accuracy=0.94183, Test accuracy=0.94028
+Gamma=2, Epochs=1000, Lr=0.0001, NMI=0.69452, ARI=0.78142, Train accuracy=0.94203, Test accuracy=0.94276
+Gamma=4, Epochs=1000, Lr=0.0001, NMI=0.69895, ARI=0.79326, Train accuracy=0.94536, Test accuracy=0.94633
+Gamma=6, Epochs=1000, Lr=0.0001, NMI=0.68746, ARI=0.77461, Train accuracy=0.94011, Test accuracy=0.9378
+Gamma=7, Epochs=1000, Lr=0.0001, NMI=0.68116, ARI=0.76923, Train accuracy=0.93858, Test accuracy=0.93671
+Gamma=9, Epochs=1000, Lr=0.0001, NMI=0.6939, ARI=0.77695, Train accuracy=0.94077, Test accuracy=0.93842
+Gamma=10, Epochs=1000, Lr=0.0001, NMI=0.68345, ARI=0.76736, Train accuracy=0.93804, Test accuracy=0.93578
+
+--------------------------optimizer--------------------
+

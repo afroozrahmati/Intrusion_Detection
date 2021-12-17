@@ -91,7 +91,7 @@ if __name__ == "__main__":
                                       restore_best_weights=True)
             history = model.fit(x_train,
                                      y={'clustering': y_train, 'decoder_out': x_train},
-                                     epochs=2,
+                                     epochs=1,
                                      validation_split=0.2,
                                      # validation_data=(x_test, (y_test, x_test)),
                                      batch_size=64,
@@ -114,11 +114,11 @@ if __name__ == "__main__":
             #mse_loss = np.round(mean_squared_error(y_arg_test, y_pred_test), 5)
             kld_loss = np.round(mutual_info_score(y_arg_test, y_pred_test), 5)
 
-            loss=0.01
+
             print(len(x_test))
             print(accuracy)
             #loss, accuracy = model.evaluate(x_test, y_test)
             return kld_loss, len(x_test), {"accuracy": accuracy}
 
     # Start Flower client
-    fl.client.start_numpy_client("172.29.80.1:8080", client=CifarClient())
+    fl.client.start_numpy_client("192.168.1.237:8080", client=CifarClient())

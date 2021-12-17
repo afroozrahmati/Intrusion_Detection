@@ -85,7 +85,7 @@ def target_distribution(q):  # target distribution P which enhances the discrimi
 def get_model(timesteps,n_features):
 
 
-    gamma = 1
+    gamma = 4
     # tf.keras.backend.clear_session()
     # print('Setting Up Model for training')
     # print(gamma)
@@ -113,9 +113,9 @@ def get_model(timesteps,n_features):
 
     # plot_model(model, show_shapes=True)
     #model.summary()
-    optimizer = Adam(0.005, beta_1=0.1, beta_2=0.001, amsgrad=True)
+    #optimizer = Adam(0.005, beta_1=0.1, beta_2=0.001, amsgrad=True)
     model.compile(loss={'clustering':  'kld', 'decoder_out': 'mse'},
-                  loss_weights=[gamma, 1], optimizer=optimizer,
+                  loss_weights=[gamma, 1], optimizer='adam',
                   metrics={'clustering': 'accuracy', 'decoder_out': 'mse'})
 
     # print('Model compiled.           ')
@@ -215,7 +215,9 @@ def model_evaluate(model,x_train,y_train,x_test,y_test,epochs):
     # print('====================')
     # print('====================')
     # print('====================')
-
+    s =str(epochs)+','+ str(acc)+','+ str(nmi)+','+ str(ari)+','+str(testAcc)+','+str(nmi_test)+','+str(ari_test)+'\n'
+    with open('D:\\UW\\RA\\Intrusion_Detection\\result_gamma_4.txt', 'a') as f:
+        f.write(s)
     print('comm_round: {} | global_acc: {:.3%} | global_nmi: {} | global_ari: {}'.format(epochs, testAcc, nmi,ari))
 
 file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
@@ -244,12 +246,12 @@ timesteps = np.shape(x_train)[1]
 n_features = np.shape(x_train)[2]
 
 global_model = get_model(timesteps, n_features)
-comms_round = 100
+comms_round = 1000
 
 
 # commence global training loop
 for comm_round in range(comms_round):
-    print("start round" ,comm_round )
+    #print("start round" ,comm_round )
     # get the global model's weights - will serve as the initial weights for all local models
     global_weights = global_model.get_weights()
 
