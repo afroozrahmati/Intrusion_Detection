@@ -3,6 +3,7 @@ from ClusteringLayer import *
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow import keras
+from sklearn.utils import shuffle
 
 class data_processing:
     def __init__(self):
@@ -60,17 +61,40 @@ class data_processing:
         df['subcategory '] = df['subcategory '].map(d)
         return df
 
-    def load_data(self,file_path_normal, file_path_abnormal):
+    '''
+    A UDF to convert input data into 3-D
+    array as required for LSTM network.
+    '''
+
+    def make_timesteps(self,X, y, lookback):
+        output_X = []
+        output_y = []
+        for i in range(len(X) - lookback - 1):
+            t = []
+            for j in range(1, lookback + 1):
+                # Gather past records upto the lookback period
+                t.append(X[[(i + j + 1)], :])
+            output_X.append(t)
+            output_y.append(y[i + lookback + 1])
+        return output_X, output_y
+
+    def load_data(self,file_path_normal, file_path_abnormal,timesteps):
         df_normal = pd.read_csv(file_path_normal)
         df_abnormal = pd.read_csv(file_path_abnormal)
         df = pd.concat([df_normal, df_abnormal], ignore_index=True)
         df = self.pre_processing(df)
+
+
         train, test = train_test_split(df, test_size=0.3, random_state=16)
 
         x_train, y_train = train.drop(columns=['attack']), train['attack']
         x_test, y_test = test.drop(columns=['attack']), test['attack']
-        x_train = x_train.values.reshape((x_train.shape[0], 1, x_train.shape[1]))
-        x_test = x_test.values.reshape((x_test.shape[0], 1, x_test.shape[1]))
+
+        #timesteps = 3
+        features = x_train.shape[1]
+
+      #  x_train = x_train.values.reshape((x_train.shape[0], timesteps, x_train.shape[1]))
+      #  x_test = x_test.values.reshape((x_test.shape[0], timesteps, x_test.shape[1]))
 
         x_train = np.array(x_train)
         x_train = np.nan_to_num(x_train)
@@ -84,4 +108,70 @@ class data_processing:
         y_test = np.array(keras.utils.to_categorical(y_test, len(CLASSES)))
         y_train = np.asarray(y_train)
         y_test = np.asarray(y_test)
+
+        x_train = np.array(x_train)
+        x_test = np.array(x_test)
+        y_train = np.array(y_train)
+        y_test = np.array(y_test)
+
+
+        x_train,y_train=self.make_timesteps(np.array(x_train),np.array(y_train),timesteps)
+        x_test, y_test = self.make_timesteps(np.array(x_test), np.array(y_test), timesteps)
+        x_train = np.array(x_train)
+        x_test = np.array(x_test)
+        y_train = np.array(y_train)
+        y_test = np.array(y_test)
+        x_train = x_train.reshape(x_train.shape[0], timesteps, features)
+        x_test = x_test.reshape(x_test.shape[0], timesteps, features)
+
+
+
+        return x_train,y_train,x_test,y_test
+
+    def load_data_total(self,file_path):
+        df = pd.read_csv(file_path)
+        df = self.pre_processing(df)
+
+
+        train, test = train_test_split(df, test_size=0.3, random_state=16)
+
+        x_train, y_train = train.drop(columns=['attack']), train['attack']
+        x_test, y_test = test.drop(columns=['attack']), test['attack']
+
+        #timesteps = 3
+        features = x_train.shape[1]
+
+      #  x_train = x_train.values.reshape((x_train.shape[0], timesteps, x_train.shape[1]))
+      #  x_test = x_test.values.reshape((x_test.shape[0], timesteps, x_test.shape[1]))
+
+        x_train = np.array(x_train)
+        x_train = np.nan_to_num(x_train)
+        x_train = self.normalize_dataset(x_train)
+        x_test = np.array(x_test)
+        x_test = np.nan_to_num(x_test)
+        x_test = self.normalize_dataset(x_test)
+        del df
+        CLASSES = ['normal', 'abnormal']
+        y_train = np.array(keras.utils.to_categorical(y_train, len(CLASSES)))
+        y_test = np.array(keras.utils.to_categorical(y_test, len(CLASSES)))
+        y_train = np.asarray(y_train)
+        y_test = np.asarray(y_test)
+
+        x_train = np.array(x_train)
+        x_test = np.array(x_test)
+        y_train = np.array(y_train)
+        y_test = np.array(y_test)
+
+
+        x_train,y_train=self.make_timesteps(np.array(x_train),np.array(y_train),1)
+        x_test, y_test = self.make_timesteps(np.array(x_test), np.array(y_test), 1)
+        x_train = np.array(x_train)
+        x_test = np.array(x_test)
+        y_train = np.array(y_train)
+        y_test = np.array(y_test)
+        x_train = x_train.reshape(x_train.shape[0], 1, features)
+        x_test = x_test.reshape(x_test.shape[0], 1, features)
+
+
+
         return x_train,y_train,x_test,y_test

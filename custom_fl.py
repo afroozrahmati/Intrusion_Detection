@@ -26,11 +26,13 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.metrics.cluster import adjusted_rand_score
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from ClusteringLayer import *
+from datetime import datetime
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def load_processed_data(file_path_normal,file_path_abnormal):
     data_process= data_processing()
-    x_train,y_train,x_test,y_test = data_process.load_data(file_path_normal,file_path_abnormal)
+    x_train,y_train,x_test,y_test = data_process.load_data(file_path_normal,file_path_abnormal,1)
 
     # print("train shape: ", np.shape(x_train))
     # print("test shape: ", np.shape(x_test))
@@ -43,7 +45,7 @@ def load_processed_data(file_path_normal,file_path_abnormal):
     return x_train,y_train,x_test, y_test
 
 
-def create_clients(x_train, y_train, num_clients=10, initial='clients'):
+def create_clients(x_train, y_train, num_clients=100, initial='clients'):
     ''' return: a dictionary with keys clients' names and value as
                 data shards - tuple of images and label lists.
         args:
@@ -121,14 +123,13 @@ def get_model(timesteps,n_features):
     # print('Model compiled.           ')
     return model
 
-def model_training(model,x_train,y_train,epochs=1000):
+def model_training(model,x_train,y_train,epochs,tensorboard_callback):
     # print('Training Starting:')
     #
     # print("train shape: ", np.shape(x_train))
     # print("train label shape: ", y_train.shape)
 
-    callbacks = EarlyStopping(monitor='val_clustering_accuracy', mode='max', verbose=2, patience=800,
-                              restore_best_weights=True)
+
     batch_size = 64
 
 
@@ -139,7 +140,7 @@ def model_training(model,x_train,y_train,epochs=1000):
                               # validation_data=(x_test, (y_test, x_test)),
                               batch_size=batch_size,
                               verbose=0,
-                              callbacks=callbacks
+                              #callbacks=tensorboard_callback
                               )
     return model
 
@@ -216,12 +217,12 @@ def model_evaluate(model,x_train,y_train,x_test,y_test,epochs):
     # print('====================')
     # print('====================')
     s =str(epochs)+','+ str(acc)+','+ str(nmi)+','+ str(ari)+','+str(testAcc)+','+str(nmi_test)+','+str(ari_test)+'\n'
-    with open('D:\\UW\\RA\\Intrusion_Detection\\result_gamma_4.txt', 'a') as f:
+    with open('D:\\UW\\RA\\Intrusion_Detection\\result_fl.txt', 'a') as f:
         f.write(s)
     print('comm_round: {} | global_acc: {:.3%} | global_nmi: {} | global_ari: {}'.format(epochs, testAcc, nmi,ari))
 
-file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
-file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal_new.csv'  # sys.argv[1] #    #+ sys.argv[0]
+file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal_new.csv'  # sys.argv[2] #  #+ sys.argv[1]
 x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal)  # args.partition)
 
 x_train = np.asarray(x_train)
@@ -246,8 +247,10 @@ timesteps = np.shape(x_train)[1]
 n_features = np.shape(x_train)[2]
 
 global_model = get_model(timesteps, n_features)
-comms_round = 1000
+comms_round = 100
 
+log_dir = "logs/fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 # commence global training loop
 for comm_round in range(comms_round):
@@ -264,10 +267,10 @@ for comm_round in range(comms_round):
 
         local_model = get_model(timesteps, n_features)
 
-        # set local model weight to the weight of the global model
+        # set local model weight to the weight of the global modelty
         local_model.set_weights(global_weights)
 
-        local_model = model_training(local_model, data[0], data[1],epochs=1)
+        local_model = model_training(local_model, data[0], data[1],2,tensorboard_callback)
         # fit local model with client's data
         #local_model.fit(clients_batched[client], epochs=1, verbose=0)
 

@@ -56,9 +56,9 @@ def get_model(timesteps , n_features ):
     print('Model compiled.           ')
     return model
 
-def load_processed_data(file_path_normal,file_path_abnormal):
+def load_processed_data(file_path):
     data_process= data_processing()
-    x_train,y_train,x_test,y_test = data_process.load_data(file_path_normal,file_path_abnormal)
+    x_train,y_train,x_test,y_test = data_process.load_data_total(file_path)
 
     print("train shape: ", np.shape(x_train))
     print("test shape: ", np.shape(x_test))
@@ -80,8 +80,8 @@ def main() -> None:
     strategy = fl.server.strategy.FedAvg(
         fraction_fit=0.3,
         fraction_eval=0.2,
-        min_fit_clients=8,
-        min_eval_clients=8,
+        min_fit_clients=10,
+        min_eval_clients=10,
         min_available_clients=10,
         eval_fn=get_eval_fn(model),
         on_fit_config_fn=fit_config,
@@ -90,7 +90,7 @@ def main() -> None:
     )
 
     # Start Flower server for four rounds of federated learning
-    fl.server.start_server("192.168.1.237:8080", config={"num_rounds": 200}, strategy=strategy)
+    fl.server.start_server("192.168.1.237:8080", config={"num_rounds": 100}, strategy=strategy)
 
 
 
@@ -99,17 +99,17 @@ def get_eval_fn(model):
     """Return an evaluation function for server-side evaluation."""
 
     # Load data and model here to avoid the overhead of doing it in `evaluate` itself
-    file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
-    file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
-    x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal)  # args.partition)
+    file_path = 'D:\\UW\\RA\\Intrusion_Detection\\data\\df_shuffled.csv'  # sys.argv[1] #    #+ sys.argv[0]
+    #file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+    x_train, y_train, x_test, y_test = load_processed_data(file_path)  # args.partition)
     #(x_train, y_train), _ = tf.keras.datasets.cifar10.load_data()
 
     # Use the last 5k training examples as a validation set
-    x_val, y_val = x_test, y_test
+    x_val, y_val = x_train[15051:16723], y_train[15051:16723]      #x_test, y_test
 
     # The `evaluate` function will be called after every round
     def evaluate(
-        weights: fl.common.Weights,
+            weights: fl.common.Weights,
     ) -> Optional[Tuple[float, Dict[str, fl.common.Scalar]]]:
         model.set_weights(weights)  # Update model with the latest parameters
 
@@ -133,7 +133,7 @@ def fit_config(rnd: int):
     local epoch, increase to two local epochs afterwards.
     """
     config = {
-        "batch_size": 32,
+        "batch_size": 64,
         "local_epochs": 1 if rnd < 2 else 2,
     }
     return config

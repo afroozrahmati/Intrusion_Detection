@@ -134,22 +134,23 @@ def main() -> None:
     # parser = argparse.ArgumentParser(description="Flower")
     # parser.add_argument("--partition", type=int, choices=range(0, 10), required=True)
     # args = parser.parse_args()
-    file_path_normal =  sys.argv[1] #    #+ sys.argv[0]
-    file_path_abnormal = sys.argv[2] #  #+ sys.argv[1]
+    #file_path_normal =  sys.argv[1] #    #+ sys.argv[0]
+    #file_path_abnormal = sys.argv[2] #  #+ sys.argv[1]
     # Load and compile Keras model
+    idx = sys.argv[1]
     model= get_model(1,23)
 
     # Load a subset of CIFAR-10 to simulate the local data partition
-    x_train, y_train, x_test, y_test = load_partition(file_path_normal,file_path_abnormal)
+    x_train, y_train, x_test, y_test = load_partition(int(idx))
 
     # Start Flower client
     client = CifarClient(model, x_train, y_train, x_test, y_test)
     fl.client.start_numpy_client("192.168.1.237:8080", client=client)
 
 
-def load_processed_data(file_path_normal,file_path_abnormal):
+def load_processed_data(file_path):
     data_process= data_processing()
-    x_train,y_train,x_test,y_test = data_process.load_data(file_path_normal,file_path_abnormal)
+    x_train,y_train,x_test,y_test = data_process.load_data_total(file_path)
 
     print("train shape: ", np.shape(x_train))
     print("test shape: ", np.shape(x_test))
@@ -161,18 +162,24 @@ def load_processed_data(file_path_normal,file_path_abnormal):
     x_test = np.asarray(x_test)
     return x_train,y_train,x_test, y_test
 
-def load_partition(file_path_normal,file_path_abnormal):
+def load_partition(idx ): #file_path_normal,file_path_abnormal
+    # """Load 1/10th of the training and test data to simulate a partition."""
+    #
+    #
+    #file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
+    file_path = 'D:\\UW\\RA\\Intrusion_Detection\\data\\df_shuffled.csv'  # sys.argv[2] #  #+ sys.argv[1]
+    x_train, y_train, x_test, y_test = load_processed_data(file_path)  # args.partition)
+    #
+    # x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal) #args.partition)
+    # #(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+    # return  x_train, y_train, x_test, y_test #x_train[idx * 1720 : (idx + 1) * 1720], y_train[idx * 1720 : (idx + 1) * 1720], x_test[idx * 430 : (idx + 1) * 430], y_test[idx * 430 : (idx + 1) * 430]
+
     """Load 1/10th of the training and test data to simulate a partition."""
+    assert idx in range(10)
+    #x_train, y_train, x_test, y_test = tf.keras.datasets.cifar10.load_data()
 
 
-    # file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
-    # file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
-    # x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal)  # args.partition)
-
-    x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal) #args.partition)
-    #(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
-    return  x_train, y_train, x_test, y_test #x_train[idx * 1720 : (idx + 1) * 1720], y_train[idx * 1720 : (idx + 1) * 1720], x_test[idx * 430 : (idx + 1) * 430], y_test[idx * 430 : (idx + 1) * 430]
-
+    return x_train[idx * 1672 : (idx + 1) * 1672], y_train[idx * 1672 : (idx + 1) * 1672], x_test[idx * 716 : (idx + 1) * 716], y_test[idx * 716 : (idx + 1) * 716]
 
 
 if __name__ == "__main__":
