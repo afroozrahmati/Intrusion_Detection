@@ -30,6 +30,11 @@ import sklearn.metrics.pairwise as smp
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+
+# This function loads processed data.  
+# file_path_normal: CSV file 
+# file_path_abnormal: CSV file
+# returns:  4 arrays
 def load_processed_data(file_path_normal,file_path_abnormal):
     data_process= data_processing()
     x_train,y_train,x_test,y_test = data_process.load_data(file_path_normal,file_path_abnormal)
@@ -45,16 +50,19 @@ def load_processed_data(file_path_normal,file_path_abnormal):
     return x_train,y_train,x_test, y_test
 
 
-def create_clients(x_train, y_train, num_clients=10, initial='clients'):
-    ''' return: a dictionary with keys clients' names and value as
-                data shards - tuple of images and label lists.
-        args:
-            image_list: a list of numpy arrays of training images
-            label_list:a list of binarized labels for each image
-            num_client: number of fedrated members (clients)
-            initials: the clients'name prefix, e.g, clients_1
+''' create_clients creates a number of 
+   args:
+        image_list: a list of numpy arrays of training images
+        label_list:a list of binarized labels for each image
+        num_client: number of fedrated members (clients)
+        initials: the clients'name prefix, e.g, clients_1
 
-    '''
+   return: a dictionary with keys clients' names and value as
+                data shards - tuple of images and label lists.
+        
+'''
+def create_clients(x_train, y_train, num_clients=10, initial='clients'):
+
 
     # create a list of client names
     client_names = ['{}_{}'.format(initial, i + 1) for i in range(num_clients)]
@@ -113,8 +121,8 @@ def get_model(timesteps,n_features):
 
     clustering_model = Model(inputs=inputs, outputs=clustering)
 
-    # plot_model(model, show_shapes=True)
-    #model.summary()
+    #plot_model(model, show_shapes=True)
+    model.summary()
     optimizer = Adam(0.005, beta_1=0.1, beta_2=0.001, amsgrad=True)
     model.compile(loss={'clustering':  'kld', 'decoder_out': 'mse'},
                   loss_weights=[gamma, 1], optimizer=optimizer,
@@ -279,17 +287,28 @@ def aggregate_gradients(client_grads):
 
     return agg_grads
 
+###############################################################################
+###############################################################################
+#                            Main                                             #
+###############################################################################
+###############################################################################
 
-file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
-file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+# 1. Import Dataset.  Data is split into 2 files, benign normal traffic
+# and attacks / abnormal traffic.
+file_path_normal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
+file_path_abnormal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+
+# 2. Split the data into two sets, Train and Test.  Each set split features from labels
 x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal)  # args.partition)
 
+
+# 3. ??? Why do WE have to do this?
 x_train = np.asarray(x_train)
 x_test = np.nan_to_num(x_test)
 x_test = np.asarray(x_test)
 
 
-#create clients
+# 4. create clients
 clients = create_clients(x_train, y_train, num_clients=10, initial='client')
 
 # process and batch the training data for each client

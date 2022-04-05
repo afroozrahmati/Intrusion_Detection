@@ -38,8 +38,8 @@ PREFETCH_BUFFER = 10
 # x_test = x_test.astype(np.float32).reshape(10000, 28, 28, 1)
 # y_test = y_test.astype(np.int32).reshape(10000, 1)
 
-file_path_normal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
-file_path_abnormal = 'D:\\UW\\RA\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+file_path_normal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
+file_path_abnormal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
 data_processing = data_processing()
 x_train, y_train, x_test, y_test = data_processing.load_data(file_path_normal, file_path_abnormal)
 

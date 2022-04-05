@@ -78,7 +78,7 @@ class data_processing:
             output_y.append(y[i + lookback + 1])
         return output_X, output_y
 
-    def load_data(self,file_path_normal, file_path_abnormal,timesteps):
+    def load_data(self,file_path_normal, file_path_abnormal,timesteps=3):
         df_normal = pd.read_csv(file_path_normal)
         df_abnormal = pd.read_csv(file_path_abnormal)
         df = pd.concat([df_normal, df_abnormal], ignore_index=True)
