@@ -61,8 +61,9 @@ from fl_ss_utils import *
 
 # 1. Import Dataset.  Data is split into 2 files, benign normal traffic
 # and attacks / abnormal traffic.
-file_path_normal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detection\\data\\normal.csv'  # sys.argv[1] #    #+ sys.argv[0]
-file_path_abnormal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detection\\data\\abnormal.csv'  # sys.argv[2] #  #+ sys.argv[1]
+print("Starting Machine:\nLoading Data...")
+file_path_normal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detection\\data\\normal_ft.csv'  # sys.argv[1] #    #+ sys.argv[0]
+file_path_abnormal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detection\\data\\abnormal_ft.csv'  # sys.argv[2] #  #+ sys.argv[1]
 
 # 2. Split the data into two sets, Train and Test.  Each set split features from labels
 # Function takes in both normal and abnormal packet files
@@ -85,10 +86,11 @@ timesteps = np.shape(x_train)[1]
 n_features = np.shape(x_train)[2]
 
 global_model = get_model(timesteps, n_features)
-comms_round = 200
+comms_round = 100
 
 # commence global training loop
 for comm_round in range(comms_round):
+    print("Simulate Models Sent to Clients\n")
     # get the global model's weights - will serve as the initial weights for all local models
     global_weights = global_model.get_weights()
 
@@ -98,7 +100,8 @@ for comm_round in range(comms_round):
     client_grads = []
     
     # loop through each client and create new local model
-    for (client_name, data) in clients.items():    
+    for (client_name, data) in clients.items():
+        print('{} training'.format(client_name))
         local_model = get_model(timesteps, n_features)
 
         # set local model weight to the weight of the global model

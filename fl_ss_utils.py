@@ -44,18 +44,18 @@ def load_processed_data(file_path_normal,file_path_abnormal):
         
 '''
 def create_clients(x_train, y_train, num_clients=10, initial='clients'):
-    print("In create_clients\n")
+    print("Creating Clients with Data Shards \n")
 
     # create a list of client names
     client_names = ['{}_{}'.format(initial, i + 1) for i in range(num_clients)]
 
     # shard data and place at each client
     size = len(x_train) // num_clients
-    print("size is ", size, "\n")
+    #print("size is ", size, "\n")
     client_dict={}
     for i in range(num_clients):
         client_dict[client_names[i]]= [x_train[i:i + size], y_train[i:i + size]]
-        print("client is ", client_names[i])
+        #print("client is ", client_names[i])
 
     return client_dict
 
@@ -209,7 +209,7 @@ def aggregate_gradients(client_grads):
 
     wv = foolsgold(grads)  # Use FG
 
-    print(wv)
+    #print(wv)
 
     agg_grads = []
     # Iterate through each layer

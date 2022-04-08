@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from tensorflow import keras
+import missingno
 import numpy as np
 
 class data_processing:
@@ -32,37 +33,65 @@ class data_processing:
             normalized_dataset.append(normalized)
         return normalized_dataset
 
+    '''
+        Used to clean data with hex values
+    '''
+    def convertHextoDec(self, val):
+        return int(val, 0)
+
+    def convertHexData(self,df, column_name):
+        values = df.loc[df[column_name].astype(str).str.startswith('0x'), column_name]
+        for i in set(values):
+            df.loc[df[column_name].astype(str).str.startswith(i), column_name] = self.convertHextoDec(i)
+        df[column_name] = df[column_name].astype(float)
+        return df
+            
     # pre_processsing of the data
     # takes in the self object, and a dictionary
     def pre_processing(self, df ):
-        # TODO: I don't understand why an dhow we are pre-processing here???
-        #print("df head \n",df.head())
+        print("Pre-Processing Data")
+        
+        # Removed any columns that do not contribute to anomaly based -- i.e. ip specific
         df.drop(columns=['saddr', 'daddr', 'ltime', 'stime', 'smac', 'dmac', 'soui', 'doui', 'sco', 'dco', 'category'],
                 axis=1, inplace=True)
-        #print("df drop \n",df.head())
+
+        # Fix strings
         d = {'e': 1, 'e s': 2, 'e d': 3, 'e *': 4, 'e g': 5, 'eU': 6, 'e &': 7, 'e   t': 8, 'e    F': 9}
         df['flgs'] = df['flgs'].map(d)
-        #print("df flgs \n",df.head())
         d = {'udp': 1, 'tcp': 2, 'arp': 3, 'ipv6-icmp': 4, 'icmp': 5, 'igmp': 6, 'rarp': 7}
         df['proto'] = df['proto'].map(d)
-        #print("df proto \n",df.head())
+        d = {'CON': 1, 'INT': 2, 'FIN': 3, 'NRS': 4, 'RST': 5, 'URP': 6, 'ACC': 7, 'REQ': 8}
+        df['state'] = df['state'].map(d)
+        d = {'Normal': 0, 'UDP': 1, 'TCP': 2, 'Service_Scan': 3, 'OS_Fingerprint': 4, 'HTTP': 5}
+        df['subcategory '] = df['subcategory '].map(d)
+        
+        # Fix hex values hidden in two columns
+        df = self.convertHexData(df,'sport')
+        df = self.convertHexData(df,'dport')
+
+        #  Make sure readable by ML 
         df['bytes'] = df['bytes'].astype(int)
         df['pkts'] = df['pkts'].astype(int)
         df['spkts'] = df['spkts'].astype(int)
         df['dpkts'] = df['dpkts'].astype(int)
         df['sbytes'] = df['sbytes'].astype(int)
         df['dbytes'] = df['dbytes'].astype(int)
-        df['sport'] = df.sport.fillna(value=0)
-        df['dport'] = df.sport.fillna(value=0)
-        # TODO: need to apply it on any hex values ( functon require)
-        df.loc[df.sport.astype(str).str.startswith('0x0303'), "sport"] = 771
-        df.loc[df.dport.astype(str).str.startswith('0x0303'), "dport"] = 771
         df['sport'] = df['sport'].astype(float)
         df['dport'] = df['dport'].astype(float)
-        d = {'CON': 1, 'INT': 2, 'FIN': 3, 'NRS': 4, 'RST': 5, 'URP': 6}
-        df['state'] = df['state'].map(d)
-        d = {'Normal': 0, 'UDP': 1, 'TCP': 2, 'Service_Scan': 3, 'OS_Fingerprint': 4, 'HTTP': 5}
-        df['subcategory '] = df['subcategory '].map(d)
+        df['TnBPsrcIP'] = df['TnBPsrcIP'].astype(int)
+        df['TnBPDstIP'] = df['TnBPDstIP'].astype(int)
+        df['TnPPSrcIP'] = df['TnPPSrcIP'].astype(int)
+        df['TnPPDstIP'] = df['TnPPDstIP'].astype(int)
+        df['TnPPerProto'] = df['TnPPerProto'].astype(int)
+        df['TnPPerDport'] = df['TnPPerDport'].astype(int)
+        df['avgPD'] = df['avgPD'].astype(float)
+
+        print('Head of Data Frame\n',df.head())
+        print('Check Data is Clean')
+        print('\nNull Values')
+        print(df.isnull().sum())
+        missingno.matrix(df)
+        df.to_csv(r'C:\Users\ChristianDunham\Source\Repos\Intrusion_Detection\data\cleaned.csv', index=False)
         return df
 
     '''
@@ -97,7 +126,7 @@ class data_processing:
 
         # Combine the two dictionaries together - ignore_index makes
         # sure the index count starts over at the concatenation
-        df = pd.concat([df_normal, df_abnormal], ignore_index=True)
+        df = pd.concat([df_normal, df_abnormal]).reset_index(drop=True)
        
         # Now have a dict of all data, pre-process the data
         df = self.pre_processing(df)
@@ -114,12 +143,12 @@ class data_processing:
 
         # TODO what is this?  thought these were supposed to be labels
         x_test, y_test = test.drop(columns=['attack']), test['attack']
-        print("x_test.head() ", x_test.head())
-        print("y_test.head() ", y_test.head())
+        #print("x_test.head() ", x_test.head())
+        #print("y_test.head() ", y_test.head())
 
         # Get features from second column, needed to reshape for LSTM 3-D array (timesteps)
         features = x_train.shape[1]
-        #print("features \n", features)
+        print("Data Features: {} | LSTM Timesteps: {}".format(features, timesteps))
 
         # Make the array's numpy multi-dimension arrays to change shape for timesteps later
         # Make sure any NaNs are nums
@@ -146,7 +175,7 @@ class data_processing:
         #encoder2.fit(y_test)
         #y_test = encoder2.transform(y_test)
         
-        print(y_test[5:])
+        
         y_train = np.asarray(y_train)
         y_test = np.asarray(y_test)
 
