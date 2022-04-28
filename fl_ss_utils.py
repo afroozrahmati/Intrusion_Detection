@@ -1,3 +1,4 @@
+from typing import List
 import numpy as np
 import os
 import tensorflow as tf
@@ -9,6 +10,8 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import sklearn.metrics.pairwise as smp
 from sklearn.metrics import accuracy_score, f1_score, precision_score
 from fl_ss_data_processing import *
+from csv import writer
+import matplotlib.pyplot as plt
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -19,7 +22,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # returns:  4 arrays
 def load_processed_data(file_path_normal,file_path_abnormal):
     data_process= data_processing()
-    x_train,y_train,x_test,y_test = data_process.load_data(file_path_normal,file_path_abnormal)
+    x_train,y_train,x_test,y_test,x_trainP,y_trainP,x_testP,y_testP = data_process.load_data(file_path_normal,file_path_abnormal)
 
     #print("train shape: ", np.shape(x_train))
     #print("test shape: ", np.shape(x_test))
@@ -29,7 +32,10 @@ def load_processed_data(file_path_normal,file_path_abnormal):
     x_train = np.asarray(x_train)
     x_test = np.nan_to_num(x_test)
     x_test = np.asarray(x_test)
-    return x_train,y_train,x_test, y_test
+    x_trainP = np.asarray(x_trainP)
+    x_testP = np.nan_to_num(x_testP)
+    x_testP = np.asarray(x_testP)
+    return x_train,y_train,x_test, y_test,x_trainP,y_trainP,x_testP,y_testP
 
 
 ''' create_clients creates a number of 
@@ -58,6 +64,39 @@ def create_clients(x_train, y_train, num_clients=10, initial='clients'):
         #print("client is ", client_names[i])
 
     return client_dict
+
+
+def create_sybils(x_trainP, y_trainP, num_sybils=3, initial='client'):
+    print('Creating {} Sybils with Data Shards \n'.format(3))
+
+    # create a list of sybil names
+    sybil_names = ['{}_{}'.format(initial, i + 11) for i in range(num_sybils)]
+
+    # shard data and place at each client
+    size = len(x_trainP) // num_sybils
+    #print("size is ", size, "\n")
+    sybil_dict={}
+    for i in range(num_sybils):
+        sybil_dict[sybil_names[i]]= [x_trainP[i:i + size], y_trainP[i:i + size]]
+        #print("client is ", client_names[i])
+
+    return sybil_dict
+
+''' create_attackers creates a number of 
+   args:
+        image_list: a list of numpy arrays of training images
+        label_list:a list of binarized labels for each image
+        attack_dict: dict of chosen attackers from client list
+        initials: the clients'name prefix, e.g, clients_1
+
+   return: a dictionary with keys clients' names and value as
+                data shards - tuple of images and label lists.
+        
+'''
+def create_attackers(data):
+    print("Creating Attackers \n")
+    data = replace_1_with_0(data)
+    return data
 
 
 def batch_data(data_shard, bs=32):
@@ -163,7 +202,15 @@ def model_evaluate(model,x_train,y_train,x_test,y_test,epochs):
     testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
     f1 = f1_score(y_arg, y_pred)
     precision = precision_score(y_arg, y_pred)
+    m_float = float(m)
 
+    list_data = [epochs, testAcc, f1, precision, m_float]
+    with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\results.csv','a',newline='') as f_object:
+        writer_object = writer(f_object)
+        writer_object.writerow(list_data)
+        f_object.close()
+    with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\log.txt','a',newline='') as f:
+            f.write('comm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}'.format(epochs, testAcc, f1, precision, m))
     print('comm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}'.format(epochs, testAcc, f1, precision, m))
 
 
@@ -172,8 +219,11 @@ def model_evaluate(model,x_train,y_train,x_test,y_test,epochs):
 # Get weightings
 def foolsgold(grads):
     n_clients = len(grads)
-
+    print("FG Total Client Grads: {}".format(n_clients))
+    #for unnormalized version - not recommended
     cs = smp.cosine_similarity(grads) - np.eye(n_clients)
+
+
     maxcs = np.max(cs, axis=1)
     # pardoning
     for i in range(n_clients):
@@ -200,7 +250,7 @@ def foolsgold(grads):
 # client_grads = Compute gradients from all the clients
 def aggregate_gradients(client_grads):
     num_clients = len(client_grads)
-
+    print("aggregate_gradients Total Client Grads: {}".format(num_clients))
     grad_len = np.array(client_grads[0][-2].data.shape).prod()
 
     grads = np.zeros((num_clients, grad_len))
@@ -208,8 +258,12 @@ def aggregate_gradients(client_grads):
         grads[i] = np.reshape(client_grads[i][-2].data, (grad_len))
 
     wv = foolsgold(grads)  # Use FG
-
-    #print(wv)
+    list_data = [wv]
+    with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\results.csv','a',newline='') as f_object:
+        writer_object = writer(f_object)
+        writer_object.writerow(list_data)
+        f_object.close()
+    print(wv)
 
     agg_grads = []
     # Iterate through each layer
@@ -224,3 +278,20 @@ def aggregate_gradients(client_grads):
         agg_grads.append(temp)
 
     return agg_grads
+
+### for attacking all of a data set
+def replace_1_with_0(data):
+    """
+    :param targets: Target class IDs
+    :type targets: list
+    :param target_set: Set of class IDs possible
+    :type target_set: list
+    :return: new class IDs
+    """
+    print("Flipping Labels")
+    #print(data[:])
+    for idx in range(len(data)):
+        if (data[idx] == [1., 0.]).all():
+            data[idx] = [0., 1.]
+    #print(data[:])
+    return data

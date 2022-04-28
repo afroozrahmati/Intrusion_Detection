@@ -4,6 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 from tensorflow import keras
 import missingno
 import numpy as np
+import matplotlib.pyplot as plt
 
 class data_processing:
     def __init__(self):
@@ -49,19 +50,22 @@ class data_processing:
     # pre_processsing of the data
     # takes in the self object, and a dictionary
     def pre_processing(self, df ):
-        print("Pre-Processing Data")
+        print("\nPre-Processing Data")
         
         # Removed any columns that do not contribute to anomaly based -- i.e. ip specific
-        df.drop(columns=['saddr', 'daddr', 'ltime', 'stime', 'smac', 'dmac', 'soui', 'doui', 'sco', 'dco', 'category'],
+        #df.drop(columns=['saddr', 'daddr', 'ltime', 'stime', 'smac', 'dmac', 'soui', 'doui', 'sco', 'dco', 'category'],
+        #        axis=1, inplace=True)
+        df.drop(columns=['saddr', 'daddr', 'ltime', 'stime', 'smac', 'dmac', 'soui', 'doui', 'sco', 'dco'],
                 axis=1, inplace=True)
-
         # Fix strings
-        d = {'e': 1, 'e s': 2, 'e d': 3, 'e *': 4, 'e g': 5, 'eU': 6, 'e &': 7, 'e   t': 8, 'e    F': 9}
+        d = {'e': 1, 'e s': 2, 'e d': 3, 'e *': 4, 'e g': 5, 'eU': 6, 'e &': 7, 'e   t': 8, 'e    F': 9, 'e r': 10}
         df['flgs'] = df['flgs'].map(d)
         d = {'udp': 1, 'tcp': 2, 'arp': 3, 'ipv6-icmp': 4, 'icmp': 5, 'igmp': 6, 'rarp': 7}
         df['proto'] = df['proto'].map(d)
         d = {'CON': 1, 'INT': 2, 'FIN': 3, 'NRS': 4, 'RST': 5, 'URP': 6, 'ACC': 7, 'REQ': 8}
         df['state'] = df['state'].map(d)
+        d = {'Normal': 0, 'DDoS': 1, 'DoS': 2, 'Reconnaissance': 3}
+        df['category'] = df['category'].map(d)
         d = {'Normal': 0, 'UDP': 1, 'TCP': 2, 'Service_Scan': 3, 'OS_Fingerprint': 4, 'HTTP': 5}
         df['subcategory '] = df['subcategory '].map(d)
         
@@ -87,8 +91,8 @@ class data_processing:
         df['avgPD'] = df['avgPD'].astype(float)
 
         print('Head of Data Frame\n',df.head())
-        print('Check Data is Clean')
-        print('\nNull Values')
+        print('\nCheck Data is Clean')
+        print('Null Values')
         print(df.isnull().sum())
         missingno.matrix(df)
         df.to_csv(r'C:\Users\ChristianDunham\Source\Repos\Intrusion_Detection\data\cleaned.csv', index=False)
@@ -127,28 +131,53 @@ class data_processing:
         # Combine the two dictionaries together - ignore_index makes
         # sure the index count starts over at the concatenation
         df = pd.concat([df_normal, df_abnormal]).reset_index(drop=True)
-       
+        print(list(df.columns))
+        print()
+        attack_distribution = df.groupby(by='attack').size()
+        print("Data Distributions:")
+        print("normal (0) abnormal(1) distribtuion", attack_distribution)
+        fig = attack_distribution.plot(kind='bar', figsize=(20,16), fontsize=14).get_figure()
+        fig.savefig('attack_distr.pdf')
+        attack_cat_distribution = df.groupby(by='category').size()
+        print("\nDDoS | DoS | Recon", attack_cat_distribution)
+        fig = attack_cat_distribution.plot(kind='bar', figsize=(20,16), fontsize=14).get_figure()
+        fig.savefig('attack_cat_distr.pdf')        
+        attack_subcat_distribution = df.groupby(by='subcategory ').size()
+        print("\nHTTP | Normal | OS_Fingerprint | Service_Scan | UPD | TCP ", attack_subcat_distribution)
+        fig = attack_subcat_distribution.plot(kind='bar', figsize=(20,16), fontsize=14).get_figure()
+        fig.savefig('attack_subcat_distr.pdf') 
         # Now have a dict of all data, pre-process the data
         df = self.pre_processing(df)
+        
+        #make a poisoned data set for sybils - can choose to target type
+        poisonDF = df.copy()
+        poisonDF = poisonDF.drop(poisonDF.index[poisonDF['subcategory ']==1])
+        poisonDF = poisonDF.drop(poisonDF.index[poisonDF['subcategory ']==2])
+        poisonDF = poisonDF.drop(poisonDF.index[poisonDF['subcategory ']==4])
+        poisonDF = poisonDF.drop(poisonDF.index[poisonDF['subcategory ']==5])
+        poisonDF = poisonDF.drop(poisonDF.index[poisonDF['subcategory ']==0])
+        d = {1:0, 0:0}
+        poisonDF['attack'] = df['attack'].map(d)
+        print('\nHead of Poison Data Frame\n',poisonDF.head())
+        print('\nCheck Poison Data is Clean')
+        print('Poison Null Values')
+        print(poisonDF.isnull().sum())
+        missingno.matrix(poisonDF)
+        poisonDF.to_csv(r'C:\Users\ChristianDunham\Source\Repos\Intrusion_Detection\data\poisoncleaned.csv', index=False)
 
         # Next the dictionary with processed normal and attack data needs to be split.
         train, test = train_test_split(df, test_size=0.3, random_state=16)
-
-        # For the training data we don't want the attack label
         x_train, y_train = train.drop(columns=['attack']), train['attack']
-        #print("x_train is:\n ", str(np.shape(x_train)))
-        #print(x_train.head())
-        #print("y_train is: \n", str(np.shape(y_train)))
-        #print(y_train.head())
-
-        # TODO what is this?  thought these were supposed to be labels
         x_test, y_test = test.drop(columns=['attack']), test['attack']
-        #print("x_test.head() ", x_test.head())
-        #print("y_test.head() ", y_test.head())
+
+        # Poison Next the dictionary with processed normal and attack data needs to be split.
+        trainP, testP = train_test_split(poisonDF, test_size=0.3, random_state=16)
+        x_trainP, y_trainP = trainP.drop(columns=['attack']), train['attack']
+        x_testP, y_testP = testP.drop(columns=['attack']), test['attack']
 
         # Get features from second column, needed to reshape for LSTM 3-D array (timesteps)
         features = x_train.shape[1]
-        print("Data Features: {} | LSTM Timesteps: {}".format(features, timesteps))
+        print("\nData Features: {} | LSTM Timesteps: {}".format(features, timesteps))
 
         # Make the array's numpy multi-dimension arrays to change shape for timesteps later
         # Make sure any NaNs are nums
@@ -159,25 +188,35 @@ class data_processing:
         x_test = np.array(x_test)
         x_test = np.nan_to_num(x_test)
         x_test = self.normalize_dataset(x_test)
-        
-        # Why are we deleteing the object?
+
+        # Poison Make the array's numpy multi-dimension arrays to change shape for timesteps later
+        # Make sure any NaNs are nums
+        # Normalize data
+        x_trainP = np.array(x_trainP)
+        x_trainP = np.nan_to_num(x_trainP)
+        x_trainP = self.normalize_dataset(x_trainP)
+        x_testP = np.array(x_testP)
+        x_testP = np.nan_to_num(x_testP)
+        x_testP= self.normalize_dataset(x_testP)
+
         del df
+        del poisonDF
 
         #Create two classes and use keras.utils to create binary label arrays
         CLASSES = ['normal', 'abnormal']
-        # this is one hot encoding for binary classificaiton - ????? why? 
+        # this is one hot encoding for binary classificaiton
         y_train = np.array(keras.utils.to_categorical(y_train, len(CLASSES)))
         y_test = np.array(keras.utils.to_categorical(y_test, len(CLASSES)))
-        #encoder = LabelEncoder()
-        #encoder.fit(y_train)
-        #y_train = encoder.transform(y_train)
-        #encoder2 = LabelEncoder()
-        #encoder2.fit(y_test)
-        #y_test = encoder2.transform(y_test)
-        
         
         y_train = np.asarray(y_train)
         y_test = np.asarray(y_test)
+
+        #Poison this is one hot encoding for binary classificaiton
+        y_trainP = np.array(keras.utils.to_categorical(y_trainP, len(CLASSES)))
+        y_testP = np.array(keras.utils.to_categorical(y_testP, len(CLASSES)))
+        
+        y_trainP = np.asarray(y_trainP)
+        y_testP = np.asarray(y_testP)
 
         # set all arrays to numpy arrays
         x_train = np.array(x_train)
@@ -185,9 +224,19 @@ class data_processing:
         y_train = np.array(y_train)
         y_test = np.array(y_test)
 
+        #P set all arrays to numpy arrays
+        x_trainP = np.array(x_trainP)
+        x_testP = np.array(x_testP)
+        y_trainP = np.array(y_trainP)
+        y_testP = np.array(y_testP)
+
         # Use make timesteps for LSTM timesteps.
         x_train,y_train=self.make_timesteps(np.array(x_train),np.array(y_train),timesteps)
         x_test, y_test = self.make_timesteps(np.array(x_test), np.array(y_test), timesteps)
+
+        # P Use make timesteps for LSTM timesteps.
+        x_trainP,y_trainP=self.make_timesteps(np.array(x_trainP),np.array(y_trainP),timesteps)
+        x_testP, y_testP = self.make_timesteps(np.array(x_testP), np.array(y_testP), timesteps)
 
         # Make arrays numpy again and change x arrays for LSTM change shape
         x_train = np.array(x_train)
@@ -197,4 +246,12 @@ class data_processing:
         x_train = x_train.reshape(x_train.shape[0], timesteps, features)
         x_test = x_test.reshape(x_test.shape[0], timesteps, features)
 
-        return x_train,y_train,x_test,y_test
+        #P Make arrays numpy again and change x arrays for LSTM change shape
+        x_trainP = np.array(x_trainP)
+        x_testP = np.array(x_testP)
+        y_trainP = np.array(y_trainP)
+        y_testP = np.array(y_testP)
+        x_trainP = x_trainP.reshape(x_trainP.shape[0], timesteps, features)
+        x_testP = x_testP.reshape(x_testP.shape[0], timesteps, features)
+
+        return x_train,y_train,x_test,y_test,x_trainP,y_trainP,x_testP,y_testP

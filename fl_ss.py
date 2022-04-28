@@ -67,16 +67,24 @@ file_path_abnormal = 'C:\\Users\\ChristianDunham\\Source\\Repos\\Intrusion_Detec
 
 # 2. Split the data into two sets, Train and Test.  Each set split features from labels
 # Function takes in both normal and abnormal packet files
-x_train, y_train, x_test, y_test = load_processed_data(file_path_normal, file_path_abnormal)  # args.partition)
+x_train, y_train, x_test, y_test,x_trainP,y_trainP,x_testP,y_testP = load_processed_data(file_path_normal, file_path_abnormal)  # args.partition)
 
 # 3. ??? Why do WE have to do this?
 x_train = np.asarray(x_train)
 x_test = np.nan_to_num(x_test)
 x_test = np.asarray(x_test)
 
+# 3. P ??? Why do WE have to do this?
+x_trainP = np.asarray(x_trainP)
+x_testP = np.nan_to_num(x_testP)
+x_testP = np.asarray(x_testP)
+
 # 4. create clients
 clients = create_clients(x_train, y_train, num_clients=10, initial='client')
 
+# 4. create sybils
+sybils = create_sybils(x_trainP, y_trainP, num_sybils=3, initial='client')
+clients.update(sybils)
 # process and batch the training data for each client
 client_names=[]
 for (client_name, data) in clients.items():
@@ -84,9 +92,11 @@ for (client_name, data) in clients.items():
 
 timesteps = np.shape(x_train)[1]
 n_features = np.shape(x_train)[2]
+n_clients = len(client_names)
+print("Number of total clients and sybils {}".format(n_clients))
 
 global_model = get_model(timesteps, n_features)
-comms_round = 100
+comms_round = 25
 
 # commence global training loop
 for comm_round in range(comms_round):
@@ -98,7 +108,7 @@ for comm_round in range(comms_round):
     scaled_local_weight_list = list()
     
     client_grads = []
-    
+
     # loop through each client and create new local model
     for (client_name, data) in clients.items():
         print('{} training'.format(client_name))
@@ -106,7 +116,11 @@ for comm_round in range(comms_round):
 
         # set local model weight to the weight of the global model
         local_model.set_weights(global_weights)
-        
+
+        # Create attack of all traffic for a label flip
+        #print(data[1])
+        #if(client_name == "client_5" or client_name == "client_4" or client_name == "client_3"):
+        #   create_attackers(data[1])
         local_model = model_training(local_model, data[0], data[1],epochs=10)
         
 
@@ -117,7 +131,9 @@ for comm_round in range(comms_round):
         # clear session to free memory after each communication round
         K.clear_session()
 
+    num_grads = len(client_grads)
     # to get the average over all the local model, we simply take the sum of the scaled weights
+    print("Total Client Grads: {}".format(num_grads))
     average_weights = aggregate_gradients(client_grads)
 
     # update global model
