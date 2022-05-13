@@ -3,15 +3,25 @@ import numpy as np
 import os
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.python.ops.gen_array_ops import scatter_nd_non_aliasing_add_eager_fallback
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import sklearn.metrics.pairwise as smp
-from sklearn.metrics import accuracy_score, f1_score, precision_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, classification_report
 from fl_ss_data_processing import *
 from csv import writer
 import matplotlib.pyplot as plt
+#from triangle_sector_similarity import Cosine_Similarity,Euclidean_Distance,TS_SS,Pairwise_TS_SS
+import math
+import torch
+import csv
+from itertools import zip_longest
+import config
+#from tensorflow.python.ops.numpy_ops import np_config
+
+
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -20,9 +30,9 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # file_path_normal: CSV file 
 # file_path_abnormal: CSV file
 # returns:  4 arrays
-def load_processed_data(file_path_normal,file_path_abnormal):
+def load_processed_data(file_path_normal,file_path_abnormal,path, attack, defense, log_name,num_sybils=1):
     data_process= data_processing()
-    x_train,y_train,x_test,y_test,x_trainP,y_trainP,x_testP,y_testP = data_process.load_data(file_path_normal,file_path_abnormal)
+    x_train,y_train,x_test,y_test,x_trainP,y_trainP,x_testP,y_testP, x_trainDbaProto, x_testDbaProto, y_trainDbaProto, y_testDbaProto , x_trainDbaPkts, x_testDbaPkts, y_trainDbaPkts, y_testDbaPkts, x_trainDbaDport, x_testDbaDport, y_trainDbaDport, y_testDbaDport, x_trainDbaBytes, x_testDbaBytes, y_trainDbaBytes, y_testDbaBytes = data_process.load_data(file_path_normal,file_path_abnormal,config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,config.NUM_SYBILS, timesteps=80)
 
     #print("train shape: ", np.shape(x_train))
     #print("test shape: ", np.shape(x_test))
@@ -35,7 +45,19 @@ def load_processed_data(file_path_normal,file_path_abnormal):
     x_trainP = np.asarray(x_trainP)
     x_testP = np.nan_to_num(x_testP)
     x_testP = np.asarray(x_testP)
-    return x_train,y_train,x_test, y_test,x_trainP,y_trainP,x_testP,y_testP
+    x_trainDbaProto = np.asarray(x_trainDbaProto)
+    x_testDbaProto = np.nan_to_num(x_testDbaProto)
+    x_testDbaProto = np.asarray(x_testDbaProto)
+    x_trainDbaPkts = np.asarray(x_trainDbaPkts)
+    x_testDbaPkts = np.nan_to_num(x_testDbaPkts)
+    x_testDbaPkts = np.asarray(x_testDbaPkts)
+    x_trainDbaDport = np.asarray(x_trainDbaDport)
+    x_testDbaDport = np.nan_to_num(x_testDbaDport)
+    x_testDbaDport = np.asarray(x_testDbaDport)
+    x_trainDbaBytes = np.asarray(x_trainDbaBytes)
+    x_testDbaBytes = np.nan_to_num(x_testDbaBytes)
+    x_testDbaBytes = np.asarray(x_testDbaBytes)
+    return x_train,y_train,x_test,y_test,x_trainP,y_trainP,x_testP,y_testP, x_trainDbaProto, x_testDbaProto, y_trainDbaProto, y_testDbaProto , x_trainDbaPkts, x_testDbaPkts, y_trainDbaPkts, y_testDbaPkts, x_trainDbaDport, x_testDbaDport, y_trainDbaDport, y_testDbaDport, x_trainDbaBytes, x_testDbaBytes, y_trainDbaBytes, y_testDbaBytes
 
 
 ''' create_clients creates a number of 
@@ -49,8 +71,11 @@ def load_processed_data(file_path_normal,file_path_abnormal):
                 data shards - tuple of images and label lists.
         
 '''
-def create_clients(x_train, y_train, num_clients=10, initial='clients'):
-    print("Creating Clients with Data Shards \n")
+def create_clients(path, attack, num_sybils, defense, log_name, x_train, y_train, num_clients=10, initial='clients'):
+    print("Create Clients: {}\n".format(num_clients))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("Create Clients: {}\n".format(num_clients))
+    f.close()
 
     # create a list of client names
     client_names = ['{}_{}'.format(initial, i + 1) for i in range(num_clients)]
@@ -66,11 +91,16 @@ def create_clients(x_train, y_train, num_clients=10, initial='clients'):
     return client_dict
 
 
-def create_sybils(x_trainP, y_trainP, num_sybils=3, initial='client'):
-    print('Creating {} Sybils with Data Shards \n'.format(3))
+def create_backdoor_sybils(path, attack, defense, log_name,x_trainP, y_trainP, num_sybils=1, num_clients=1, initial='client'):
+    print("Creating Backdoor sybils\nnum sybils {} and num clients {}".format(num_sybils, num_clients))
+    num = num_sybils
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("Create Backdoor Sybils: {}\n".format(num_sybils))
+    f.close()
+
 
     # create a list of sybil names
-    sybil_names = ['{}_{}'.format(initial, i + 11) for i in range(num_sybils)]
+    sybil_names = ['{}_{}'.format(initial, i + (num_clients+1)) for i in range(num_sybils)]
 
     # shard data and place at each client
     size = len(x_trainP) // num_sybils
@@ -78,6 +108,134 @@ def create_sybils(x_trainP, y_trainP, num_sybils=3, initial='client'):
     sybil_dict={}
     for i in range(num_sybils):
         sybil_dict[sybil_names[i]]= [x_trainP[i:i + size], y_trainP[i:i + size]]
+        #print("client is ", client_names[i])
+
+    return sybil_dict
+
+def create_dba_sybils(path, attack, defense, log_name, x_trainDbaProto, y_trainDbaProto,x_trainDbaPkts, y_trainDbaPkts,x_trainDbaDport,y_trainDbaDport, x_trainDbaBytes, y_trainDbaBytes, num_sybils=1,num_clients=1, initial='client'):
+    print("create_dba sybils num sybils {} and num clients {}".format(num_sybils, num_clients))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write('\nCreate DBA Sybils {}\n'.format(num_sybils))
+        f.close()
+    print('Creating {} DBA Sybils with Data Shards \n'.format(num_sybils))
+    sybil_dict={}
+    protoDict = create_proto_sybils(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME, x_trainDbaProto, y_trainDbaProto,config.NUM_SYBILS, config.NUM_CLIENTS, initial='client')
+    sybil_dict.update(protoDict)
+    pktsDict = create_pkts_sybils(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME, x_trainDbaPkts, y_trainDbaPkts,config.NUM_SYBILS, config.NUM_CLIENTS, initial='client')
+    sybil_dict.update(pktsDict)
+    dportDict = create_dport_sybils(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME, x_trainDbaDport, y_trainDbaDport, config.NUM_SYBILS, config.NUM_CLIENTS, initial='client')
+    sybil_dict.update(dportDict)    
+    bytesDict = create_bytes_sybils(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME, x_trainDbaBytes, y_trainDbaBytes, config.NUM_SYBILS, config.NUM_CLIENTS, initial='client')
+    sybil_dict.update(bytesDict)
+
+    return sybil_dict
+
+
+def create_proto_sybils(path, attack, defense, log_name, x_trainDbaProto, y_trainDbaProto, num_sybils,num_clients=1, initial='client'):
+    print("create_proto sybils num sybils {} and num clients {}".format(num_sybils, num_clients))
+    num = num_sybils
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write('\nCreate Proto DBA Sybils: {}\n'.format(num))
+        f.close()
+    print('Creating {} Proto DBA Sybils with Data Shards \n'.format(num))
+
+    # create a list of sybil names
+    sybil_names = ['{}_{}'.format(initial, i + (num_clients+1)) for i in range(num)]
+
+    # shard data and place at each client
+    sizeProto = len(x_trainDbaProto) // num_sybils
+    #print("size is ", size, "\n")
+    sybil_dict={}
+   
+    for i in range(num):
+        sybil_dict[sybil_names[i]]= [x_trainDbaProto[i:i + sizeProto], y_trainDbaProto[i:i + sizeProto]]
+        #print("client is ", client_names[i])
+
+    return sybil_dict
+
+def create_pkts_sybils(path, attack, defense, log_name, x_trainDbaPkts, y_trainDbaPkts, num_sybils,num_clients=1, initial='client'):
+    print("create_pkts sybils num sybils {} and num clients {}".format(num_sybils, num_clients))
+    num = num_sybils
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write('\nCreate Pkts DBA Sybils: {}\n'.format(num))
+        f.close()
+    print('Creating {} Pkts DBA Sybils with Data Shards \n'.format(num))
+    
+    if num == 1:
+        iPlus = num_clients+2
+    elif num == 5:
+        iPlus = num_clients+6
+    else:
+        iPlus = num_clients+11
+
+    # create a list of sybil names
+    sybil_names = ['{}_{}'.format(initial, i + iPlus) for i in range(num)]
+
+    # shard data and place at each client
+    sizePkts = len(x_trainDbaPkts) // num_sybils
+    #print("size is ", size, "\n")
+    sybil_dict={}
+   
+    for i in range(num):
+        sybil_dict[sybil_names[i]]= [x_trainDbaPkts[i:i + sizePkts], y_trainDbaPkts[i:i + sizePkts]]
+        #print("client is ", client_names[i])
+
+    return sybil_dict
+
+def create_dport_sybils(path, attack, defense, log_name, x_trainDbaDport, y_trainDbaDport, num_sybils,num_clients=1, initial='client'):
+    print("create_dport sybils num sybils {} and num clients {}".format(num_sybils, num_clients))
+    num = num_sybils
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write('\nCreate Dport DBA Sybils: {}\n'.format(num))
+        f.close()
+    print('Creating {} Dport DBA Sybils with Data Shards \n'.format(num))
+    
+    if num == 1:
+        iPlus = num_clients+3
+    elif num == 5:
+        iPlus = num_clients+11
+    else:
+        iPlus = num_clients+21
+
+    # create a list of sybil names
+    sybil_names = ['{}_{}'.format(initial, i + iPlus) for i in range(num)]
+
+    # shard data and place at each client
+    sizeDport = len(x_trainDbaDport) // num_sybils
+    #print("size is ", size, "\n")
+    sybil_dict={}
+   
+    for i in range(num):
+        sybil_dict[sybil_names[ i]]= [x_trainDbaDport[i:i + sizeDport], y_trainDbaDport[i:i + sizeDport]]
+        #print("client is ", client_names[i])
+
+    return sybil_dict
+
+def create_bytes_sybils(path, attack, defense, log_name, x_trainDbaBytes, y_trainDbaBytes, num_sybils,num_clients=1, initial='client'):
+    print("create_bytes sybils num sybils {} and num clients {}".format(num_sybils, num_clients))
+    num = num_sybils
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write('\nCreate Bytes DBA Sybils: {}\n'.format(num))
+        f.close()
+    print('Creating {} Bytes DBA Sybils with Data Shards \n'.format(num))
+    
+    if num == 1:
+        iPlus = num_clients+4
+    elif num == 5:
+        iPlus = num_clients+16
+    else:
+        iPlus = num_clients+31
+
+    # create a list of sybil names
+    sybil_names = ['{}_{}'.format(initial, i + iPlus) for i in range(num)]
+
+    # shard data and place at each client
+    sizeBytes = len(x_trainDbaBytes) // num_sybils
+    #print("size is ", size, "\n")
+    sybil_dict={}
+   
+    for i in range(num):
+        sybil_dict[sybil_names[i]]= [x_trainDbaBytes[i:i + sizeBytes], y_trainDbaBytes[i:i + sizeBytes]]
         #print("client is ", client_names[i])
 
     return sybil_dict
@@ -93,61 +251,79 @@ def create_sybils(x_trainP, y_trainP, num_sybils=3, initial='client'):
                 data shards - tuple of images and label lists.
         
 '''
-def create_attackers(data):
-    print("Creating Attackers \n")
-    data = replace_1_with_0(data)
+def create_label_flip_sybils(path, attack, defense, log_name, x_train, y_train,num_sybils=1, num_clients=10, initial='clients'):
+
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nCreate Label Flip Sybils: {}\n".format(num_sybils))
+        f.close()
+    print("\nCreating Label Flip Sybils with Data Shards \n")
+
+    # create a list of client names
+    client_names = ['{}_{}'.format(initial, i + (num_clients +1)) for i in range(num_sybils)]
+
+    # shard data and place at each client
+    size = len(x_train) // num_sybils
+    #print("size is ", size, "\n")
+    client_dict={}
+    for i in range(num_sybils):
+        client_dict[client_names[i]]= [x_train[i:i + size], y_train[i:i + size]]
+    
+    for (client_name, data) in client_dict.items():
+        data = replace_1_with_0(config.PATH, config.ATTACK, config.NUM_SYBILS, config.DEFENSE, config.LOG_NAME, data[1])
+    return client_dict
+
+### for attacking all of a data set
+def replace_1_with_0(path, attack, num_sybils, defense, log_name,data):
+    """
+    :param targets: Target class IDs
+    :type targets: list
+    :param target_set: Set of class IDs possible
+    :type target_set: list
+    :return: new class IDs
+    """
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nFlipping Labels\n")
+        f.close()
+    print("Flipping Labels")
+    #print(data[:])
+    for idx in range(len(data)):
+        if (data[idx] == [1., 0.]).all():
+            data[idx] = [0., 1.]
+    #print(data[:])
     return data
 
-
-def batch_data(data_shard, bs=32):
-    '''Takes in a clients data shard and create a tfds object off it
-    args:
-        shard: a data, label constituting a client's data shard
-        bs:batch size
-    return:
-        tfds object'''
-    #seperate shard into data and labels lists
-    #print("Data Shard used to be *data_shard ",data_shard)
-    data, label = zip(data_shard)
-    dataset = tf.data.Dataset.from_tensor_slices((list(data), list(label)))
-    return dataset.shuffle(len(label)).batch(bs)
-
-def target_distribution(q):  # target distribution P which enhances the discrimination of soft label Q
-    weight = q ** 2 / q.sum(0)
-    return (weight.T / weight.sum(1)).T
-
 def get_model(timesteps,n_features):
-#def get_model(x_train):
     model = Sequential()
-    model.add(LSTM(512, return_sequences=True, input_shape=(timesteps, n_features)))
-    #model.add(LSTM(100, input_shape=(timesteps, n_features)))
-    model.add(Dense(256, activation='relu'))
-    model.add(Dropout(.2))
-    model.add(LSTM(256, return_sequences=True))
+    model.add(LSTM(256, return_sequences=True, input_shape=(timesteps, n_features)))
     model.add(Dense(128, activation='relu'))
+    model.add(Dropout(.2))
+    model.add(LSTM(128, return_sequences=True))
+    model.add(Dense(64, activation='relu'))
     model.add(Dropout(.25))
-    model.add(LSTM(128))
+    model.add(LSTM(64))
     model.add(Dropout(.25))
-    #model.add(Dense(2))
     model.add(Dense(2, activation='softmax'))
     #model.add(Dense(2, activation='sigmoid'))
     #model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.CategoricalAccuracy(),'accuracy'])
     #model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.BinaryAccuracy()])
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    #with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\dba_1_sybil_SIM_log.txt','a') as f:
+    #        f.write(str(model.summary()))
+    #        f.close()
+    #print(model.summary())
 
     return model
 
 def model_training(model,x_train,y_train,epochs=4000):
-    #print('Training Starting:')
-    #print("train shape: ", np.shape(x_train))
-    #print("train head", x_train[:5])
-    #print("train label shape: ", y_train.shape)
-
     callbacks = EarlyStopping(monitor='accuracy', mode='max', verbose=0, patience=1000,
                               restore_best_weights=True)
-   # mc = ModelCheckpoint('best_model.h5', monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
+    # mc = ModelCheckpoint('best_model.h5', monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
     batch_size = 10
-  
+    X_train = x_train.copy()
+    Y_train = y_train.copy()
+    accuracy_callback = AccuracyCallback((X_train, Y_train))
+
+    #use verbose = 1 or 2 to see epoch progress pbar... each step is examples / batch
     train_history = model.fit(x_train,
                               y_train,
                               epochs=epochs,
@@ -155,11 +331,350 @@ def model_training(model,x_train,y_train,epochs=4000):
                               #validation_data=(x_test, (y_test, x_test)),
                               batch_size=batch_size,
                               verbose=0,
-                              callbacks=callbacks
+                              callbacks=[callbacks, accuracy_callback]
                               )
     #saved_model = load_model('best_model.h5')
 
     return model
+
+def model_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,y_test,epochs, num_sybils=1):
+    q = model.predict(x_train, verbose=0)
+    q_t = model.predict(x_test, verbose=0)
+
+    #convert one-hot to index
+    y_pred = np.argmax(q, axis=1)
+    y_arg = np.argmax(y_train, axis=1)
+    y_pred_test = np.argmax(q_t, axis=1)
+    y_arg_test = np.argmax(y_test, axis=1)
+
+    m = tf.keras.metrics.binary_accuracy(y_arg_test, y_pred_test, threshold=0.5)
+    trainAcc = np.round(accuracy_score(y_arg, y_pred), 5)
+    testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
+    f1 = f1_score(y_arg_test, y_pred_test)
+    precision = precision_score(y_arg_test, y_pred_test)
+    m_float = float(m)
+    list_data = [epochs, testAcc, f1, precision, m_float]
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'results.csv','a',newline='') as f_object:
+        writer_object = writer(f_object)
+        writer_object.writerow(list_data)
+        f_object.close()
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+            f.write('\n############################################################################################\n')
+            f.write('\n############################################################################################\n')
+            f.write('\ncomm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}\n'.format(epochs, testAcc, f1, precision, m))
+    f.close()
+    print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_test_f1: {} | global_test_precision: {} | global test bin acc {}'.format(epochs, trainAcc, testAcc, f1, precision, m))
+
+classes = ['normal','attack']
+class AccuracyCallback(tf.keras.callbacks.Callback):
+
+    def __init__(self, test_data):
+        self.test_data = test_data
+        self.class_history = ['normal', 'abnormal']
+
+    def on_epoch_end(self, epoch, logs=None):
+        x_data, y_data = self.test_data
+
+        correct = 0
+        incorrect = 0
+
+        x_result = self.model.predict(x_data, verbose=0)
+
+        x_numpy = []
+
+        for i in classes:
+            self.class_history.append([])
+
+        class_correct = [0] * len(classes)
+        class_incorrect = [0] * len(classes)
+
+        for i in range(len(x_data)):
+            x = x_data[i]
+            y = y_data[i]
+
+            res = x_result[i]
+
+            actual_label = np.argmax(y)
+            pred_label = np.argmax(res)
+
+            if(pred_label == actual_label):
+                x_numpy.append(["cor:", str(y), str(res), str(pred_label)])     
+                class_correct[actual_label] += 1   
+                correct += 1
+            else:
+                x_numpy.append(["inc:", str(y), str(res), str(pred_label)])
+                class_incorrect[actual_label] += 1
+                incorrect += 1
+        with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\output\\training_log.txt','a') as f:
+                    f.write("\n\tCorrect: %d" %(correct))
+                    f.write("\tIncorrect: %d" %(incorrect))
+                    f.close()
+        #print("\n\tCorrect: %d" %(correct))
+        #print("\tIncorrect: %d" %(incorrect))
+
+        for i in range(len(classes)):
+            tot = float(class_correct[i] + class_incorrect[i])
+            class_acc = -1
+            if (tot > 0):
+                class_acc = float(class_correct[i]) / tot
+            with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\output\\training_log.txt','a') as f:
+                        f.write("\t%s: %.3f" %(classes[i],class_acc))
+                        f.close()
+            #print("\t%s: %.3f" %(classes[i],class_acc)) 
+
+        acc = float(correct) / float(correct + incorrect)  
+        with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\output\\training_log.txt','a') as f:
+                    f.write("\tCurrent Network Accuracy: %.3f \n" %(acc))
+                    f.close()
+        #print("\tCurrent Network Accuracy: %.3f" %(acc))
+
+# Takes in grad
+# Compute similarity
+# Get weightings
+def foolsGold(path, attack, defense, log_name,grads, num_sybils=1):
+    n_clients = len(grads)
+    print("FoolsGold Total Client Grads: {}".format(n_clients))
+
+    cs = smp.cosine_similarity(grads) - np.eye(n_clients)
+    print("CS Similarity is \n {}".format(cs))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nCS Similarity is\n {}\n".format(cs))
+        f.close()
+    maxcs = np.max(cs, axis=1)
+    print("Maxcs is \n {}".format(maxcs))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nMaxcs is \n {}\n".format(maxcs)) 
+        f.close()
+
+    # pardoning
+    for i in range(n_clients):
+        for j in range(n_clients):
+            if i == j:
+                continue
+            if maxcs[i] < maxcs[j]:
+                cs[i][j] = cs[i][j] * maxcs[i] / maxcs[j]
+    wv = 1 - (np.max(cs, axis=1))
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+    alpha = np.max(cs, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    wv = (np.log(wv / (1 - wv)) + 0.5)
+    wv[(np.isinf(wv) + wv > 1)] = 1
+    wv[(wv < 0)] = 0
+
+    print("\nFG wv is\n{}".format(wv))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nFG wv is {}\n".format(wv))
+        f.close()
+    #Check the percentage of attackers in wv as gate
+    wvWeight = np.sum(wv)
+    wvWeight = wvWeight / n_clients
+    print("FG wv sum weight % is {}".format(wvWeight))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nFG wv sum weight % is {}\n".format(wvWeight))
+        f.close()
+
+    return wv, alpha
+
+def ts_ss(v, eps=1e-15, eps2=1e-4):
+    # reusable compute
+    v_inner = torch.mm(v, v.t())
+    vs = v.norm(dim=-1, keepdim=True)
+    vs_dot = vs.mm(vs.t())
+
+    # compute triangle(v)
+    v_cos = v_inner / vs_dot
+    v_cos = v_cos.clamp(-1. + eps2, 1. - eps2)  # clamp to avoid backprop instability
+    theta_ = torch.acos(v_cos) + math.radians(10)
+    theta_rad = theta_ * math.pi / 180.
+    tri = (vs_dot * torch.sin(theta_rad)) / 2.
+
+    # compute sector(v)
+    v_norm = (v ** 2).sum(-1, keepdim=True)
+    euc_dist = v_norm + v_norm.t() - 2.0 * v_inner
+    euc_dist = torch.sqrt(torch.abs(euc_dist) + eps)  # add epsilon to avoid srt(0.)
+    magnitude_diff = (vs - vs.t()).abs()
+    sec = math.pi * (euc_dist + magnitude_diff) ** 2 * theta_ / 360.
+
+    return tri * sec
+
+
+# Takes in grad
+# Compute similarity
+# Get weightings
+def asf(path, attack, defense, log_name,grads, num_sybils=1):
+    n_clients = len(grads)
+    print("ASF Total Client Grads: {}".format(n_clients))
+    
+    #    3.  TS-SS Triangle Area Similarity - Sector Area Similarity
+    v = torch.tensor(grads)
+
+    # TS-SS normalized
+    distance_calc =  ts_ss(v).numpy()
+    normalized = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
+    sm = normalized - np.eye(n_clients)
+    print("ASF Similarity is\n {}".format(sm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nASF Similarity is\n {}\n".format(sm))
+        f.close()
+    prc = 0.05 
+    maxsm = np.max(sm, axis=1)
+    print("Maxsm is\n {}".format(maxsm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nMaxsm is\n {}".format(maxsm))
+        f.close()
+  
+    # pardoningF for sm
+    for i in range(n_clients):
+        for j in range(n_clients):
+            if i == j:
+                continue
+            if maxsm[i] < maxsm[j]:
+                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+ 
+    wv = 1 - (np.max(sm, axis=1))
+
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    wv = (np.log(wv / (1 - wv)) + 0.5)
+    wv[(np.isinf(wv) + wv > 1)] = 1
+    wv[(wv < 0)] = 0
+    print("ASF wv is {}".format(wv))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\n\nASF wv is {}\n".format(wv))
+        f.close()
+    return wv,alpha
+
+# Takes in grad
+# Compute similarity
+# Get weightings
+def sim(path, attack, defense, log_name,grads, num_sybils=1):
+    n_clients = len(grads)
+    print("Similarity Total Client Grads: {}".format(n_clients))
+    
+    #    3.  TS-SS Triangle Area Similarity - Sector Area Similarity
+    v = torch.tensor(grads)
+
+    # TS-SS normalized
+    distance_calc =  ts_ss(v).numpy()
+    normalized = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
+    sm = normalized - np.eye(n_clients)
+    print("TS-SS Similarity is\n {}".format(sm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nTS-SS Similarity is\n {}\n".format(sm))
+        f.close()
+    prc = 0.05 
+    maxsm = np.max(sm, axis=1)
+    print("Maxsm is\n {}".format(maxsm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nMaxsm is\n {}\n".format(maxsm))
+        f.close()
+  
+    # pardoningF for sm
+    for i in range(n_clients):
+        for j in range(n_clients):
+            if i == j:
+                continue
+            if maxsm[i] < maxsm[j]:
+                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+ 
+    wv = 1 - (np.max(sm, axis=1))
+
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    #print("finding / 0 wv is  {}".format(wv))
+    wv = (np.log(wv / (1 - wv)) + 0.5)
+    #print("np.log(wv/1-wv +,5)  {}".format(wv))
+    wv[(np.isinf(wv) + wv > 1)] = 1
+    wv[(wv < 0)] = 0
+    print("TS-SS wv is {}".format(wv))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\n\nTS-SS wv is {}\n".format(wv))
+        f.close()
+
+    #Check the percentage of attackers in wv as gate
+    wvWeight = np.sum(wv)
+    wvWeight = wvWeight / n_clients
+    print("TS-SS wv sum weight % is {}\n".format(wvWeight))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nTS-SS wv sum weight % is\n {}\n".format(wvWeight))
+        f.close()
+
+    if wvWeight >= 0.75:
+        wv, alpha = foolsGold(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+
+    # wv is the weight
+    return wv,alpha
+
+# client_grads = Compute gradients from all the clients
+def aggregate_gradients(path, attack, defense, log_name, client_grads, num_sybils=1):
+    num_clients = len(client_grads)
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\naggregate_gradients Total Client Grads: {}\n".format(num_clients))
+        f.close()
+    print("Aggregating Gradients for Total of Clients: {}".format(num_clients))
+    
+    grad_len = np.array(client_grads[0][-2].data.shape).prod()
+
+    grads = np.zeros((num_clients, grad_len))
+    for i in range(len(client_grads)):
+        grads[i] = np.reshape(client_grads[i][-2].data, (grad_len))
+    wv = []
+    if defense == 'fg':
+        wv, alpha  = foolsGold(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+        list_data = [wv]
+        alpha_list = [alpha]
+        print("alpha is {}".format(alpha))
+        export_data = zip_longest(*list_data, fillvalue = '')
+        with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'wv.csv','a',newline='') as csv_object:
+            writer_object = csv.writer(csv_object)
+            writer_object.writerows(export_data)
+        csv_object.close()
+
+    if defense == 'asf':
+        wv, alpha  = asf(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+        list_data = [wv]
+        alpha_list = [alpha]
+        print("alpha is {}".format(alpha))
+        export_data = zip_longest(*list_data, fillvalue = '')
+        with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'wv.csv','a',newline='') as csv_object:
+            writer_object = csv.writer(csv_object)
+            writer_object.writerows(export_data)
+        csv_object.close()
+
+    if defense == 'sim':
+        wv, alpha  = sim(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+        list_data = [wv]
+        alpha_list = [alpha]
+        print("alpha is {}".format(alpha))
+        export_data = zip_longest(*list_data, fillvalue = '')
+        with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'wv.csv','a',newline='') as csv_object:
+            writer_object = csv.writer(csv_object)
+            writer_object.writerows(export_data)
+        csv_object.close()
+    
+    return wv
 
 def weight_scalling_factor(clients_trn_data, client_name):
     local_count = 1
@@ -175,123 +690,33 @@ def scale_model_weights(weight, scalar):
     return weight_final
 
 
-def sum_scaled_weights(scaled_weight_list):
+def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poison_factor,num_sybils=1):
     '''Return the sum of the listed scaled weights. The is equivalent to scaled avg of the weights'''
-    avg_grad = list()
+
+    # Iterate through each layer
+    for i in range(len(scaled_weight_list[0])):
+        assert len(poison_factor) == len(scaled_weight_list), 'len of poison {} is not consistent with len of scaled_weight_list {}'.format(len(poison_factor), len(scaled_weight_list))
+        # Aggregate gradients for a layer
+        for c, client_grad in enumerate(scaled_weight_list):
+            print("\nStep[{}] for Client_grad[{}]is:\n {}\n".format(i,c,client_grad))
+            with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+                f.write("\n\nStep[{}] for Client_grad[{}]is:\n {}\n\n".format(i,c,client_grad))
+                f.close()
+            poison_scalar = poison_factor[c]
+            print("\npoison scalar {}\n".format(poison_scalar))
+            temp = list(map(lambda x: x*np.asarray(poison_scalar), client_grad))
+            print("\n\nScaled Step[{}] for Client_grad[{}]is:\n {}\n\n".format(i,c,temp))
+            with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+                f.write("\n\npoison scalar {}\n\n".format(poison_scalar))
+                f.write("\n\nScaled Step[{}] for Client_grad[{}]is:\n {}\n\n".format(i,c,temp))
+                f.close()
+            scaled_weight_list[c][i] = temp
+            
+    avg_grad = []
     # get the average grad accross all client gradients
     for grad_list_tuple in zip(*scaled_weight_list):
+    #for grad_list_tuple in zip(*poison_grads):
         layer_mean = tf.math.reduce_sum(grad_list_tuple, axis=0)
         avg_grad.append(layer_mean)
-
     return avg_grad
-
-
-def model_evaluate(model,x_train,y_train,x_test,y_test,epochs):
-    q = model.predict(x_train, verbose=0)
-    q_t = model.predict(x_test, verbose=0)
-
-    #p = target_distribution(q)
-
-    y_pred = np.argmax(q, axis=1)
-    y_arg = np.argmax(y_train, axis=1)
-    y_pred_test = np.argmax(q_t, axis=1)
-    y_arg_test = np.argmax(y_test, axis=1)
-
-    m = tf.keras.metrics.binary_accuracy(y_arg, y_pred, threshold=0.5)
-    #score = model.evaluate(x_test, y_test, verbose=0)
-    testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
-    f1 = f1_score(y_arg, y_pred)
-    precision = precision_score(y_arg, y_pred)
-    m_float = float(m)
-
-    list_data = [epochs, testAcc, f1, precision, m_float]
-    with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\results.csv','a',newline='') as f_object:
-        writer_object = writer(f_object)
-        writer_object.writerow(list_data)
-        f_object.close()
-    with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\log.txt','a',newline='') as f:
-            f.write('comm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}'.format(epochs, testAcc, f1, precision, m))
-    print('comm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}'.format(epochs, testAcc, f1, precision, m))
-
-
-# Takes in grad
-# Compute similarity
-# Get weightings
-def foolsgold(grads):
-    n_clients = len(grads)
-    print("FG Total Client Grads: {}".format(n_clients))
-    #for unnormalized version - not recommended
-    cs = smp.cosine_similarity(grads) - np.eye(n_clients)
-
-
-    maxcs = np.max(cs, axis=1)
-    # pardoning
-    for i in range(n_clients):
-        for j in range(n_clients):
-            if i == j:
-                continue
-            if maxcs[i] < maxcs[j]:
-                cs[i][j] = cs[i][j] * maxcs[i] / maxcs[j]
-    wv = 1 - (np.max(cs, axis=1))
-    wv[wv > 1] = 1
-    wv[wv < 0] = 0
-
-    # Rescale so that max value is wv
-    wv = wv / np.max(wv)
-    wv[(wv == 1)] = .99
-
-    # Logit function
-    wv = (np.log(wv / (1 - wv)) + 0.5)
-    wv[(np.isinf(wv) + wv > 1)] = 1
-    wv[(wv < 0)] = 0
-
-    return wv
-
-# client_grads = Compute gradients from all the clients
-def aggregate_gradients(client_grads):
-    num_clients = len(client_grads)
-    print("aggregate_gradients Total Client Grads: {}".format(num_clients))
-    grad_len = np.array(client_grads[0][-2].data.shape).prod()
-
-    grads = np.zeros((num_clients, grad_len))
-    for i in range(len(client_grads)):
-        grads[i] = np.reshape(client_grads[i][-2].data, (grad_len))
-
-    wv = foolsgold(grads)  # Use FG
-    list_data = [wv]
-    with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\results.csv','a',newline='') as f_object:
-        writer_object = writer(f_object)
-        writer_object.writerow(list_data)
-        f_object.close()
-    print(wv)
-
-    agg_grads = []
-    # Iterate through each layer
-    for i in range(len(client_grads[0])):
-        temp = wv[0] * client_grads[0][i]
-        # Aggregate gradients for a layer
-        for c, client_grad in enumerate(client_grads):
-            if c == 0:
-                continue
-            temp += wv[c] * client_grad[i]
-        temp = temp / len(client_grads)
-        agg_grads.append(temp)
-
-    return agg_grads
-
-### for attacking all of a data set
-def replace_1_with_0(data):
-    """
-    :param targets: Target class IDs
-    :type targets: list
-    :param target_set: Set of class IDs possible
-    :type target_set: list
-    :return: new class IDs
-    """
-    print("Flipping Labels")
-    #print(data[:])
-    for idx in range(len(data)):
-        if (data[idx] == [1., 0.]).all():
-            data[idx] = [0., 1.]
-    #print(data[:])
-    return data
+   

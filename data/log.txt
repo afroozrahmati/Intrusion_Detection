@@ -1,1 +1,0 @@
-comm_round: 0 | global_acc: 71.267% | global_f1: 0.8132830555893443 | global_precision: 0.6893257268540793 | global bin 0.7232904434204102comm_round: 1 | global_acc: 98.165% | global_f1: 0.9873095203096673 | global_precision: 0.978630403108305 | global bin 0.9844369888305664
