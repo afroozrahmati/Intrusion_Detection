@@ -1,0 +1,825 @@
+###############################################################################################################################################################                   Begin dba_10_sybils_asf Simulation              ###############################################################################################################################################################Starting Machine:
+Loading Data...
+
+Data Distributions:
+normal (0) abnormal(1)
+attack
+0     9490
+1    14400
+dtype: int64
+Data Proto Distributions:
+normal (0) abnormal(1)
+proto
+arp            467
+icmp            12
+igmp             2
+ipv6-icmp       88
+rarp             1
+tcp           8447
+udp          14873
+dtype: int64
+
+Pre-Processing DataHead of Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check Data is CleanNull ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Backdooring DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of df is 12720
+
+DBA DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of proto is 253410 : pkts : 32490 : dport : 462810 : bytes : 716700
+
+Head of Poison Data Frame
+       pkSeqID  flgs  proto    sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+9511  11328126     1      2  10080.0  ...        46388        81338    0.0       0
+9540  53563130     1      2  10350.0  ...        22949        25569    0.0       0
+9555  39790096     1      2  10446.0  ...        11813        37974    0.0       0
+9574  46379101     1      2   1057.0  ...        19113        31594    0.0       0
+9616   8058153     1      2  10855.0  ...        43629        83238    0.0       0
+
+[5 rows x 30 columns]
+Check Poison Data is Clean
+Poison Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaProto Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaProto Data is CleandbaProto Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaDport Data Frame
+     pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+326     4335     1      1   80.0  ...     11859844      4284267  17.634145       0
+327     4336     1      2   80.0  ...      6064055      3985226  17.889824       0
+328     4337     1      2   80.0  ...      6425553      4066934   5.963981       0
+331    24317     1      2   80.0  ...      5326760      4130150   5.981577       0
+332    24334     1      1   80.0  ...     12249365      4486587  17.943359       0
+
+[5 rows x 30 columns]
+Check dbaDport Data is Clean
+
+dbaDport Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaBytes Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaBytes Data is Clean
+
+dbaBytes Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaPkts Data Frame
+      pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+1374    12070     1      4  133.0  ...       220968       965050    0.0       0
+1375    25176     1      4  133.0  ...       142271      1154097    0.0       0
+1376    25566     1      4  133.0  ...       178007      1380563    0.0       0
+1377    27533     1      4  133.0  ...       167280      1050013    0.0       0
+1378    51757     1      4  133.0  ...       168450       941884    0.0       0
+
+[5 rows x 30 columns]
+Check dbaPkts Data is Clean
+
+dbaPkts Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Data Features: 29 | LSTM Timesteps: 80
+Create Clients: 10
+
+Create DBA Sybils 10
+
+Create Proto DBA Sybils: 10
+
+Create Pkts DBA Sybils: 10
+
+Create Dport DBA Sybils: 10
+
+Create Bytes DBA Sybils: 10
+
+Number of total clients and sybils 50
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 12.183805100008612
+Total time for client_2 : local training was 10.95236220001243
+Total time for client_3 : local training was 11.154046400013613
+Total time for client_4 : local training was 11.133061400003498
+Total time for client_5 : local training was 12.799389400024666
+Total time for client_6 : local training was 10.998605799977668
+Total time for client_7 : local training was 11.132271199981915
+Total time for client_8 : local training was 11.210416099987924
+Total time for client_9 : local training was 12.462405799975386
+Total time for client_10 : local training was 10.88638459998765
+Total time for client_11 : local training was 8.909702700009802
+Total time for client_12 : local training was 9.12918499999796
+Total time for client_13 : local training was 9.090632900013588
+Total time for client_14 : local training was 10.300174700008938
+Total time for client_15 : local training was 8.63096479998785
+Total time for client_16 : local training was 8.981386200000998
+Total time for client_17 : local training was 9.065425599983428
+Total time for client_18 : local training was 9.955081299995072
+Total time for client_19 : local training was 8.827693700004602
+Total time for client_20 : local training was 9.21228050001082
+Total time for client_21 : local training was 8.06738910000422
+Total time for client_22 : local training was 9.211412400007248
+Total time for client_23 : local training was 7.712098899995908
+Total time for client_24 : local training was 7.7163628000125755
+Total time for client_25 : local training was 7.957117299985839
+Total time for client_26 : local training was 9.1843825999822
+Total time for client_27 : local training was 7.644992799992906
+Total time for client_28 : local training was 7.923221499979263
+Total time for client_29 : local training was 7.715151999989757
+Total time for client_30 : local training was 7.7088911999890115
+Total time for client_31 : local training was 9.395315600006143
+Total time for client_32 : local training was 9.386399500013795
+Total time for client_33 : local training was 9.686572000005981
+Total time for client_34 : local training was 9.533852799999295
+Total time for client_35 : local training was 11.107563800003845
+Total time for client_36 : local training was 9.42192559997784
+Total time for client_37 : local training was 9.378713500016602
+Total time for client_38 : local training was 9.69029969998519
+Total time for client_39 : local training was 10.780103600001894
+Total time for client_40 : local training was 9.512796800001524
+Total time for client_41 : local training was 10.602588999987347
+Total time for client_42 : local training was 10.80345269999816
+Total time for client_43 : local training was 12.51447810002719
+Total time for client_44 : local training was 10.531320099980803
+Total time for client_45 : local training was 10.803436000016518
+Total time for client_46 : local training was 10.988585799990688
+Total time for client_47 : local training was 10.696718200022588
+Total time for client_48 : local training was 12.39233349999995
+Total time for client_49 : local training was 10.653581399994437
+Total time for client_50 : local training was 10.85316130000865
+
+Total Client Grads Scaled : 50 unscaled 50
+
+aggregate_gradients Total Client Grads: 50
+
+ASF Similarity is
+ [[-2.         -0.26368288 -0.10620682 ... -0.58509587 -0.24295079
+  -0.02617629]
+ [-0.26368288 -2.         -0.16178485 ... -0.11568867 -0.29406615
+  -0.06923208]
+ [-0.10620682 -0.16178485 -2.         ...  0.27531373 -0.23403976
+  -0.54052634]
+ ...
+ [-0.58509587 -0.11568867  0.27531373 ... -2.          0.09507428
+  -0.09311657]
+ [-0.24295079 -0.29406615 -0.23403976 ...  0.09507428 -2.
+   0.17909921]
+ [-0.02617629 -0.06923208 -0.54052634 ... -0.09311657  0.17909921
+  -2.        ]]
+
+Maxsm is
+ [ 5.73962724e-01  2.86347776e-01  2.75313729e-01  8.67634512e-02
+  7.28987944e-01  1.71690581e-02  5.13278465e-01  3.43990241e-01
+  3.32807339e-01 -1.49676277e-01  3.56488136e-02  2.66545715e-01
+  1.10132900e-01  2.21797298e-01  5.71212192e-02  1.33160466e-01
+  5.58976155e-02  5.25141858e-01  2.44006117e-01  1.55589824e-01
+  9.54493517e-01  7.58904108e-01  1.00000000e+00  6.98210953e-01
+  9.00042907e-01  8.28074912e-01  9.27137218e-01  8.67101755e-01
+  7.88364270e-01  6.49374096e-01  6.63389033e-02  1.95327649e-01
+ -1.56530260e-01 -2.68635779e-01 -7.86797463e-02  2.27562740e-01
+  2.54310703e-01 -1.00424083e-01  1.07004805e-01 -6.87730407e-02
+  2.33420258e-01  1.00000000e+00  2.01224033e-01 -1.13270893e-03
+  9.76706955e-02 -4.63348842e-04  6.14227070e-02  7.51370395e-01
+  6.21024920e-01  1.79099208e-01]
+
+ASF wv is [1.         1.         1.         1.         0.61145356 1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         0.         0.         0.         0.91697715
+ 0.         0.06847674 0.         0.         0.19358111 1.
+ 1.         1.         1.         0.62100499 1.         1.
+ 1.         1.         1.         1.         1.         0.
+ 1.         1.         1.         1.         1.         0.40428676
+ 1.         1.        ]
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 0 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 11.11877000000095
+Total time for client_2 : local training was 12.187045900005614
+Total time for client_3 : local training was 10.67008270000224
+Total time for client_4 : local training was 10.889018899993971
+Total time for client_5 : local training was 10.994728599995142
+Total time for client_6 : local training was 12.038103200000478
+Total time for client_7 : local training was 10.641021399991587
+Total time for client_8 : local training was 10.954272300004959
+Total time for client_9 : local training was 10.880178400024306
+Total time for client_10 : local training was 11.990168199990876
+Total time for client_11 : local training was 8.500303300010273
+Total time for client_12 : local training was 8.705095399986021
+Total time for client_13 : local training was 8.725445700023556
+Total time for client_14 : local training was 10.221475900005316
+Total time for client_15 : local training was 8.554489700007252
+Total time for client_16 : local training was 8.618871100014076
+Total time for client_17 : local training was 8.742097399983322
+Total time for client_18 : local training was 9.002078000019537
+Total time for client_19 : local training was 10.249607200006722
+Total time for client_20 : local training was 8.608362400002079
+Total time for client_21 : local training was 7.825786300003529
+Total time for client_22 : local training was 7.766695199999958
+Total time for client_23 : local training was 8.792190200008918
+Total time for client_24 : local training was 7.469121200003428
+Total time for client_25 : local training was 7.627050199982477
+Total time for client_26 : local training was 7.656258599978173
+Total time for client_27 : local training was 8.797693600005005
+Total time for client_28 : local training was 7.368965700006811
+Total time for client_29 : local training was 7.595876700012013
+Total time for client_30 : local training was 7.745936999999685
+Total time for client_31 : local training was 10.990101399976993
+Total time for client_32 : local training was 9.40216299999156
+Total time for client_33 : local training was 9.297777699975995
+Total time for client_34 : local training was 9.602322499995353
+Total time for client_35 : local training was 9.578585700015537
+Total time for client_36 : local training was 11.061432299989974
+Total time for client_37 : local training was 9.520608099992387
+Total time for client_38 : local training was 9.51822609998635
+Total time for client_39 : local training was 9.570605999993859
+Total time for client_40 : local training was 11.04143379998277
+Total time for client_41 : local training was 10.581586999993306
+Total time for client_42 : local training was 10.708267900015926
+Total time for client_43 : local training was 10.677562199998647
+Total time for client_44 : local training was 12.420872299990151
+Total time for client_45 : local training was 10.50870139998733
+Total time for client_46 : local training was 10.76270829999703
+Total time for client_47 : local training was 10.910389299999224
+Total time for client_48 : local training was 10.88015800001449
+Total time for client_49 : local training was 10.652094400022179
+Total time for client_50 : local training was 10.75699560000794
+
+Total Client Grads Scaled : 50 unscaled 50
+
+aggregate_gradients Total Client Grads: 50
+
+ASF Similarity is
+ [[-2.         -0.34994729 -0.92542852 ... -0.24178826 -0.89292126
+  -0.86162782]
+ [-0.34994729 -2.         -0.37163417 ... -0.62004069 -0.41555372
+  -0.54767021]
+ [-0.92542852 -0.37163417 -2.         ... -0.19007229 -0.90984757
+  -0.87480324]
+ ...
+ [-0.24178826 -0.62004069 -0.19007229 ... -2.         -0.07275591
+  -0.21209692]
+ [-0.89292126 -0.41555372 -0.90984757 ... -0.07275591 -2.
+  -0.90931501]
+ [-0.86162782 -0.54767021 -0.87480324 ... -0.21209692 -0.90931501
+  -2.        ]]
+
+Maxsm is
+ [ 0.55346896 -0.17134939  0.38717241  0.08994869  0.41697911  0.56469636
+  0.05850236 -0.00181129  0.65047218  0.37782209  0.23071833  0.64057972
+  0.18125623  0.75447169  0.20053682  0.5165059   0.49197665  0.35274118
+  0.26131424  0.15559702 -0.04314907 -0.05901534 -0.04414189  0.01378627
+ -0.04441941 -0.0388261   0.00856351  0.08192473  0.01801169 -0.06128722
+  0.4216584   1.          0.329533    0.5958204   0.41772997  0.51858057
+  0.63117993  0.31255489  0.63813297  0.45397475  0.16624659  0.32305247
+  0.82097868  0.33968189  0.25272903  1.          0.49769676  0.26752879
+  0.50698974  0.30760361]
+
+ASF wv is [1.         0.01758443 1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         0.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         0.         1.         1.
+ 1.         1.        ]
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 1 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.75319269997999
+Total time for client_2 : local training was 10.735835699975723
+Total time for client_3 : local training was 12.441875899996376
+Total time for client_4 : local training was 10.6003439000051
+Total time for client_5 : local training was 10.783723900007317
+Total time for client_6 : local training was 10.817089899996063
+Total time for client_7 : local training was 12.32887369999662
+Total time for client_8 : local training was 10.864506100013386
+Total time for client_9 : local training was 10.82258870001533
+Total time for client_10 : local training was 10.934760500007542
+Total time for client_11 : local training was 10.330489200016018
+Total time for client_12 : local training was 8.783011699997587
+Total time for client_13 : local training was 8.631392100010999
+Total time for client_14 : local training was 8.904094600002281
+Total time for client_15 : local training was 8.743585399992298
+Total time for client_16 : local training was 10.313873799983412
+Total time for client_17 : local training was 8.592446599999676
+Total time for client_18 : local training was 8.691283799998928
+Total time for client_19 : local training was 8.899069799983408
+Total time for client_20 : local training was 9.903273700008867
+Total time for client_21 : local training was 7.605316200002562
+Total time for client_22 : local training was 7.685141299996758
+Total time for client_23 : local training was 7.800159199978225
+Total time for client_24 : local training was 8.924998200003756
+Total time for client_25 : local training was 7.578758999996353
+Total time for client_26 : local training was 7.436703399987891
+Total time for client_27 : local training was 7.78598429998965
+Total time for client_28 : local training was 7.761055299983127
+Total time for client_29 : local training was 9.334609000012279
+Total time for client_30 : local training was 7.436805700010154
+Total time for client_31 : local training was 9.752746600017417
+Total time for client_32 : local training was 9.763186299998779
+Total time for client_33 : local training was 10.576836199994432
+Total time for client_34 : local training was 9.572783400013577
+Total time for client_35 : local training was 9.482408199983183
+Total time for client_36 : local training was 9.694470899994485
+Total time for client_37 : local training was 10.845484399993438
+Total time for client_38 : local training was 9.591194099979475
+Total time for client_39 : local training was 9.409385099977953
+Total time for client_40 : local training was 9.659739399998216
+Total time for client_41 : local training was 12.52754140002071
+Total time for client_42 : local training was 10.613533900002949
+Total time for client_43 : local training was 10.631697400007397
+Total time for client_44 : local training was 10.840295600006357
+Total time for client_45 : local training was 11.005002399993828
+Total time for client_46 : local training was 10.662111100013135
+Total time for client_47 : local training was 10.660389800003031
+Total time for client_48 : local training was 10.646473100001458
+Total time for client_49 : local training was 10.713544199999887
+Total time for client_50 : local training was 12.06876760002342
+
+Total Client Grads Scaled : 50 unscaled 50
+
+aggregate_gradients Total Client Grads: 50
+
+ASF Similarity is
+ [[-2.         -0.73266781 -0.69021598 ... -0.70954671 -0.58855841
+  -0.56414148]
+ [-0.73266781 -2.         -0.68815636 ... -0.82114485 -0.7515599
+  -0.81079801]
+ [-0.69021598 -0.68815636 -2.         ... -0.68971853 -0.4665516
+  -0.69973806]
+ ...
+ [-0.70954671 -0.82114485 -0.68971853 ... -2.         -0.64478368
+  -0.68830925]
+ [-0.58855841 -0.7515599  -0.4665516  ... -0.64478368 -2.
+  -0.64009302]
+ [-0.56414148 -0.81079801 -0.69973806 ... -0.68830925 -0.64009302
+  -2.        ]]
+
+Maxsm is
+ [ 0.37704392  0.61005385  0.05773365  0.11201425 -0.16528404 -0.40642988
+ -0.1845311   0.121818    0.88494859  0.32478008  0.53580437  0.33881529
+  0.50767679  0.50865476  0.66492474  0.55954488  0.53005813  0.27795265
+  0.49649887  0.39949621  0.30616324  0.17489098  0.32785425  0.36494023
+  0.24806022  0.16405194  0.26036265  0.32924053  0.23466018  0.34231667
+  0.99077725  0.53115958  1.          0.40059489  0.78612714  0.71841451
+  0.58541437  0.67208833  0.37989602  0.48266471  0.37159354 -0.32602855
+  0.20633305 -0.06953331  0.34543296  0.79646562 -0.28335041  0.1543954
+  1.          0.03019609]
+
+ASF wv is [1.         1.         1.         1.         1.         0.42215787
+ 1.         1.         0.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 0.         1.         0.         1.         1.         0.68935845
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         0.         1.         1.
+ 0.         1.        ]
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 2 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.412484000000404
+Total time for client_2 : local training was 10.614993700000923
+Total time for client_3 : local training was 10.68931899999734
+Total time for client_4 : local training was 12.02505269998801
+Total time for client_5 : local training was 10.454347199993208
+Total time for client_6 : local training was 10.643665800016606
+Total time for client_7 : local training was 10.795150499994634
+Total time for client_8 : local training was 10.970958599995356
+Total time for client_9 : local training was 12.345953600015491
+Total time for client_10 : local training was 10.808397299988428
+Total time for client_11 : local training was 8.689652000000933
+Total time for client_12 : local training was 8.942448999994667
+Total time for client_13 : local training was 10.441897399985464
+Total time for client_14 : local training was 8.583854900003644
+Total time for client_15 : local training was 8.612807900004555
+Total time for client_16 : local training was 8.866046900016954
+Total time for client_17 : local training was 10.060007200023392
+Total time for client_18 : local training was 8.5040752000059
+Total time for client_19 : local training was 8.523117700009607
+Total time for client_20 : local training was 8.63011469997582
+Total time for client_21 : local training was 9.358345600019675
+Total time for client_22 : local training was 7.290505999990273
+Total time for client_23 : local training was 7.465842099976726
+Total time for client_24 : local training was 7.703096999990521
+Total time for client_25 : local training was 7.853608300007181
+Total time for client_26 : local training was 9.273615699989023
+Total time for client_27 : local training was 7.55015560000902
+Total time for client_28 : local training was 7.70013910002308
+Total time for client_29 : local training was 7.766654800012475
+Total time for client_30 : local training was 8.827964800002519
+Total time for client_31 : local training was 9.44736330001615
+Total time for client_32 : local training was 9.952111399994465
+Total time for client_33 : local training was 10.040975399984745
+Total time for client_34 : local training was 11.132820000028005
+Total time for client_35 : local training was 9.74838850001106
+Total time for client_36 : local training was 9.538052799995057
+Total time for client_37 : local training was 9.806284599995706
+Total time for client_38 : local training was 11.207852399995318
+Total time for client_39 : local training was 9.339777300017886
+Total time for client_40 : local training was 9.570255500002531
+Total time for client_41 : local training was 10.677035600005183
+Total time for client_42 : local training was 10.901830399991013
+Total time for client_43 : local training was 12.537169399991399
+Total time for client_44 : local training was 10.714319899998372
+Total time for client_45 : local training was 10.988920999981929
+Total time for client_46 : local training was 10.95186480000848
+Total time for client_47 : local training was 12.069306600023992
+Total time for client_48 : local training was 10.866930499993032
+Total time for client_49 : local training was 10.863574100018013
+Total time for client_50 : local training was 11.12052379999659
+
+Total Client Grads Scaled : 50 unscaled 50
+
+aggregate_gradients Total Client Grads: 50
+
+ASF Similarity is
+ [[-2.         -0.8255514  -0.7907205  ... -0.87681833 -0.76063093
+  -0.76327263]
+ [-0.8255514  -2.         -0.85815179 ... -0.8214641  -0.9091392
+  -0.85746418]
+ [-0.7907205  -0.85815179 -2.         ... -0.9015094  -0.77844342
+  -0.76351363]
+ ...
+ [-0.87681833 -0.8214641  -0.9015094  ... -2.         -0.78267411
+  -0.79845376]
+ [-0.76063093 -0.9091392  -0.77844342 ... -0.78267411 -2.
+  -0.91701859]
+ [-0.76327263 -0.85746418 -0.76351363 ... -0.79845376 -0.91701859
+  -2.        ]]
+
+Maxsm is
+ [-0.16248826  0.48215174  0.35223546  0.70334034  0.24994515 -0.14521454
+  0.44664417  0.04825191  0.47348068  0.22742511  0.26790321  0.2680933
+  0.2555864   0.25711886  0.10216715  0.0434381   0.19194064  0.72760149
+  0.14533536  0.14285116 -0.14547699 -0.16635746  0.04891186 -0.09377931
+ -0.02220341 -0.00815562 -0.19383136 -0.10734254 -0.16564844 -0.17253571
+  1.          0.56670718  0.11465323  0.35462848  0.32066127  0.49507415
+  0.35148031  0.25152308  0.41933887  0.26705559  0.05430656  0.37652953
+ -0.02356034  0.05822117  0.3929483   0.65714636  0.65022342 -0.14941583
+  1.          0.61017398]
+
+ASF wv is [1.         1.         1.         0.62305943 1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         0.27146674
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 0.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         0.96244744 0.88407335 1.
+ 0.         1.        ]
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 3 | global_acc: 61.346% | global_f1: 0.7536205810920212 | global_precision: 0.6047350945575285 | global bin 0.6134631633758545
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 12.181414999999106
+Total time for client_2 : local training was 10.530222800007323
+Total time for client_3 : local training was 10.806497299985494
+Total time for client_4 : local training was 11.114406799984863
+Total time for client_5 : local training was 12.40810010000132
+Total time for client_6 : local training was 10.793226899986621
+Total time for client_7 : local training was 11.028254200005904
+Total time for client_8 : local training was 11.161307700007455
+Total time for client_9 : local training was 11.06250669999281
+Total time for client_10 : local training was 12.480082699999912
+Total time for client_11 : local training was 8.59369430001243
+Total time for client_12 : local training was 8.729585799999768
+Total time for client_13 : local training was 8.723039700009394
+Total time for client_14 : local training was 10.000912199990125
+Total time for client_15 : local training was 8.450151400000323
+Total time for client_16 : local training was 8.747671399993123
+Total time for client_17 : local training was 9.242171799996868
+Total time for client_18 : local training was 10.64572020000196
+Total time for client_19 : local training was 8.700807900022482
+Total time for client_20 : local training was 8.996206199983135
+Total time for client_21 : local training was 8.173033200000646
+Total time for client_22 : local training was 7.750511899997946
+Total time for client_23 : local training was 9.237726100021973
+Total time for client_24 : local training was 7.496432699990692
+Total time for client_25 : local training was 7.688830200000666
+Total time for client_26 : local training was 7.658141000021715
+Total time for client_27 : local training was 8.863281700003427
+Total time for client_28 : local training was 7.458422800002154
+Total time for client_29 : local training was 7.672503300011158
+Total time for client_30 : local training was 7.692509699991206
+Total time for client_31 : local training was 10.788299100007862
+Total time for client_32 : local training was 9.567076199979056
+Total time for client_33 : local training was 9.607598600006895
+Total time for client_34 : local training was 9.695221800007857
+Total time for client_35 : local training was 11.025156799994875
+Total time for client_36 : local training was 9.474592799990205
+Total time for client_37 : local training was 9.484393399994588
+Total time for client_38 : local training was 9.532963800011203
+Total time for client_39 : local training was 9.748350299982121
+Total time for client_40 : local training was 11.211264599987771
+Total time for client_41 : local training was 10.586848499980988
+Total time for client_42 : local training was 10.695011899981182
+Total time for client_43 : local training was 10.676163199997973
+Total time for client_44 : local training was 11.912257300020428
+Total time for client_45 : local training was 10.679626699973596
+Total time for client_46 : local training was 10.742625499988208
+Total time for client_47 : local training was 10.751491400005762
+Total time for client_48 : local training was 12.280455100000836
+Total time for client_49 : local training was 10.646946100023342
+Total time for client_50 : local training was 10.660427700000582
+
+Total Client Grads Scaled : 50 unscaled 50
+
+aggregate_gradients Total Client Grads: 50
+
+ASF Similarity is
+ [[-2.         -0.51983928 -0.78656987 ... -0.74927005 -0.83380985
+  -0.72755263]
+ [-0.51983928 -2.         -0.8632462  ... -0.71636772 -0.75414876
+  -0.8195116 ]
+ [-0.78656987 -0.8632462  -2.         ... -0.90946494 -0.84850874
+  -0.87108759]
+ ...
+ [-0.74927005 -0.71636772 -0.90946494 ... -2.         -0.75650945
+  -0.83054982]
+ [-0.83380985 -0.75414876 -0.84850874 ... -0.75650945 -2.
+  -0.86092211]
+ [-0.72755263 -0.8195116  -0.87108759 ... -0.83054982 -0.86092211
+  -2.        ]]
+
+Maxsm is
+ [-0.32840407  1.          0.29576513  0.35583322  0.642234    0.70594459
+  0.68048538 -0.00156123  0.82174039 -0.03774326  0.36037308  0.47116593
+  0.34461749  0.56558153  0.57201401  0.49084757  0.30271966  0.25768827
+  0.58774691  0.41984954  0.14427018  0.03489497  0.1064515   0.13097828
+  0.12175104  0.33443203  0.03817264 -0.08085562  0.09783557  0.15713741
+  0.63945839  0.83072857  0.67153417  0.57007478  0.84206054  0.65750826
+  0.83435178  0.39641814  1.          0.7533653  -0.16245732 -0.41599454
+  0.03871954  0.21595513  0.22361459  0.45494515 -0.30567599  0.41324288
+  0.02716304  0.38692176]
+
+ASF wv is [0.48391613 0.         1.         1.         1.         0.45974982
+ 0.552227   1.         0.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         0.         1.         1.         0.         1.
+ 0.         1.         0.         0.         1.         0.10546612
+ 1.         1.         1.         1.         0.52570694 1.
+ 1.         1.        ]
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 4 | global_acc: 59.300% | global_f1: 0.7439630681818182 | global_precision: 0.5923098671190274 | global bin 0.5930002927780151
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.788017599988962
+Total time for client_2 : local training was 10.918017599993618
+Total time for client_3 : local training was 12.383318300009705
+Total time for client_4 : local training was 10.704471100005321
+Total time for client_5 : local training was 10.657321499980753
+Total time for client_6 : local training was 10.911188400001265
+Total time for client_7 : local training was 12.120564500015462
+Total time for client_8 : local training was 10.640962999983458
+Total time for client_9 : local training was 10.727845200017327
+Total time for client_10 : local training was 11.032311299990397
+Total time for client_11 : local training was 10.312422599992715
+Total time for client_12 : local training was 8.532098499999847
+Total time for client_13 : local training was 8.579982900002506
+Total time for client_14 : local training was 8.875740899995435
+Total time for client_15 : local training was 8.862849799974356
+Total time for client_16 : local training was 8.449002799985465
+Total time for client_17 : local training was 8.60893709998345
+Total time for client_18 : local training was 8.702678200002993
+Total time for client_19 : local training was 8.815967099973932
+Total time for client_20 : local training was 10.172553199983668
+Total time for client_21 : local training was 7.478402600012487
+Total time for client_22 : local training was 7.504430900007719
+Total time for client_23 : local training was 7.689408900012495
+Total time for client_24 : local training was 8.979087999992771
+Total time for client_25 : local training was 7.608345599990571
+Total time for client_26 : local training was 7.519888199982233
+Total time for client_27 : local training was 7.722181300021475
+Total time for client_28 : local training was 7.857079200010048

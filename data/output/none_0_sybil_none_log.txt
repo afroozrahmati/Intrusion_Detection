@@ -1,0 +1,38 @@
+Starting Machine:
+Loading Data...
+
+Number of total clients and sybils 10
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 12.152171200024895
+Total time for client_2 : local training was 10.423705800028984
+Total time for client_3 : local training was 10.439556600002106
+Total time for client_4 : local training was 10.354764400050044
+Total time for client_5 : local training was 10.136777199979406
+Total time for client_6 : local training was 10.244740099995397
+Total time for client_7 : local training was 10.519804200041108
+Total time for client_8 : local training was 10.316084099991713
+Total time for client_9 : local training was 10.308438100037165
+Total time for client_10 : local training was 10.36487049999414
+
+Total Client Grads Scaled : 10 unscaled 10
+Starting Machine:
+Loading Data...
+
+Number of total clients and sybils 10
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 11.50532670004759
+Total time for client_2 : local training was 10.439486999996006
+Total time for client_3 : local training was 10.485721300006844
+Total time for client_4 : local training was 10.38862079998944
+Total time for client_5 : local training was 10.247661000001244
+Total time for client_6 : local training was 10.179941000009421
+Total time for client_7 : local training was 10.4985351000214
+Total time for client_8 : local training was 10.327844700019341
+Total time for client_9 : local training was 10.337506799958646
+Total time for client_10 : local training was 10.290814500011038
+
+Total Client Grads Scaled : 10 unscaled 10

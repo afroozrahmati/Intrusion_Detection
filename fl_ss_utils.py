@@ -673,7 +673,7 @@ def aggregate_gradients(path, attack, defense, log_name, client_grads, num_sybil
             writer_object = csv.writer(csv_object)
             writer_object.writerows(export_data)
         csv_object.close()
-    
+
     return wv
 
 def weight_scalling_factor(clients_trn_data, client_name):
@@ -690,28 +690,26 @@ def scale_model_weights(weight, scalar):
     return weight_final
 
 
-def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poison_factor,num_sybils=1):
+def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poison_factor,num_sybils=1):          
     '''Return the sum of the listed scaled weights. The is equivalent to scaled avg of the weights'''
+    print("Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
+    for c, client_grad in enumerate(scaled_weight_list):
+        print("c is {}".format(c))
+        if poison_factor[c] < .35:
+            print("deleting {}".format(c))
+            del scaled_weight_list[c]
 
-    # Iterate through each layer
-    for i in range(len(scaled_weight_list[0])):
-        assert len(poison_factor) == len(scaled_weight_list), 'len of poison {} is not consistent with len of scaled_weight_list {}'.format(len(poison_factor), len(scaled_weight_list))
-        # Aggregate gradients for a layer
-        for c, client_grad in enumerate(scaled_weight_list):
-            print("\nStep[{}] for Client_grad[{}]is:\n {}\n".format(i,c,client_grad))
-            with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-                f.write("\n\nStep[{}] for Client_grad[{}]is:\n {}\n\n".format(i,c,client_grad))
-                f.close()
-            poison_scalar = poison_factor[c]
-            print("\npoison scalar {}\n".format(poison_scalar))
-            temp = list(map(lambda x: x*np.asarray(poison_scalar), client_grad))
-            print("\n\nScaled Step[{}] for Client_grad[{}]is:\n {}\n\n".format(i,c,temp))
-            with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-                f.write("\n\npoison scalar {}\n\n".format(poison_scalar))
-                f.write("\n\nScaled Step[{}] for Client_grad[{}]is:\n {}\n\n".format(i,c,temp))
-                f.close()
-            scaled_weight_list[c][i] = temp
-            
+    print("Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
+    avg_grad = []
+    # get the average grad accross all client gradients
+    for grad_list_tuple in zip(*scaled_weight_list):
+        layer_mean = tf.math.reduce_sum(grad_list_tuple, axis=0)
+        avg_grad.append(layer_mean)
+    return avg_grad
+
+def baseline_sum_scaled_weights_ids(path, attack, defense, log_name,scaled_weight_list,num_sybils=1):
+    '''Return the sum of the listed scaled weights. The is equivalent to scaled avg of the weights'''
+    print("Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
     avg_grad = []
     # get the average grad accross all client gradients
     for grad_list_tuple in zip(*scaled_weight_list):

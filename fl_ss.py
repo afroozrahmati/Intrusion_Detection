@@ -134,7 +134,7 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
     n_clts = len(clients)
     print("Number of total Clients {}".format(n_clts))
 
-    print("Number of Sybils Passed in to simulation{}".format(num_sybils))
+    print("Number of Sybils Passed in to simulation {}".format(num_sybils))
     # 4.b create label flip sybils
     if attack == 'label':
         num_clients = num_sybils
@@ -224,14 +224,23 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
              f.write("\n\nTotal Client Grads Scaled : {} unscaled {}\n".format(num_grads_scaled, num_grads_unscaled))
              f.close()
         print("\nTotal Client Grads Scaled : {} unscaled {}\n".format(num_grads_scaled, num_grads_unscaled))
-        poison_scaling = aggregate_gradients(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_unscaled, config.NUM_SYBILS)
-        average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled, poison_scaling, config.NUM_SYBILS)
+        baseline = config.BASELINE
+        if baseline == True:
+            average_weights = baseline_sum_scaled_weights_ids(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled, config.NUM_SYBILS)
+            # 6. update global model
+            global_model.set_weights(average_weights)
 
-        # 6. update global model
-        global_model.set_weights(average_weights)
-    
-        # 7. test global model and print out metrics after each communications round
-        model_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_model,x_train,y_train,x_test,y_test,comm_round, config.NUM_SYBILS)
+            # 7. test global model and print out metrics after each communications round
+            model_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_model,x_train,y_train,x_test,y_test,comm_round, config.NUM_SYBILS)
+        else:
+            poison_scaling = aggregate_gradients(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_unscaled, config.NUM_SYBILS)
+            average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled,poison_scaling, config.NUM_SYBILS)
+            # 6. update global model
+            global_model.set_weights(average_weights)
+
+            # 7. test global model and print out metrics after each communications round
+            model_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_model,x_train,y_train,x_test,y_test,comm_round, config.NUM_SYBILS)
+        
 # 1. 
 ###############################################################################
 ###############################################################################
@@ -241,10 +250,60 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
 
 def main():
 
-
-    simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, config.DEFENSE, config.NUM_SYBILS, config.NUM_CLIENTS)
+    '''
+       To make single runs
+    '''
+    #simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, config.DEFENSE, config.NUM_SYBILS, config.NUM_CLIENTS)
+    
+    
+    '''
+       To run just ids - no poison defense and poison attacks
     '''
     global_tic = time.perf_counter()
+    config.BASELINE = True
+    simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.NO_ATTACK, config.NO_DEFENSE, config.NO_SYBILS, config.NUM_CLIENTS)
+    for i in range(len(config.ATTACK_LIST)):
+            for k in range(len(config.NUM_SYBILS_LIST)):
+                config.ATTACK = config.ATTACK_LIST[i]
+                config.NUM_SYBILS = config.NUM_SYBILS_LIST[k]
+                print("Number of Sybils in loop {} for {} attack with a {} defense".format(config.NUM_SYBILS, config.ATTACK, config.NO_DEFENSE))
+                with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.NO_DEFENSE +'_'+ config.LOG_NAME,'a') as f:
+                    f.write("###############################################################################")
+                    f.write("###############################################################################")
+                    f.write("#                   Begin {}_{}_sybils_{} Simulation              #".format(config.ATTACK, config.NUM_SYBILS, config.NO_DEFENSE))
+                    f.write("###############################################################################")
+                    f.write("###############################################################################")
+                f.close()
+                tic = time.perf_counter()
+                simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, config.NO_DEFENSE, config.NUM_SYBILS, config.NUM_CLIENTS)
+                toc = time.perf_counter()
+                sim_time = convert(toc-tic)
+                with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.NO_DEFENSE +'_'+ config.LOG_NAME,'a') as f:
+                    f.write("Total time for simulation : {}_{}_sybils_{} was {}".format(config.ATTACK, config.NUM_SYBILS, config.NO_DEFENSE, sim_time))
+                    f.close()
+                print("Total time for simulation : {}_{}_sybils_{} was {}".format(config.ATTACK, config.NUM_SYBILS, config.NO_DEFENSE, sim_time))
+    global_toc = time.perf_counter()
+    total_time = convert(global_toc-global_tic)
+    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.NO_DEFENSE +'_'+ config.LOG_NAME,'a') as f:
+        f.write("###############################################################################")
+        f.write("###############################################################################")
+        f.write("#                      Total time for simulations was {}               #".format(total_time))
+        f.write("###############################################################################")
+        f.write("###############################################################################")
+        f.close()
+    print("###############################################################################")
+    print("###############################################################################")
+    print("#                      Total time for simulations was {}               #".format(total_time))
+    print("###############################################################################")
+    print("###############################################################################")
+
+
+    '''
+       To Test Poison Attacks against Poison Defenses
+    '''
+    '''
+    global_tic = time.perf_counter()
+    config.BASELINE = False
     for i in range(len(config.ATTACK_LIST)):
         for j in range(len(config.DEFENSE_LIST)):
             for k in range(len(config.NUM_SYBILS_LIST)):
@@ -282,7 +341,6 @@ def main():
     print("###############################################################################")
     print("###############################################################################")
     '''
-
 if __name__ == "__main__":
     main()
 
