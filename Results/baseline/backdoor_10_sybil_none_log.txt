@@ -1,0 +1,1310 @@
+###############################################################################################################################################################                   Begin backdoor_10_sybils_none Simulation              ###############################################################################################################################################################Starting Machine:
+Loading Data...
+
+Data Distributions:
+normal (0) abnormal(1)
+attack
+0     9490
+1    14400
+dtype: int64
+Data Proto Distributions:
+normal (0) abnormal(1)
+proto
+arp            467
+icmp            12
+igmp             2
+ipv6-icmp       88
+rarp             1
+tcp           8447
+udp          14873
+dtype: int64
+
+Pre-Processing DataHead of Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check Data is CleanNull ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Backdooring DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of df is 12720
+
+DBA DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of proto is 253410 : pkts : 32490 : dport : 462810 : bytes : 716700
+
+Head of Poison Data Frame
+       pkSeqID  flgs  proto    sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+9511  11328126     1      2  10080.0  ...        46388        81338    0.0       0
+9540  53563130     1      2  10350.0  ...        22949        25569    0.0       0
+9555  39790096     1      2  10446.0  ...        11813        37974    0.0       0
+9574  46379101     1      2   1057.0  ...        19113        31594    0.0       0
+9616   8058153     1      2  10855.0  ...        43629        83238    0.0       0
+
+[5 rows x 30 columns]
+Check Poison Data is Clean
+Poison Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaProto Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaProto Data is CleandbaProto Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaDport Data Frame
+     pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+326     4335     1      1   80.0  ...     11859844      4284267  17.634145       0
+327     4336     1      2   80.0  ...      6064055      3985226  17.889824       0
+328     4337     1      2   80.0  ...      6425553      4066934   5.963981       0
+331    24317     1      2   80.0  ...      5326760      4130150   5.981577       0
+332    24334     1      1   80.0  ...     12249365      4486587  17.943359       0
+
+[5 rows x 30 columns]
+Check dbaDport Data is Clean
+
+dbaDport Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaBytes Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaBytes Data is Clean
+
+dbaBytes Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaPkts Data Frame
+      pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+1374    12070     1      4  133.0  ...       220968       965050    0.0       0
+1375    25176     1      4  133.0  ...       142271      1154097    0.0       0
+1376    25566     1      4  133.0  ...       178007      1380563    0.0       0
+1377    27533     1      4  133.0  ...       167280      1050013    0.0       0
+1378    51757     1      4  133.0  ...       168450       941884    0.0       0
+
+[5 rows x 30 columns]
+Check dbaPkts Data is Clean
+
+dbaPkts Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Data Features: 29 | LSTM Timesteps: 80
+Create Clients: 10
+Create Backdoor Sybils: 10
+
+Number of total clients and sybils 20
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.616209899948444
+Total time for client_2 : local training was 10.53810359997442
+Total time for client_3 : local training was 10.193460099981166
+Total time for client_4 : local training was 10.664295400027186
+Total time for client_5 : local training was 10.28091090003727
+Total time for client_6 : local training was 10.21439510001801
+Total time for client_7 : local training was 10.666316400049254
+Total time for client_8 : local training was 10.188857099972665
+Total time for client_9 : local training was 10.677981099986937
+Total time for client_10 : local training was 10.203494699962903
+Total time for client_11 : local training was 7.150105600012466
+Total time for client_12 : local training was 7.640626700012945
+Total time for client_13 : local training was 7.1475782000343315
+Total time for client_14 : local training was 7.613009399967268
+Total time for client_15 : local training was 7.163520800007973
+Total time for client_16 : local training was 7.610120800032746
+Total time for client_17 : local training was 7.495583500014618
+Total time for client_18 : local training was 7.139288300008047
+Total time for client_19 : local training was 7.557246199983638
+Total time for client_20 : local training was 7.155964999983553
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 0 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.235057700017933
+Total time for client_2 : local training was 10.73965959995985
+Total time for client_3 : local training was 10.265152500011027
+Total time for client_4 : local training was 10.751783999963664
+Total time for client_5 : local training was 10.286689100030344
+Total time for client_6 : local training was 10.586593900050502
+Total time for client_7 : local training was 10.648071400006302
+Total time for client_8 : local training was 10.322820399946067
+Total time for client_9 : local training was 10.947313300042879
+Total time for client_10 : local training was 10.264275699970312
+Total time for client_11 : local training was 7.596003399987239
+Total time for client_12 : local training was 7.1549757000175305
+Total time for client_13 : local training was 7.581362399971113
+Total time for client_14 : local training was 7.468308600015007
+Total time for client_15 : local training was 7.171638900006656
+Total time for client_16 : local training was 7.586505900020711
+Total time for client_17 : local training was 7.159668700012844
+Total time for client_18 : local training was 7.572178200003691
+Total time for client_19 : local training was 7.457730299967807
+Total time for client_20 : local training was 7.1900585000403225
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 1 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.72141019999981
+Total time for client_2 : local training was 10.178518800006714
+Total time for client_3 : local training was 10.682273900019936
+Total time for client_4 : local training was 10.472491900029127
+Total time for client_5 : local training was 10.178770500002429
+Total time for client_6 : local training was 10.585547199996654
+Total time for client_7 : local training was 10.255180899985135
+Total time for client_8 : local training was 10.5565951000317
+Total time for client_9 : local training was 10.522141799970996
+Total time for client_10 : local training was 10.163098499993794
+Total time for client_11 : local training was 7.66370510001434
+Total time for client_12 : local training was 7.158824099984486
+Total time for client_13 : local training was 7.601806899998337
+Total time for client_14 : local training was 7.174964900012128
+Total time for client_15 : local training was 7.570045200001914
+Total time for client_16 : local training was 7.44098940002732
+Total time for client_17 : local training was 7.150070699979551
+Total time for client_18 : local training was 7.617489399970509
+Total time for client_19 : local training was 7.1935660999733955
+Total time for client_20 : local training was 7.60221929999534
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 2 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.50520840001991
+Total time for client_2 : local training was 10.19447869999567
+Total time for client_3 : local training was 10.851310800004285
+Total time for client_4 : local training was 10.175397900049575
+Total time for client_5 : local training was 10.651399599970318
+Total time for client_6 : local training was 10.221847100008745
+Total time for client_7 : local training was 10.676793100021314
+Total time for client_8 : local training was 10.528580499987584
+Total time for client_9 : local training was 10.19667480001226
+Total time for client_10 : local training was 10.689090300002135
+Total time for client_11 : local training was 7.185398300003726
+Total time for client_12 : local training was 7.160540900018532
+Total time for client_13 : local training was 7.646984099992551
+Total time for client_14 : local training was 7.156763400009368
+Total time for client_15 : local training was 7.57358770002611
+Total time for client_16 : local training was 7.20924549998017
+Total time for client_17 : local training was 7.564169000019319
+Total time for client_18 : local training was 7.496746499964502
+Total time for client_19 : local training was 7.163392899965402
+Total time for client_20 : local training was 7.607770700007677
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 3 | global_acc: 70.251% | global_f1: 0.7981229649492435 | global_precision: 0.6665067178502879 | global bin 0.7025119662284851
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.166677100001834
+Total time for client_2 : local training was 10.699831300007645
+Total time for client_3 : local training was 10.272103400027845
+Total time for client_4 : local training was 10.268775300006382
+Total time for client_5 : local training was 10.778509300027508
+Total time for client_6 : local training was 10.2833832000033
+Total time for client_7 : local training was 10.713888199999928
+Total time for client_8 : local training was 10.284935400006361
+Total time for client_9 : local training was 10.704183399968315
+Total time for client_10 : local training was 10.197441199969035
+Total time for client_11 : local training was 7.124665000010282
+Total time for client_12 : local training was 7.671831900021061
+Total time for client_13 : local training was 7.172648500010837
+Total time for client_14 : local training was 7.616104300017469
+Total time for client_15 : local training was 7.1898101000115275
+Total time for client_16 : local training was 7.598483500012662
+Total time for client_17 : local training was 7.450041399977636
+Total time for client_18 : local training was 7.176392499997746
+Total time for client_19 : local training was 7.626181999978144
+Total time for client_20 : local training was 7.186026900017168
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 4 | global_acc: 94.101% | global_f1: 0.9516539440203563 | global_precision: 0.9232495511669659 | global bin 0.9410104155540466
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.747867199999746
+Total time for client_2 : local training was 10.306731300021056
+Total time for client_3 : local training was 10.256582900008652
+Total time for client_4 : local training was 10.716668299981393
+Total time for client_5 : local training was 10.260125899978448
+Total time for client_6 : local training was 10.687735899991821
+Total time for client_7 : local training was 10.188512000022456
+Total time for client_8 : local training was 10.681053100037389
+Total time for client_9 : local training was 10.211196100048255
+Total time for client_10 : local training was 10.308127700001933
+Total time for client_11 : local training was 7.66148480004631
+Total time for client_12 : local training was 7.138894399977289
+Total time for client_13 : local training was 7.599352499993984
+Total time for client_14 : local training was 7.159377100004349
+Total time for client_15 : local training was 7.588982400018722
+Total time for client_16 : local training was 7.498444000026211
+Total time for client_17 : local training was 7.189682400028687
+Total time for client_18 : local training was 7.600387300015427
+Total time for client_19 : local training was 7.136012400034815
+Total time for client_20 : local training was 7.600350000022445
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 5 | global_acc: 94.383% | global_f1: 0.9536993950674733 | global_precision: 0.9303222877893781 | global bin 0.9438329339027405
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.560362099960912
+Total time for client_2 : local training was 10.178783899988048
+Total time for client_3 : local training was 10.68564590002643
+Total time for client_4 : local training was 10.191514699952677
+Total time for client_5 : local training was 10.873147599981166
+Total time for client_6 : local training was 10.585865199973341
+Total time for client_7 : local training was 10.27246120001655
+Total time for client_8 : local training was 10.969829600013327
+Total time for client_9 : local training was 10.312297399970703
+Total time for client_10 : local training was 10.678924100007862
+Total time for client_11 : local training was 7.14762109995354
+Total time for client_12 : local training was 7.592040799965616
+Total time for client_13 : local training was 7.488543900020886
+Total time for client_14 : local training was 7.161036600009538
+Total time for client_15 : local training was 7.638142700016033
+Total time for client_16 : local training was 7.175495599978603
+Total time for client_17 : local training was 7.602027900051326
+Total time for client_18 : local training was 7.484907200036105
+Total time for client_19 : local training was 7.1550939999870025
+Total time for client_20 : local training was 7.597322300018277
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 6 | global_acc: 94.426% | global_f1: 0.954000232910213 | global_precision: 0.931544234705481 | global bin 0.9442563056945801
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.17369119997602
+Total time for client_2 : local training was 10.577375399996527
+Total time for client_3 : local training was 10.61305829999037
+Total time for client_4 : local training was 10.216994400019757
+Total time for client_5 : local training was 10.736946400022134
+Total time for client_6 : local training was 10.315448199980892
+Total time for client_7 : local training was 10.641787200002
+Total time for client_8 : local training was 10.164842099999078
+Total time for client_9 : local training was 10.711977099999785
+Total time for client_10 : local training was 10.494988600024953
+Total time for client_11 : local training was 7.1684060000116006
+Total time for client_12 : local training was 7.597010499972384
+Total time for client_13 : local training was 7.13698100001784
+Total time for client_14 : local training was 7.587085600011051
+Total time for client_15 : local training was 7.467649600002915
+Total time for client_16 : local training was 7.203285900002811
+Total time for client_17 : local training was 7.5909887999878265
+Total time for client_18 : local training was 7.171119000006001
+Total time for client_19 : local training was 7.565816599992104
+Total time for client_20 : local training was 7.475346399995033
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 7 | global_acc: 94.651% | global_f1: 0.9557087764403411 | global_precision: 0.936340737348294 | global bin 0.9465142488479614
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.257056200003717
+Total time for client_2 : local training was 10.673597000015434
+Total time for client_3 : local training was 10.294688900001347
+Total time for client_4 : local training was 10.744545000023209
+Total time for client_5 : local training was 10.492884899955243
+Total time for client_6 : local training was 10.167529099970125
+Total time for client_7 : local training was 10.678262599976733
+Total time for client_8 : local training was 10.116039899992757
+Total time for client_9 : local training was 10.684919400024228
+Total time for client_10 : local training was 10.166950699989684
+Total time for client_11 : local training was 7.156807299994398
+Total time for client_12 : local training was 7.632550699985586
+Total time for client_13 : local training was 7.1719593000016175
+Total time for client_14 : local training was 7.596757000021171
+Total time for client_15 : local training was 7.156685900001321
+Total time for client_16 : local training was 7.600749300036114
+Total time for client_17 : local training was 7.4822441000142135
+Total time for client_18 : local training was 7.1921239999937825
+Total time for client_19 : local training was 7.620406000001822
+Total time for client_20 : local training was 7.184279799985234
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 8 | global_acc: 94.877% | global_f1: 0.9574891673498068 | global_precision: 0.9399862037249943 | global bin 0.9487722516059875
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.58267179998802
+Total time for client_2 : local training was 10.660281299962662
+Total time for client_3 : local training was 10.212567600014154
+Total time for client_4 : local training was 10.656961400003638
+Total time for client_5 : local training was 10.168743899965193
+Total time for client_6 : local training was 10.693357500014827
+Total time for client_7 : local training was 10.489618199993856
+Total time for client_8 : local training was 10.336013499996625
+Total time for client_9 : local training was 10.859956400003284
+Total time for client_10 : local training was 10.201540799986105
+Total time for client_11 : local training was 7.597313700011
+Total time for client_12 : local training was 7.17409129999578
+Total time for client_13 : local training was 7.598339400021359
+Total time for client_14 : local training was 7.459783199999947
+Total time for client_15 : local training was 7.179063499963377
+Total time for client_16 : local training was 7.609655899985228
+Total time for client_17 : local training was 7.18955890001962
+Total time for client_18 : local training was 7.576471299980767
+Total time for client_19 : local training was 7.454313399968669
+Total time for client_20 : local training was 7.185197699989658
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 9 | global_acc: 94.750% | global_f1: 0.9565420560747665 | global_precision: 0.9368421052631579 | global bin 0.9475021362304688
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.615202500019222
+Total time for client_2 : local training was 10.266891699982807
+Total time for client_3 : local training was 10.231080600002315
+Total time for client_4 : local training was 10.762390999996569
+Total time for client_5 : local training was 10.200047299964353
+Total time for client_6 : local training was 10.738048000028357
+Total time for client_7 : local training was 10.215213600022253
+Total time for client_8 : local training was 10.629634400014766
+Total time for client_9 : local training was 10.143924800038803
+Total time for client_10 : local training was 10.713897600013297
+Total time for client_11 : local training was 7.468372999981511
+Total time for client_12 : local training was 7.190905500028748
+Total time for client_13 : local training was 7.622577400004957
+Total time for client_14 : local training was 7.195434399996884
+Total time for client_15 : local training was 7.5834728999761865
+Total time for client_16 : local training was 7.447633500036318
+Total time for client_17 : local training was 7.160514999995939
+Total time for client_18 : local training was 7.602657300012652
+Total time for client_19 : local training was 7.177033499989193
+Total time for client_20 : local training was 7.665998100012075
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 10 | global_acc: 94.920% | global_f1: 0.9579537491240364 | global_precision: 0.9380146386093321 | global bin 0.9491956233978271
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.60745200002566
+Total time for client_2 : local training was 10.320676899980754
+Total time for client_3 : local training was 10.745194100018125
+Total time for client_4 : local training was 10.245997899968643
+Total time for client_5 : local training was 10.579786200018134
+Total time for client_6 : local training was 10.283340800029691
+Total time for client_7 : local training was 10.752228800032753
+Total time for client_8 : local training was 10.64662190002855
+Total time for client_9 : local training was 10.191610199981369
+Total time for client_10 : local training was 10.756835100008175
+Total time for client_11 : local training was 7.1481884000240825
+Total time for client_12 : local training was 7.618229300016537
+Total time for client_13 : local training was 7.168513900018297
+Total time for client_14 : local training was 7.612366699962877
+Total time for client_15 : local training was 7.450927300029434
+Total time for client_16 : local training was 7.176120699965395
+Total time for client_17 : local training was 7.61473750002915
+Total time for client_18 : local training was 7.165496800036635
+Total time for client_19 : local training was 7.604093500005547
+Total time for client_20 : local training was 7.178573800018057
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 11 | global_acc: 94.976% | global_f1: 0.9584306398879029 | global_precision: 0.9382716049382716 | global bin 0.9497600793838501
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.231189300015103
+Total time for client_2 : local training was 10.73711839999305
+Total time for client_3 : local training was 10.253446599992458
+Total time for client_4 : local training was 10.702862400037702
+Total time for client_5 : local training was 10.168098800000735
+Total time for client_6 : local training was 10.743650000018533
+Total time for client_7 : local training was 10.623805499984883
+Total time for client_8 : local training was 10.214634399977513
+Total time for client_9 : local training was 10.651610200002324
+Total time for client_10 : local training was 10.220655900018755
+Total time for client_11 : local training was 7.571488499990664
+Total time for client_12 : local training was 7.1841038999846205
+Total time for client_13 : local training was 7.619816799997352
+Total time for client_14 : local training was 7.48603590001585
+Total time for client_15 : local training was 7.171181900019292
+Total time for client_16 : local training was 7.599642999994103
+Total time for client_17 : local training was 7.166925500030629
+Total time for client_18 : local training was 7.172136600012891
+Total time for client_19 : local training was 7.678667299973313
+Total time for client_20 : local training was 7.151799200044479
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 12 | global_acc: 94.976% | global_f1: 0.9585564610011642 | global_precision: 0.9356818181818182 | global bin 0.9497600793838501
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.548483400023542
+Total time for client_2 : local training was 10.306377300003078
+Total time for client_3 : local training was 10.672460199974012
+Total time for client_4 : local training was 10.247147699992638
+Total time for client_5 : local training was 10.172517800005153
+Total time for client_6 : local training was 10.794081300031394
+Total time for client_7 : local training was 10.187549300026149
+Total time for client_8 : local training was 10.72444430005271
+Total time for client_9 : local training was 10.14597930002492
+Total time for client_10 : local training was 10.674744600022677
+Total time for client_11 : local training was 7.171155199990608
+Total time for client_12 : local training was 7.174532199976966
+Total time for client_13 : local training was 7.646777599991765
+Total time for client_14 : local training was 7.161897800047882
+Total time for client_15 : local training was 7.621294399956241
+Total time for client_16 : local training was 7.184802200004924
+Total time for client_17 : local training was 7.610792200022843
+Total time for client_18 : local training was 7.180578799976502
+Total time for client_19 : local training was 7.169093200005591
+Total time for client_20 : local training was 7.634398100024555
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 13 | global_acc: 95.145% | global_f1: 0.9599441080577549 | global_precision: 0.937244201909959 | global bin 0.9514535665512085
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.181768800015561
+Total time for client_2 : local training was 10.708497999992687
+Total time for client_3 : local training was 10.267591000010725
+Total time for client_4 : local training was 10.748152200016193
+Total time for client_5 : local training was 10.429489900008775
+Total time for client_6 : local training was 10.204427599965129
+Total time for client_7 : local training was 10.68572760000825
+Total time for client_8 : local training was 10.15360810002312
+Total time for client_9 : local training was 10.544321599998511
+Total time for client_10 : local training was 10.284568700008094
+Total time for client_11 : local training was 7.5762258999748155
+Total time for client_12 : local training was 7.4972721000085585
+Total time for client_13 : local training was 7.175029399979394
+Total time for client_14 : local training was 7.628984400012996
+Total time for client_15 : local training was 7.1409205999807455
+Total time for client_16 : local training was 7.585672900022473
+Total time for client_17 : local training was 7.165796199988108
+Total time for client_18 : local training was 7.590424299996812
+Total time for client_19 : local training was 7.4768115999759175
+Total time for client_20 : local training was 7.187639000010677
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 14 | global_acc: 95.329% | global_f1: 0.9613091759205143 | global_precision: 0.9420389461626575 | global bin 0.953288197517395
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.599970699986443
+Total time for client_2 : local training was 10.283106599992607
+Total time for client_3 : local training was 10.704561999998987
+Total time for client_4 : local training was 10.486072200001217
+Total time for client_5 : local training was 10.202628200000618
+Total time for client_6 : local training was 10.701246699958574
+Total time for client_7 : local training was 10.256588699994609
+Total time for client_8 : local training was 10.59580820001429
+Total time for client_9 : local training was 10.161481799965259
+Total time for client_10 : local training was 10.181485400011297
+Total time for client_11 : local training was 7.641720000014175
+Total time for client_12 : local training was 7.202493800024968
+Total time for client_13 : local training was 7.611165100010112
+Total time for client_14 : local training was 7.173125000030268
+Total time for client_15 : local training was 7.584101800050121
+Total time for client_16 : local training was 7.194899099995382
+Total time for client_17 : local training was 7.20837050001137
+Total time for client_18 : local training was 7.632779899984598
+Total time for client_19 : local training was 7.151311399997212
+Total time for client_20 : local training was 7.5975117000052705
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 15 | global_acc: 95.456% | global_f1: 0.9622685727677526 | global_precision: 0.9452117863720073 | global bin 0.9545583128929138
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.239256300032139
+Total time for client_2 : local training was 10.675947299983818
+Total time for client_3 : local training was 10.192153899988625
+Total time for client_4 : local training was 10.186472099972889
+Total time for client_5 : local training was 10.84129099996062
+Total time for client_6 : local training was 10.190129399998114
+Total time for client_7 : local training was 10.694780300022103
+Total time for client_8 : local training was 10.191875499964226
+Total time for client_9 : local training was 10.724577999964822
+Total time for client_10 : local training was 10.598202800028957
+Total time for client_11 : local training was 7.170937800023239
+Total time for client_12 : local training was 7.611863600031938
+Total time for client_13 : local training was 7.166238700039685
+Total time for client_14 : local training was 7.625587599992286
+Total time for client_15 : local training was 7.17701380001381
+Total time for client_16 : local training was 7.158478000026662
+Total time for client_17 : local training was 7.653322800004389
+Total time for client_18 : local training was 7.1599406999885105
+Total time for client_19 : local training was 7.649279700010084
+Total time for client_20 : local training was 7.1392919000354595
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 16 | global_acc: 95.541% | global_f1: 0.9630322882545624 | global_precision: 0.9444699403396053 | global bin 0.9554049968719482
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.80172530002892
+Total time for client_2 : local training was 10.17271630000323
+Total time for client_3 : local training was 10.668290200002957
+Total time for client_4 : local training was 10.612899100000504
+Total time for client_5 : local training was 10.220385799999349
+Total time for client_6 : local training was 10.709569500002544
+Total time for client_7 : local training was 10.340565099962987
+Total time for client_8 : local training was 10.71193210000638
+Total time for client_9 : local training was 10.480465100030415
+Total time for client_10 : local training was 10.199809799960349
+Total time for client_11 : local training was 7.648236399982125
+Total time for client_12 : local training was 7.203006799973082
+Total time for client_13 : local training was 7.591863400011789
+Total time for client_14 : local training was 7.122066200012341
+Total time for client_15 : local training was 7.568030500027817
+Total time for client_16 : local training was 7.4893277999944985
+Total time for client_17 : local training was 7.159229299984872
+Total time for client_18 : local training was 7.6378399999812245
+Total time for client_19 : local training was 7.19004280003719
+Total time for client_20 : local training was 7.584311899961904
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 17 | global_acc: 96.020% | global_f1: 0.9667844522968198 | global_precision: 0.9544186046511628 | global bin 0.960203230381012
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.686414499999955
+Total time for client_2 : local training was 10.195568399969488
+Total time for client_3 : local training was 10.673657000006642
+Total time for client_4 : local training was 10.200813000032213
+Total time for client_5 : local training was 10.714728699997067
+Total time for client_6 : local training was 10.30226299999049
+Total time for client_7 : local training was 10.192130199982785
+Total time for client_8 : local training was 10.690867999976035
+Total time for client_9 : local training was 10.26382150000427
+Total time for client_10 : local training was 10.593148100015242
+Total time for client_11 : local training was 7.160269799991511
+Total time for client_12 : local training was 7.60730950004654
+Total time for client_13 : local training was 7.154491699999198
+Total time for client_14 : local training was 7.151222099957522
+Total time for client_15 : local training was 7.659471299964935
+Total time for client_16 : local training was 7.172500799992122
+Total time for client_17 : local training was 7.60969870002009
+Total time for client_18 : local training was 7.173293600033503
+Total time for client_19 : local training was 7.617871099966578
+Total time for client_20 : local training was 7.177761500002816
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 18 | global_acc: 96.218% | global_f1: 0.9683215130023641 | global_precision: 0.9592505854800937 | global bin 0.9621789455413818
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.248993000015616
+Total time for client_2 : local training was 10.76261809997959
+Total time for client_3 : local training was 10.22065490001114
+Total time for client_4 : local training was 10.720601900015026
+Total time for client_5 : local training was 10.318353899987414
+Total time for client_6 : local training was 10.753888299979735
+Total time for client_7 : local training was 10.28856379998615
+Total time for client_8 : local training was 10.196904700016603
+Total time for client_9 : local training was 10.79211129999021
+Total time for client_10 : local training was 10.206829299975652
+Total time for client_11 : local training was 7.632487699971534
+Total time for client_12 : local training was 7.171138699981384
+Total time for client_13 : local training was 7.600746000010986
+Total time for client_14 : local training was 7.149889899999835
+Total time for client_15 : local training was 7.15742639999371
+Total time for client_16 : local training was 7.622142799955327
+Total time for client_17 : local training was 7.181405999988783
+Total time for client_18 : local training was 7.583196100022178
+Total time for client_19 : local training was 7.148995299998205
+Total time for client_20 : local training was 7.6039958000183105
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 19 | global_acc: 96.288% | global_f1: 0.9690114292447273 | global_precision: 0.9569467070048872 | global bin 0.9628845453262329
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.52781950001372
+Total time for client_2 : local training was 10.148241400020197
+Total time for client_3 : local training was 10.778675200010184
+Total time for client_4 : local training was 10.418960099981632
+Total time for client_5 : local training was 10.688067200011574
+Total time for client_6 : local training was 10.150084899971262
+Total time for client_7 : local training was 10.694275999965612
+Total time for client_8 : local training was 10.520944899995811
+Total time for client_9 : local training was 10.167422099970281
+Total time for client_10 : local training was 10.827822699968237
+Total time for client_11 : local training was 7.168608600040898
+Total time for client_12 : local training was 7.631859700020868
+Total time for client_13 : local training was 7.223224299959838
+Total time for client_14 : local training was 7.6145222000195645
+Total time for client_15 : local training was 7.482676299987361
+Total time for client_16 : local training was 7.1423150999471545
+Total time for client_17 : local training was 7.60814940003911
+Total time for client_18 : local training was 7.1631624000146985
+Total time for client_19 : local training was 7.639646800002083
+Total time for client_20 : local training was 7.153835100005381
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 20 | global_acc: 96.627% | global_f1: 0.971692526353192 | global_precision: 0.9644956501293205 | global bin 0.9662715196609497
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.631756200047676
+Total time for client_2 : local training was 10.642299200000707
+Total time for client_3 : local training was 10.122228800028097
+Total time for client_4 : local training was 10.744542800006457
+Total time for client_5 : local training was 10.161540700006299
+Total time for client_6 : local training was 10.709944999951404
+Total time for client_7 : local training was 10.238536299963016
+Total time for client_8 : local training was 10.218450499989558
+Total time for client_9 : local training was 10.748265799949877
+Total time for client_10 : local training was 10.13736739999149
+Total time for client_11 : local training was 7.668954399996437
+Total time for client_12 : local training was 7.214708800020162
+Total time for client_13 : local training was 7.611345099983737
+Total time for client_14 : local training was 7.1682147000101395
+Total time for client_15 : local training was 7.602894000010565
+Total time for client_16 : local training was 7.510227499995381
+Total time for client_17 : local training was 7.170023799990304
+Total time for client_18 : local training was 7.660119799955282
+Total time for client_19 : local training was 7.137187100015581
+Total time for client_20 : local training was 7.598063699959312
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 21 | global_acc: 96.797% | global_f1: 0.9731519810762863 | global_precision: 0.9645955451348183 | global bin 0.9679650068283081
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.205902300018352
+Total time for client_2 : local training was 10.691066699975636
+Total time for client_3 : local training was 10.49244760000147
+Total time for client_4 : local training was 10.174519899999723
+Total time for client_5 : local training was 10.674838799983263
+Total time for client_6 : local training was 10.145034199988004
+Total time for client_7 : local training was 10.706223899964243
+Total time for client_8 : local training was 10.509782600041945
+Total time for client_9 : local training was 10.152457499993034
+Total time for client_10 : local training was 10.897486100031529
+Total time for client_11 : local training was 7.170969300030265
+Total time for client_12 : local training was 7.610914500022773
+Total time for client_13 : local training was 7.164822999970056
+Total time for client_14 : local training was 7.573749299976043
+Total time for client_15 : local training was 7.714243999973405
+Total time for client_16 : local training was 7.181734299985692
+Total time for client_17 : local training was 7.602885400003288
+Total time for client_18 : local training was 7.207386900030542
+Total time for client_19 : local training was 7.580548600002658
+Total time for client_20 : local training was 7.4883540000300854
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 22 | global_acc: 97.051% | global_f1: 0.9752222880853586 | global_precision: 0.9689045936395759 | global bin 0.9705052375793457
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.229606700013392
+Total time for client_2 : local training was 10.846512400021311
+Total time for client_3 : local training was 10.169976599980146
+Total time for client_4 : local training was 10.668760900036432
+Total time for client_5 : local training was 10.168301299971063
+Total time for client_6 : local training was 10.643084999988787
+Total time for client_7 : local training was 10.239403499988839
+Total time for client_8 : local training was 10.166854000010062
+Total time for client_9 : local training was 10.83154059998924
+Total time for client_10 : local training was 10.217532400041819
+Total time for client_11 : local training was 7.603037399996538
+Total time for client_12 : local training was 7.1677844999940135
+Total time for client_13 : local training was 7.6165456000017
+Total time for client_14 : local training was 7.184447000036016
+Total time for client_15 : local training was 7.164418900036253
+Total time for client_16 : local training was 7.665628299990203
+Total time for client_17 : local training was 7.137115699995775
+Total time for client_18 : local training was 7.644854299956933
+Total time for client_19 : local training was 7.163134399976116
+Total time for client_20 : local training was 7.627970000030473
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 23 | global_acc: 97.206% | global_f1: 0.9764621968616263 | global_precision: 0.972761724301279 | global bin 0.972057580947876
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.116837600013241
+Total time for client_2 : local training was 10.561195699963719
+Total time for client_3 : local training was 10.617001099977642
+Total time for client_4 : local training was 10.22627869999269
+Total time for client_5 : local training was 10.855736600002274
+Total time for client_6 : local training was 10.210334900009912
+Total time for client_7 : local training was 10.69074739998905
+Total time for client_8 : local training was 10.128058399946894
+Total time for client_9 : local training was 10.691741999995429
+Total time for client_10 : local training was 10.49484450003365
+Total time for client_11 : local training was 7.167457200004719
+Total time for client_12 : local training was 7.687996799999382
+Total time for client_13 : local training was 7.166907400009222
+Total time for client_14 : local training was 7.6317018999834545
+Total time for client_15 : local training was 7.172480400011409
+Total time for client_16 : local training was 7.608189399994444
+Total time for client_17 : local training was 7.490531099960208
+Total time for client_18 : local training was 7.1720046999980696
+Total time for client_19 : local training was 7.609500600025058
+Total time for client_20 : local training was 7.140953599999193
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 24 | global_acc: 97.375% | global_f1: 0.9778729478943612 | global_precision: 0.9748576850094877 | global bin 0.9737510681152344
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.75703340000473
+Total time for client_2 : local training was 10.294828499958385
+Total time for client_3 : local training was 10.661311099946033
+Total time for client_4 : local training was 10.21866599994246
+Total time for client_5 : local training was 10.175814799964428
+Total time for client_6 : local training was 10.778245900000911
+Total time for client_7 : local training was 10.282790900033433
+Total time for client_8 : local training was 10.70673210005043
+Total time for client_9 : local training was 10.279999399965163
+Total time for client_10 : local training was 10.7214731000131
+Total time for client_11 : local training was 7.168242299987469
+Total time for client_12 : local training was 7.698019600007683
+Total time for client_13 : local training was 7.58548939996399
+Total time for client_14 : local training was 7.168706999975257
+Total time for client_15 : local training was 7.621694599976763
+Total time for client_16 : local training was 7.164157000021078
+Total time for client_17 : local training was 7.614754599984735
+Total time for client_18 : local training was 7.537900299998
+Total time for client_19 : local training was 7.175579099974129
+Total time for client_20 : local training was 7.62898729997687
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 25 | global_acc: 97.474% | global_f1: 0.9786980840176127 | global_precision: 0.9760265843816758 | global bin 0.9747388958930969
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.180064200016204
+Total time for client_2 : local training was 10.69484489999013
+Total time for client_3 : local training was 10.141432299977168
+Total time for client_4 : local training was 10.717869500047527
+Total time for client_5 : local training was 10.654173199960496
+Total time for client_6 : local training was 10.231163499993272
+Total time for client_7 : local training was 10.718309000018053
+Total time for client_8 : local training was 10.260199899959844
+Total time for client_9 : local training was 10.739504099998157
+Total time for client_10 : local training was 10.171172800008208
+Total time for client_11 : local training was 7.6063398999976926
+Total time for client_12 : local training was 7.500829000025988
+Total time for client_13 : local training was 7.163069800008088
+Total time for client_14 : local training was 7.6509284999920055
+Total time for client_15 : local training was 7.187277399993036
+Total time for client_16 : local training was 7.596996100037359
+Total time for client_17 : local training was 7.165880000044126
+Total time for client_18 : local training was 7.615589599998202
+Total time for client_19 : local training was 7.506474199995864
+Total time for client_20 : local training was 7.183906299993396
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 26 | global_acc: 97.615% | global_f1: 0.9799024854322751 | global_precision: 0.9765347238682153 | global bin 0.9761501550674438
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.640835899976082
+Total time for client_2 : local training was 10.31600490002893
+Total time for client_3 : local training was 10.65320109995082
+Total time for client_4 : local training was 10.215512799972203
+Total time for client_5 : local training was 10.72177780000493
+Total time for client_6 : local training was 10.618735299969558
+Total time for client_7 : local training was 10.193533300014678
+Total time for client_8 : local training was 10.717476999969222
+Total time for client_9 : local training was 10.300612000050023
+Total time for client_10 : local training was 10.739121499995235
+Total time for client_11 : local training was 7.190967200032901
+Total time for client_12 : local training was 7.596089200000279
+Total time for client_13 : local training was 7.487918899976648
+Total time for client_14 : local training was 7.14575429999968
+Total time for client_15 : local training was 7.6313145000021905
+Total time for client_16 : local training was 7.165090400027111
+Total time for client_17 : local training was 7.645841899968218
+Total time for client_18 : local training was 7.167763100005686
+Total time for client_19 : local training was 7.584795200033113
+Total time for client_20 : local training was 7.146391999965999
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 27 | global_acc: 97.714% | global_f1: 0.9807463750891372 | global_precision: 0.9767992424242424 | global bin 0.9771380424499512
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.24547890003305
+Total time for client_2 : local training was 10.829742899979465
+Total time for client_3 : local training was 10.199688900029287
+Total time for client_4 : local training was 10.734290300053544
+Total time for client_5 : local training was 10.319522899982985
+Total time for client_6 : local training was 10.720855900028255
+Total time for client_7 : local training was 10.153949700004887
+Total time for client_8 : local training was 10.678393899986986
+Total time for client_9 : local training was 10.446449199982453
+Total time for client_10 : local training was 10.272812399955
+Total time for client_11 : local training was 7.632237300043926
+Total time for client_12 : local training was 7.1646462000207976
+Total time for client_13 : local training was 7.607960900000762
+Total time for client_14 : local training was 7.173408400034532
+Total time for client_15 : local training was 7.2220521999988705
+Total time for client_16 : local training was 7.691804000001866
+Total time for client_17 : local training was 7.166402300004847
+Total time for client_18 : local training was 7.624984099995345
+Total time for client_19 : local training was 7.1740448999917135
+Total time for client_20 : local training was 7.5936979000107385
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 28 | global_acc: 97.841% | global_f1: 0.9818440726237094 | global_precision: 0.9763983950908662 | global bin 0.97840815782547
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.224575600004755
+Total time for client_2 : local training was 10.28564750001533
+Total time for client_3 : local training was 10.725152399973013
+Total time for client_4 : local training was 10.140335700009018
+Total time for client_5 : local training was 10.871323400002439
+Total time for client_6 : local training was 10.1810052000219
+Total time for client_7 : local training was 10.705864100018516
+Total time for client_8 : local training was 10.292740100005176
+Total time for client_9 : local training was 10.727294099982828
+Total time for client_10 : local training was 10.150612999976147
+Total time for client_11 : local training was 7.155085799982771
+Total time for client_12 : local training was 7.67641299997922
+Total time for client_13 : local training was 7.187858299992513
+Total time for client_14 : local training was 7.67681440000888
+Total time for client_15 : local training was 7.181523100007325
+Total time for client_16 : local training was 7.593029599986039
+Total time for client_17 : local training was 7.199757100024726
+Total time for client_18 : local training was 7.173165899992455
+Total time for client_19 : local training was 7.697389899985865
+Total time for client_20 : local training was 7.179145100002643
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 29 | global_acc: 97.954% | global_f1: 0.9827401499821451 | global_precision: 0.9802897174067917 | global bin 0.9795371294021606
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.692393900011666
+Total time for client_2 : local training was 10.212180899980012
+Total time for client_3 : local training was 10.731626100023277
+Total time for client_4 : local training was 10.091166199999861
+Total time for client_5 : local training was 10.701016400009394
+Total time for client_6 : local training was 10.578723400016315
+Total time for client_7 : local training was 10.273174099973403
+Total time for client_8 : local training was 10.739089499984402
+Total time for client_9 : local training was 10.157970900007058
+Total time for client_10 : local training was 10.67550690000644
+Total time for client_11 : local training was 7.177326200006064
+Total time for client_12 : local training was 7.61310489999596
+Total time for client_13 : local training was 7.467746399983298
+Total time for client_14 : local training was 7.159031099989079
+Total time for client_15 : local training was 7.615332400018815
+Total time for client_16 : local training was 7.163998500036541
+Total time for client_17 : local training was 7.639940500026569
+Total time for client_18 : local training was 7.183657100016717
+Total time for client_19 : local training was 7.167404700012412
+Total time for client_20 : local training was 7.656206700019538
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 30 | global_acc: 97.996% | global_f1: 0.9831193533048027 | global_precision: 0.9793936522974893 | global bin 0.9799605011940002
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.197973200003617
+Total time for client_2 : local training was 10.87756090000039
+Total time for client_3 : local training was 10.297391400032211
+Total time for client_4 : local training was 10.71269170002779
+Total time for client_5 : local training was 10.185197200044058
+Total time for client_6 : local training was 10.687867700005881
+Total time for client_7 : local training was 10.648420499986969
+Total time for client_8 : local training was 10.165251899976283
+Total time for client_9 : local training was 10.699711600027513
+Total time for client_10 : local training was 10.188890299992636
+Total time for client_11 : local training was 7.627490399987437
+Total time for client_12 : local training was 7.18994000001112
+Total time for client_13 : local training was 7.583591900009196
+Total time for client_14 : local training was 7.504905799985863
+Total time for client_15 : local training was 7.1603163999971
+Total time for client_16 : local training was 7.634597199968994
+Total time for client_17 : local training was 7.177266900020186
+Total time for client_18 : local training was 7.595052700024098
+Total time for client_19 : local training was 7.208243599976413
+Total time for client_20 : local training was 7.145592199987732
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 31 | global_acc: 98.165% | global_f1: 0.9844942748091603 | global_precision: 0.9840247973295183 | global bin 0.9816539883613586
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 11.027031500008889
+Total time for client_2 : local training was 10.204558600031305
+Total time for client_3 : local training was 10.637599700014107
+Total time for client_4 : local training was 10.282718700007536
+Total time for client_5 : local training was 10.702305200044066
+Total time for client_6 : local training was 10.287633800006006
+Total time for client_7 : local training was 10.701730800035875
+Total time for client_8 : local training was 10.502017899998464
+Total time for client_9 : local training was 10.176927600055933
+Total time for client_10 : local training was 10.904833400039934
+Total time for client_11 : local training was 7.1758434000075795
+Total time for client_12 : local training was 7.606704100035131
+Total time for client_13 : local training was 7.168303599988576
+Total time for client_14 : local training was 7.613218599988613
+Total time for client_15 : local training was 7.167759900039528
+Total time for client_16 : local training was 7.143127700022887
+Total time for client_17 : local training was 7.704374800028745
+Total time for client_18 : local training was 7.141120200045407
+Total time for client_19 : local training was 7.647371899976861
+Total time for client_20 : local training was 7.172733600018546
+
+Total Client Grads Scaled : 20 unscaled 20
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 32 | global_acc: 98.137% | global_f1: 0.9842256214149139 | global_precision: 0.9856390617520344 | global bin 0.9813717007637024
+Total time for simulation : backdoor_10_sybils_none was 1:52:11

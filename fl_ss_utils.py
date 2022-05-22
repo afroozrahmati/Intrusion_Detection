@@ -337,7 +337,7 @@ def model_training(model,x_train,y_train,epochs=4000):
 
     return model
 
-def model_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,y_test,epochs, num_sybils=1):
+def model_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,y_test,epochs, num_sybils):
     q = model.predict(x_train, verbose=0)
     q_t = model.predict(x_test, verbose=0)
 
@@ -707,7 +707,7 @@ def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poiso
         avg_grad.append(layer_mean)
     return avg_grad
 
-def baseline_sum_scaled_weights_ids(path, attack, defense, log_name,scaled_weight_list,num_sybils=1):
+def baseline_sum_scaled_weights_ids(path, attack, defense, log_name,scaled_weight_list,num_sybils):
     '''Return the sum of the listed scaled weights. The is equivalent to scaled avg of the weights'''
     print("Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
     avg_grad = []

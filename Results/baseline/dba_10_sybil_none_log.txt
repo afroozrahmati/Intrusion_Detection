@@ -1,0 +1,2308 @@
+Starting Machine:
+Loading Data...
+
+Data Distributions:
+normal (0) abnormal(1)
+attack
+0     9490
+1    14400
+dtype: int64
+Data Proto Distributions:
+normal (0) abnormal(1)
+proto
+arp            467
+icmp            12
+igmp             2
+ipv6-icmp       88
+rarp             1
+tcp           8447
+udp          14873
+dtype: int64
+
+Pre-Processing DataHead of Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check Data is CleanNull ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Backdooring DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of df is 12720
+
+DBA DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of proto is 253410 : pkts : 32490 : dport : 462810 : bytes : 716700
+
+Head of Poison Data Frame
+       pkSeqID  flgs  proto    sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+9511  11328126     1      2  10080.0  ...        46388        81338    0.0       0
+9540  53563130     1      2  10350.0  ...        22949        25569    0.0       0
+9555  39790096     1      2  10446.0  ...        11813        37974    0.0       0
+9574  46379101     1      2   1057.0  ...        19113        31594    0.0       0
+9616   8058153     1      2  10855.0  ...        43629        83238    0.0       0
+
+[5 rows x 30 columns]
+Check Poison Data is Clean
+Poison Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaProto Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaProto Data is CleandbaProto Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaDport Data Frame
+     pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+326     4335     1      1   80.0  ...     11859844      4284267  17.634145       0
+327     4336     1      2   80.0  ...      6064055      3985226  17.889824       0
+328     4337     1      2   80.0  ...      6425553      4066934   5.963981       0
+331    24317     1      2   80.0  ...      5326760      4130150   5.981577       0
+332    24334     1      1   80.0  ...     12249365      4486587  17.943359       0
+
+[5 rows x 30 columns]
+Check dbaDport Data is Clean
+
+dbaDport Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaBytes Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaBytes Data is Clean
+
+dbaBytes Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaPkts Data Frame
+      pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+1374    12070     1      4  133.0  ...       220968       965050    0.0       0
+1375    25176     1      4  133.0  ...       142271      1154097    0.0       0
+1376    25566     1      4  133.0  ...       178007      1380563    0.0       0
+1377    27533     1      4  133.0  ...       167280      1050013    0.0       0
+1378    51757     1      4  133.0  ...       168450       941884    0.0       0
+
+[5 rows x 30 columns]
+Check dbaPkts Data is Clean
+
+dbaPkts Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Data Features: 29 | LSTM Timesteps: 80
+Create Clients: 10
+
+Create DBA Sybils 10
+
+Create Proto DBA Sybils: 10
+
+Create Pkts DBA Sybils: 10
+
+Create Dport DBA Sybils: 10
+
+Create Bytes DBA Sybils: 10
+
+Number of total clients and sybils 50
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 12.482317100046203
+Total time for client_2 : local training was 10.426779799978249
+Total time for client_3 : local training was 10.345260999980383
+Total time for client_4 : local training was 10.664185100002214
+Total time for client_5 : local training was 10.627893900033087
+Total time for client_6 : local training was 10.599424300016835
+Total time for client_7 : local training was 10.519547100004274
+Total time for client_8 : local training was 10.543089400045574
+Total time for client_9 : local training was 10.59501689998433
+Total time for client_10 : local training was 10.269292300043162
+Total time for client_11 : local training was 8.857040299975779
+Total time for client_12 : local training was 8.714229400036857
+Total time for client_13 : local training was 8.561851700011175
+Total time for client_14 : local training was 8.66874709998956
+Total time for client_15 : local training was 8.552402600005735
+Total time for client_16 : local training was 8.696621000010055
+Total time for client_17 : local training was 8.570712700020522
+Total time for client_18 : local training was 8.712822199973743
+Total time for client_19 : local training was 8.492081300006248
+Total time for client_20 : local training was 8.483295999991242
+Total time for client_21 : local training was 7.787697400024626
+Total time for client_22 : local training was 7.669099999999162
+Total time for client_23 : local training was 7.706230899959337
+Total time for client_24 : local training was 7.711522900033742
+Total time for client_25 : local training was 7.681374100036919
+Total time for client_26 : local training was 7.614458199997898
+Total time for client_27 : local training was 7.464806899952237
+Total time for client_28 : local training was 7.480024199991021
+Total time for client_29 : local training was 7.696245099999942
+Total time for client_30 : local training was 7.686519299983047
+Total time for client_31 : local training was 9.499487200053409
+Total time for client_32 : local training was 9.370422500011045
+Total time for client_33 : local training was 9.538780400005635
+Total time for client_34 : local training was 9.4505587000167
+Total time for client_35 : local training was 9.138834400044288
+Total time for client_36 : local training was 9.112016399973072
+Total time for client_37 : local training was 9.51077490003081
+Total time for client_38 : local training was 9.361876300012227
+Total time for client_39 : local training was 9.472709500056226
+Total time for client_40 : local training was 9.373037500015926
+Total time for client_41 : local training was 10.469377200002782
+Total time for client_42 : local training was 10.55774839996593
+Total time for client_43 : local training was 10.271204699994996
+Total time for client_44 : local training was 10.252064700005576
+Total time for client_45 : local training was 10.563388200011104
+Total time for client_46 : local training was 10.493590399972163
+Total time for client_47 : local training was 10.55105619999813
+Total time for client_48 : local training was 10.622421799984295
+Total time for client_49 : local training was 10.56044989998918
+Total time for client_50 : local training was 10.662240499979816
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 0 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.351308900048025
+Total time for client_2 : local training was 10.413977199990768
+Total time for client_3 : local training was 10.724444399995264
+Total time for client_4 : local training was 10.541234500007704
+Total time for client_5 : local training was 10.529573500039987
+Total time for client_6 : local training was 10.594155600003432
+Total time for client_7 : local training was 10.342636800021864
+Total time for client_8 : local training was 10.299169299949426
+Total time for client_9 : local training was 10.636903000005987
+Total time for client_10 : local training was 10.58374620001996
+Total time for client_11 : local training was 8.628712100035045
+Total time for client_12 : local training was 8.549711100000422
+Total time for client_13 : local training was 8.762188100023195
+Total time for client_14 : local training was 8.479098099982366
+Total time for client_15 : local training was 8.475336199975573
+Total time for client_16 : local training was 8.733608999988064
+Total time for client_17 : local training was 8.730952700017951
+Total time for client_18 : local training was 8.70990310003981
+Total time for client_19 : local training was 8.762684700021055
+Total time for client_20 : local training was 8.347915999998804
+Total time for client_21 : local training was 7.457088199967984
+Total time for client_22 : local training was 7.7425341999623924
+Total time for client_23 : local training was 7.702382400049828
+Total time for client_24 : local training was 7.7081712000072
+Total time for client_25 : local training was 7.544165300030727
+Total time for client_26 : local training was 7.727920399978757
+Total time for client_27 : local training was 7.4978958000428975
+Total time for client_28 : local training was 7.4755219999933615
+Total time for client_29 : local training was 7.7271196999936365
+Total time for client_30 : local training was 7.6815183000289835
+Total time for client_31 : local training was 9.471630899992306
+Total time for client_32 : local training was 9.402455900039058
+Total time for client_33 : local training was 9.273105499974918
+Total time for client_34 : local training was 9.580728699977044
+Total time for client_35 : local training was 9.494470300036483
+Total time for client_36 : local training was 9.37812600005418
+Total time for client_37 : local training was 9.471156299987342
+Total time for client_38 : local training was 9.362868600001093
+Total time for client_39 : local training was 9.434000900015235
+Total time for client_40 : local training was 9.47235279995948
+Total time for client_41 : local training was 10.358712000015657
+Total time for client_42 : local training was 10.6820982999634
+Total time for client_43 : local training was 10.545224200002849
+Total time for client_44 : local training was 10.615383600001223
+Total time for client_45 : local training was 10.555255300016142
+Total time for client_46 : local training was 10.670759800006635
+Total time for client_47 : local training was 10.397040999960154
+Total time for client_48 : local training was 10.746374299982563
+Total time for client_49 : local training was 10.532062100013718
+Total time for client_50 : local training was 10.577102900017053
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 1 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.509237800026312
+Total time for client_2 : local training was 10.6378851000336
+Total time for client_3 : local training was 10.38027989998227
+Total time for client_4 : local training was 10.691308200010099
+Total time for client_5 : local training was 10.54194019996794
+Total time for client_6 : local training was 10.536712300032377
+Total time for client_7 : local training was 10.591986000014003
+Total time for client_8 : local training was 10.550200300000142
+Total time for client_9 : local training was 10.598244699998759
+Total time for client_10 : local training was 10.395005300000776
+Total time for client_11 : local training was 8.886354099959135
+Total time for client_12 : local training was 8.66830060002394
+Total time for client_13 : local training was 8.730075700033922
+Total time for client_14 : local training was 8.733774599968456
+Total time for client_15 : local training was 8.712451900006272
+Total time for client_16 : local training was 8.576173899986316
+Total time for client_17 : local training was 8.443481599970255
+Total time for client_18 : local training was 8.774576499999966
+Total time for client_19 : local training was 8.693691599997692
+Total time for client_20 : local training was 8.731694999965839
+Total time for client_21 : local training was 7.532701300049666
+Total time for client_22 : local training was 7.724773800000548
+Total time for client_23 : local training was 7.466819100023713
+Total time for client_24 : local training was 7.493188299995381
+Total time for client_25 : local training was 7.742217299994081
+Total time for client_26 : local training was 7.667496100009885
+Total time for client_27 : local training was 7.7174510000040755
+Total time for client_28 : local training was 7.713025399949402
+Total time for client_29 : local training was 7.612821199989412
+Total time for client_30 : local training was 7.454720699985046
+Total time for client_31 : local training was 9.228681400010828
+Total time for client_32 : local training was 9.524766899994574
+Total time for client_33 : local training was 9.443362999998499
+Total time for client_34 : local training was 9.422096399997827
+Total time for client_35 : local training was 9.53137440001592
+Total time for client_36 : local training was 9.534752800012939
+Total time for client_37 : local training was 9.275724600011017
+Total time for client_38 : local training was 9.716631499992218
+Total time for client_39 : local training was 9.364702999999281
+Total time for client_40 : local training was 9.488461899978574
+Total time for client_41 : local training was 10.502124299993739
+Total time for client_42 : local training was 10.567179900011979
+Total time for client_43 : local training was 10.513414299988654
+Total time for client_44 : local training was 10.23700620001182
+Total time for client_45 : local training was 10.675333800027147
+Total time for client_46 : local training was 10.52374009997584
+Total time for client_47 : local training was 10.561194700014312
+Total time for client_48 : local training was 10.623697700037155
+Total time for client_49 : local training was 10.57796419999795
+Total time for client_50 : local training was 10.296242200012784
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 2 | global_acc: 59.131% | global_f1: 0.7431713373536716 | global_precision: 0.5913068021450748 | global bin 0.5913068056106567
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.630380799993873
+Total time for client_2 : local training was 10.565681800013408
+Total time for client_3 : local training was 10.495298099995125
+Total time for client_4 : local training was 10.532856100006029
+Total time for client_5 : local training was 10.590632400009781
+Total time for client_6 : local training was 10.288373099989258
+Total time for client_7 : local training was 10.664439700020012
+Total time for client_8 : local training was 10.554054500011262
+Total time for client_9 : local training was 10.497630400001071
+Total time for client_10 : local training was 10.528599100012798
+Total time for client_11 : local training was 8.709799100004602
+Total time for client_12 : local training was 8.744455899985041
+Total time for client_13 : local training was 8.703547099954449
+Total time for client_14 : local training was 8.497055799991358
+Total time for client_15 : local training was 8.463411099975929
+Total time for client_16 : local training was 8.751828100008424
+Total time for client_17 : local training was 8.764640000008512
+Total time for client_18 : local training was 8.699305400019512
+Total time for client_19 : local training was 8.716148799983785
+Total time for client_20 : local training was 8.522073099971749
+Total time for client_21 : local training was 7.715430499985814
+Total time for client_22 : local training was 7.683056299982127
+Total time for client_23 : local training was 7.5560491000069305
+Total time for client_24 : local training was 7.651169300021138
+Total time for client_25 : local training was 7.762542000040412
+Total time for client_26 : local training was 7.499743299966212
+Total time for client_27 : local training was 7.457691000017803
+Total time for client_28 : local training was 7.761476799962111
+Total time for client_29 : local training was 7.671156299998984
+Total time for client_30 : local training was 7.6993621999863535
+Total time for client_31 : local training was 9.517566099995747
+Total time for client_32 : local training was 9.549163900024723
+Total time for client_33 : local training was 9.275055000034627
+Total time for client_34 : local training was 9.538692299975082
+Total time for client_35 : local training was 9.356626199965831
+Total time for client_36 : local training was 9.498971799970604
+Total time for client_37 : local training was 9.516740799997933
+Total time for client_38 : local training was 9.499544400023296
+Total time for client_39 : local training was 9.181322199990973
+Total time for client_40 : local training was 9.524386300006881
+Total time for client_41 : local training was 10.49330450000707
+Total time for client_42 : local training was 10.54294509999454
+Total time for client_43 : local training was 10.585501199995633
+Total time for client_44 : local training was 10.581048199965153
+Total time for client_45 : local training was 10.616906900017057
+Total time for client_46 : local training was 10.31696839997312
+Total time for client_47 : local training was 10.660252599976957
+Total time for client_48 : local training was 10.54305390000809
+Total time for client_49 : local training was 10.501229199988302
+Total time for client_50 : local training was 10.494328500004485
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 3 | global_acc: 64.719% | global_f1: 0.7700091996320148 | global_precision: 0.6264970059880239 | global bin 0.6471916437149048
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.56545420002658
+Total time for client_2 : local training was 10.59233380004298
+Total time for client_3 : local training was 10.313665600027889
+Total time for client_4 : local training was 10.660460799990688
+Total time for client_5 : local training was 10.580223299970385
+Total time for client_6 : local training was 10.518148400005884
+Total time for client_7 : local training was 10.572062899998855
+Total time for client_8 : local training was 10.534252199984621
+Total time for client_9 : local training was 10.5715266999905
+Total time for client_10 : local training was 10.297602300008293
+Total time for client_11 : local training was 8.788394999981392
+Total time for client_12 : local training was 8.547069300024305
+Total time for client_13 : local training was 8.73450469999807
+Total time for client_14 : local training was 8.699465000012424
+Total time for client_15 : local training was 8.558465700014494
+Total time for client_16 : local training was 8.74818510003388
+Total time for client_17 : local training was 8.73715139995329
+Total time for client_18 : local training was 8.46312879998004
+Total time for client_19 : local training was 8.761505100002978
+Total time for client_20 : local training was 8.695306600013282
+Total time for client_21 : local training was 7.549162499955855
+Total time for client_22 : local training was 7.6646033999859355
+Total time for client_23 : local training was 7.738585599989165
+Total time for client_24 : local training was 7.367710799968336
+Total time for client_25 : local training was 7.4248093999922276
+Total time for client_26 : local training was 7.7011770000099204
+Total time for client_27 : local training was 7.686757699993905
+Total time for client_28 : local training was 7.5861704999697395
+Total time for client_29 : local training was 7.704733899969142
+Total time for client_30 : local training was 7.439552399970125
+Total time for client_31 : local training was 9.541413099970669
+Total time for client_32 : local training was 9.467668199969921
+Total time for client_33 : local training was 9.388985000026878
+Total time for client_34 : local training was 9.476598199980799
+Total time for client_35 : local training was 9.503301699995063
+Total time for client_36 : local training was 9.54699190001702
+Total time for client_37 : local training was 9.203802600037307
+Total time for client_38 : local training was 9.487483200035058
+Total time for client_39 : local training was 9.486462100001518
+Total time for client_40 : local training was 9.481170499988366
+Total time for client_41 : local training was 10.571567100007087
+Total time for client_42 : local training was 10.32012799999211
+Total time for client_43 : local training was 10.402744800026994
+Total time for client_44 : local training was 10.79660739999963
+Total time for client_45 : local training was 10.52734309999505
+Total time for client_46 : local training was 10.55602890002774
+Total time for client_47 : local training was 10.268794599978719
+Total time for client_48 : local training was 10.315477299969643
+Total time for client_49 : local training was 10.707379299972672
+Total time for client_50 : local training was 10.574276000028476
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 4 | global_acc: 89.063% | global_f1: 0.9147133267304941 | global_precision: 0.8486828670614662 | global bin 0.8906294107437134
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.636053099995479
+Total time for client_2 : local training was 10.536031300027389
+Total time for client_3 : local training was 10.303572100005113
+Total time for client_4 : local training was 10.671735999989323
+Total time for client_5 : local training was 10.563083700020798
+Total time for client_6 : local training was 10.510789400024805
+Total time for client_7 : local training was 10.569443499960471
+Total time for client_8 : local training was 10.285963399976026
+Total time for client_9 : local training was 10.342008200008422
+Total time for client_10 : local training was 10.667939100007061
+Total time for client_11 : local training was 8.655082399956882
+Total time for client_12 : local training was 8.56064660003176
+Total time for client_13 : local training was 8.719845900021028
+Total time for client_14 : local training was 8.509748900018167
+Total time for client_15 : local training was 8.7246724999859
+Total time for client_16 : local training was 8.693160899973009
+Total time for client_17 : local training was 8.544850500009488
+Total time for client_18 : local training was 8.703325900016353
+Total time for client_19 : local training was 8.72946410003351
+Total time for client_20 : local training was 8.80113330000313
+Total time for client_21 : local training was 7.440760599973146
+Total time for client_22 : local training was 7.7492342999903485
+Total time for client_23 : local training was 7.656450500013307
+Total time for client_24 : local training was 7.576291300007142
+Total time for client_25 : local training was 7.665808700025082
+Total time for client_26 : local training was 7.729743300005794
+Total time for client_27 : local training was 7.479877199977636
+Total time for client_28 : local training was 7.4972276000189595
+Total time for client_29 : local training was 7.748317799996585
+Total time for client_30 : local training was 7.676447100006044
+Total time for client_31 : local training was 9.489978500001598
+Total time for client_32 : local training was 9.484054900007322
+Total time for client_33 : local training was 9.499500900041312
+Total time for client_34 : local training was 9.240475200000219
+Total time for client_35 : local training was 9.658143899985589
+Total time for client_36 : local training was 9.508191999979317
+Total time for client_37 : local training was 9.459218400006648
+Total time for client_38 : local training was 9.570013999997173
+Total time for client_39 : local training was 9.498101699980907
+Total time for client_40 : local training was 9.21218349999981
+Total time for client_41 : local training was 10.412173099990468
+Total time for client_42 : local training was 10.714995299989823
+Total time for client_43 : local training was 10.556324900011532
+Total time for client_44 : local training was 10.606753100000788
+Total time for client_45 : local training was 10.62562149995938
+Total time for client_46 : local training was 10.2977508000331
+Total time for client_47 : local training was 10.749100600020029
+Total time for client_48 : local training was 10.557492799998727
+Total time for client_49 : local training was 10.517611399991438
+Total time for client_50 : local training was 10.504119599994738
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 5 | global_acc: 90.841% | global_f1: 0.9278167055944834 | global_precision: 0.8687773380545719 | global bin 0.9084109663963318
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.574015600024723
+Total time for client_2 : local training was 10.562716000014916
+Total time for client_3 : local training was 10.381257899978664
+Total time for client_4 : local training was 10.70704820001265
+Total time for client_5 : local training was 10.563877200009301
+Total time for client_6 : local training was 10.554683000023942
+Total time for client_7 : local training was 10.591224899981171
+Total time for client_8 : local training was 10.35077060002368
+Total time for client_9 : local training was 10.349001499998849
+Total time for client_10 : local training was 10.660888399987016
+Total time for client_11 : local training was 8.600914100010414
+Total time for client_12 : local training was 8.683298400021158
+Total time for client_13 : local training was 8.617127700010315
+Total time for client_14 : local training was 8.458624400023837
+Total time for client_15 : local training was 8.726630999997724
+Total time for client_16 : local training was 8.684638600039762
+Total time for client_17 : local training was 8.555487999983598
+Total time for client_18 : local training was 8.70445220003603
+Total time for client_19 : local training was 8.581070900021587
+Total time for client_20 : local training was 8.685475800011773
+Total time for client_21 : local training was 7.363770199997816
+Total time for client_22 : local training was 7.828285199997481
+Total time for client_23 : local training was 7.7178671000292525
+Total time for client_24 : local training was 7.552444100030698
+Total time for client_25 : local training was 7.725404500029981
+Total time for client_26 : local training was 7.722178999974858
+Total time for client_27 : local training was 7.4735882000532
+Total time for client_28 : local training was 7.729365399980452
+Total time for client_29 : local training was 7.688736999989487
+Total time for client_30 : local training was 7.696853799978271
+Total time for client_31 : local training was 9.49441470002057
+Total time for client_32 : local training was 9.488550500012934
+Total time for client_33 : local training was 9.211865100020077
+Total time for client_34 : local training was 9.527130000002217
+Total time for client_35 : local training was 9.494948900013696
+Total time for client_36 : local training was 9.398792500025593
+Total time for client_37 : local training was 9.455164300044999
+Total time for client_38 : local training was 9.378426600014791
+Total time for client_39 : local training was 9.506659700011369
+Total time for client_40 : local training was 9.291446499992162
+Total time for client_41 : local training was 10.71110509999562
+Total time for client_42 : local training was 10.563506299979053
+Total time for client_43 : local training was 10.609051899984479
+Total time for client_44 : local training was 10.589396300027147
+Total time for client_45 : local training was 10.53204999997979
+Total time for client_46 : local training was 10.240118000016082
+Total time for client_47 : local training was 10.732659200031776
+Total time for client_48 : local training was 10.537865600024816
+Total time for client_49 : local training was 10.490887299994938
+Total time for client_50 : local training was 10.577570499968715
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 6 | global_acc: 91.871% | global_f1: 0.9354260089686098 | global_precision: 0.8820295983086681 | global bin 0.9187129735946655
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.320057199976873
+Total time for client_2 : local training was 10.679829499975313
+Total time for client_3 : local training was 10.555221699993126
+Total time for client_4 : local training was 10.501333400025032
+Total time for client_5 : local training was 10.52588020003168
+Total time for client_6 : local training was 10.583109500003047
+Total time for client_7 : local training was 10.493774999980815
+Total time for client_8 : local training was 10.276455999992322
+Total time for client_9 : local training was 10.636803400004283
+Total time for client_10 : local training was 10.513655200018547
+Total time for client_11 : local training was 8.587431999971159
+Total time for client_12 : local training was 8.636744599964004
+Total time for client_13 : local training was 8.419066899979953
+Total time for client_14 : local training was 9.004939500009641
+Total time for client_15 : local training was 8.873300800041761
+Total time for client_16 : local training was 8.656821799988393
+Total time for client_17 : local training was 8.59276690002298
+Total time for client_18 : local training was 8.484859000018332
+Total time for client_19 : local training was 8.45767450000858
+Total time for client_20 : local training was 8.75844700000016
+Total time for client_21 : local training was 7.709467199980281
+Total time for client_22 : local training was 7.683883299992885
+Total time for client_23 : local training was 7.739387099980377
+Total time for client_24 : local training was 7.474179000011645
+Total time for client_25 : local training was 7.719816300028469
+Total time for client_26 : local training was 7.657617499993648
+Total time for client_27 : local training was 7.570092500012834
+Total time for client_28 : local training was 7.701133899972774
+Total time for client_29 : local training was 7.710649500018917
+Total time for client_30 : local training was 7.501029499981087
+Total time for client_31 : local training was 9.2395692000282
+Total time for client_32 : local training was 9.544274399988353
+Total time for client_33 : local training was 9.49693559994921
+Total time for client_34 : local training was 9.359034799970686
+Total time for client_35 : local training was 9.52645239996491
+Total time for client_36 : local training was 9.14112780004507
+Total time for client_37 : local training was 9.235353600000963
+Total time for client_38 : local training was 9.591174100001808
+Total time for client_39 : local training was 9.458050600020215
+Total time for client_40 : local training was 9.548723599989899
+Total time for client_41 : local training was 10.64718610001728
+Total time for client_42 : local training was 10.265807800053153
+Total time for client_43 : local training was 10.637777100026142
+Total time for client_44 : local training was 10.491689199989196
+Total time for client_45 : local training was 10.516317200032063
+Total time for client_46 : local training was 10.552583799988497
+Total time for client_47 : local training was 10.292992700007744
+Total time for client_48 : local training was 10.324715800001286
+Total time for client_49 : local training was 10.622130999981891
+Total time for client_50 : local training was 10.55232179997256
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 7 | global_acc: 90.940% | global_f1: 0.9286349488661627 | global_precision: 0.8691219309196837 | global bin 0.9093987941741943
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.48358709999593
+Total time for client_2 : local training was 10.472910000011325
+Total time for client_3 : local training was 10.287245299958158
+Total time for client_4 : local training was 10.667525299999397
+Total time for client_5 : local training was 10.518003800010774
+Total time for client_6 : local training was 10.505010900029447
+Total time for client_7 : local training was 10.50743880000664
+Total time for client_8 : local training was 10.233841700013727
+Total time for client_9 : local training was 10.210826199967414
+Total time for client_10 : local training was 10.527767800027505
+Total time for client_11 : local training was 8.690586499986239
+Total time for client_12 : local training was 8.72174469998572
+Total time for client_13 : local training was 8.590226500004064
+Total time for client_14 : local training was 8.466871199954767
+Total time for client_15 : local training was 8.706810100004077
+Total time for client_16 : local training was 8.668946299992967
+Total time for client_17 : local training was 8.555897499958519
+Total time for client_18 : local training was 8.662622099975124
+Total time for client_19 : local training was 8.627083599974867
+Total time for client_20 : local training was 8.440755099989474
+Total time for client_21 : local training was 7.879577000043355
+Total time for client_22 : local training was 7.676495599967893
+Total time for client_23 : local training was 7.697086700005457
+Total time for client_24 : local training was 7.703891499957535
+Total time for client_25 : local training was 7.724733099981677
+Total time for client_26 : local training was 7.72647059999872
+Total time for client_27 : local training was 7.466248699987773
+Total time for client_28 : local training was 7.845563300012145
+Total time for client_29 : local training was 7.552832000015769
+Total time for client_30 : local training was 7.7984962000045925
+Total time for client_31 : local training was 9.596822799998336
+Total time for client_32 : local training was 9.255902800010517
+Total time for client_33 : local training was 9.525570199999493
+Total time for client_34 : local training was 9.313185699982569
+Total time for client_35 : local training was 9.461613000021316
+Total time for client_36 : local training was 9.395276400027797
+Total time for client_37 : local training was 9.241841599985491
+Total time for client_38 : local training was 9.286690899985842
+Total time for client_39 : local training was 9.546821900003124
+Total time for client_40 : local training was 9.455891899997368
+Total time for client_41 : local training was 10.507385200005956
+Total time for client_42 : local training was 10.483375699957833
+Total time for client_43 : local training was 10.265080400044098
+Total time for client_44 : local training was 10.728107800008729
+Total time for client_45 : local training was 10.468086900014896
+Total time for client_46 : local training was 10.474798100010958
+Total time for client_47 : local training was 10.508189200016204
+Total time for client_48 : local training was 10.250643100007437
+Total time for client_49 : local training was 10.654652099998202
+Total time for client_50 : local training was 10.50992410001345
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 8 | global_acc: 92.803% | global_f1: 0.9423859014911884 | global_precision: 0.8946803946803947 | global bin 0.9280270934104919
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.598553800024092
+Total time for client_2 : local training was 10.518036800029222
+Total time for client_3 : local training was 10.546511400025338
+Total time for client_4 : local training was 10.309745999984443
+Total time for client_5 : local training was 10.300388799980283
+Total time for client_6 : local training was 10.676883999956772
+Total time for client_7 : local training was 10.491912400000729
+Total time for client_8 : local training was 10.495017600012943
+Total time for client_9 : local training was 10.495796300005168
+Total time for client_10 : local training was 10.166484699991997
+Total time for client_11 : local training was 8.699740000010934
+Total time for client_12 : local training was 8.735603099979926
+Total time for client_13 : local training was 8.67320690001361
+Total time for client_14 : local training was 8.69351169996662
+Total time for client_15 : local training was 8.609686599986162
+Total time for client_16 : local training was 8.464384499995504
+Total time for client_17 : local training was 8.70246080000652
+Total time for client_18 : local training was 8.649258400022518
+Total time for client_19 : local training was 8.53840499999933
+Total time for client_20 : local training was 8.687999000016134
+Total time for client_21 : local training was 7.614321800007019
+Total time for client_22 : local training was 7.452140100009274
+Total time for client_23 : local training was 7.711733700009063
+Total time for client_24 : local training was 7.663979000004474
+Total time for client_25 : local training was 7.690641299996059
+Total time for client_26 : local training was 7.711008300015237
+Total time for client_27 : local training was 7.695179499976803
+Total time for client_28 : local training was 7.481725699966773
+Total time for client_29 : local training was 7.480669000011403
+Total time for client_30 : local training was 7.6755600000033155
+Total time for client_31 : local training was 9.459112200012896
+Total time for client_32 : local training was 9.48082129994873
+Total time for client_33 : local training was 9.610020500025712
+Total time for client_34 : local training was 9.232699000043795
+Total time for client_35 : local training was 9.547172199992929
+Total time for client_36 : local training was 9.469838299963158
+Total time for client_37 : local training was 9.361931199964602
+Total time for client_38 : local training was 9.503468099981546
+Total time for client_39 : local training was 9.296491999994032
+Total time for client_40 : local training was 9.545972799998708
+Total time for client_41 : local training was 10.532418799994048
+Total time for client_42 : local training was 10.53417460003402
+Total time for client_43 : local training was 10.505624799989164
+Total time for client_44 : local training was 10.617995999986306
+Total time for client_45 : local training was 10.493127800000366
+Total time for client_46 : local training was 10.325964399962686
+Total time for client_47 : local training was 10.719328800041694
+Total time for client_48 : local training was 10.530252999975346
+Total time for client_49 : local training was 10.53709420002997
+Total time for client_50 : local training was 10.568106099963188
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 9 | global_acc: 82.557% | global_f1: 0.8714374869981278 | global_precision: 0.7723082595870207 | global bin 0.8255715370178223
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.359480000042822
+Total time for client_2 : local training was 10.289456700033043
+Total time for client_3 : local training was 10.611289999971632
+Total time for client_4 : local training was 10.419632699980866
+Total time for client_5 : local training was 10.513370400003623
+Total time for client_6 : local training was 10.333958100003656
+Total time for client_7 : local training was 10.260274699947331
+Total time for client_8 : local training was 10.670817800040822
+Total time for client_9 : local training was 10.553492699982598
+Total time for client_10 : local training was 10.556999799970072
+Total time for client_11 : local training was 8.731901299965102
+Total time for client_12 : local training was 8.625121999997646
+Total time for client_13 : local training was 8.759400099981576
+Total time for client_14 : local training was 8.699434100009967
+Total time for client_15 : local training was 8.67211700003827
+Total time for client_16 : local training was 8.62847520003561
+Total time for client_17 : local training was 8.442637600004673
+Total time for client_18 : local training was 8.874917800014373
+Total time for client_19 : local training was 8.687718700035475
+Total time for client_20 : local training was 8.581781699962448
+Total time for client_21 : local training was 7.694583699980285
+Total time for client_22 : local training was 7.723520100000314
+Total time for client_23 : local training was 7.449294000049122
+Total time for client_24 : local training was 7.449496400018688
+Total time for client_25 : local training was 7.840330000035465
+Total time for client_26 : local training was 7.708389899984468
+Total time for client_27 : local training was 7.726466800027993
+Total time for client_28 : local training was 7.4904500000411645
+Total time for client_29 : local training was 7.835813899990171
+Total time for client_30 : local training was 7.703904699999839
+Total time for client_31 : local training was 9.471829499991145
+Total time for client_32 : local training was 9.482411900011357
+Total time for client_33 : local training was 9.496817300037947
+Total time for client_34 : local training was 9.18076449999353
+Total time for client_35 : local training was 9.219796499994118
+Total time for client_36 : local training was 9.526585799991153
+Total time for client_37 : local training was 9.500901800056454
+Total time for client_38 : local training was 9.495451399998274
+Total time for client_39 : local training was 9.468030499992892
+Total time for client_40 : local training was 9.207028200034983
+Total time for client_41 : local training was 10.618111999996472
+Total time for client_42 : local training was 10.497053200029768
+Total time for client_43 : local training was 10.511515700025484
+Total time for client_44 : local training was 10.589830200013239
+Total time for client_45 : local training was 10.599222599994391
+Total time for client_46 : local training was 10.219754700025078
+Total time for client_47 : local training was 10.678316499979701
+Total time for client_48 : local training was 10.530567699985113
+Total time for client_49 : local training was 10.493068199953996
+Total time for client_50 : local training was 10.54202210000949
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 10 | global_acc: 90.898% | global_f1: 0.9283094364788264 | global_precision: 0.8687330975660496 | global bin 0.9089754223823547
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.28684949997114
+Total time for client_2 : local training was 10.268888799997512
+Total time for client_3 : local training was 10.671909599972423
+Total time for client_4 : local training was 10.561173199967016
+Total time for client_5 : local training was 10.53450830001384
+Total time for client_6 : local training was 10.300420899991877
+Total time for client_7 : local training was 10.28804620000301
+Total time for client_8 : local training was 10.672220500011463
+Total time for client_9 : local training was 10.513738400011789
+Total time for client_10 : local training was 10.562590899993666
+Total time for client_11 : local training was 8.695774199964944
+Total time for client_12 : local training was 8.314457200001925
+Total time for client_13 : local training was 8.714868499955628
+Total time for client_14 : local training was 8.665760500007309
+Total time for client_15 : local training was 8.723861199978273
+Total time for client_16 : local training was 8.576825700001791
+Total time for client_17 : local training was 8.485303200024646
+Total time for client_18 : local training was 8.859056400018744
+Total time for client_19 : local training was 8.711244900012389
+Total time for client_20 : local training was 8.741984999971464
+Total time for client_21 : local training was 7.720077599980868
+Total time for client_22 : local training was 7.715030900028069
+Total time for client_23 : local training was 7.447121600038372
+Total time for client_24 : local training was 7.460801400011405
+Total time for client_25 : local training was 7.855217200005427
+Total time for client_26 : local training was 7.70432899997104
+Total time for client_27 : local training was 7.719962700037286
+Total time for client_28 : local training was 7.485007300041616
+Total time for client_29 : local training was 7.852082299999893
+Total time for client_30 : local training was 7.546809200022835
+Total time for client_31 : local training was 9.42216550000012
+Total time for client_32 : local training was 9.508215000038035
+Total time for client_33 : local training was 9.470062800042797
+Total time for client_34 : local training was 9.228171399969142
+Total time for client_35 : local training was 9.202681400056463
+Total time for client_36 : local training was 9.539133499958552
+Total time for client_37 : local training was 9.311421399994288
+Total time for client_38 : local training was 9.480120600026567
+Total time for client_39 : local training was 9.426270800002385
+Total time for client_40 : local training was 9.25359550002031
+Total time for client_41 : local training was 10.578359999984968
+Total time for client_42 : local training was 10.5258998000063
+Total time for client_43 : local training was 10.515252600016538
+Total time for client_44 : local training was 10.572208600002341
+Total time for client_45 : local training was 10.273704999999609
+Total time for client_46 : local training was 10.708176600048319
+Total time for client_47 : local training was 10.511647600040305
+Total time for client_48 : local training was 10.530151800019667
+Total time for client_49 : local training was 10.528820600011386
+Total time for client_50 : local training was 10.573024100041948
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 11 | global_acc: 84.603% | global_f1: 0.8846601120625859 | global_precision: 0.7940785727842096 | global bin 0.8460344076156616
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.306772299984004
+Total time for client_2 : local training was 10.319393299985677
+Total time for client_3 : local training was 10.6198070999817
+Total time for client_4 : local training was 10.55548209999688
+Total time for client_5 : local training was 10.505743700021412
+Total time for client_6 : local training was 10.591597899969202
+Total time for client_7 : local training was 10.319357900007162
+Total time for client_8 : local training was 10.688923900015652
+Total time for client_9 : local training was 10.554708800045773
+Total time for client_10 : local training was 10.509076899965294
+Total time for client_11 : local training was 8.696428399998695
+Total time for client_12 : local training was 8.332570899976417
+Total time for client_13 : local training was 8.42305809998652
+Total time for client_14 : local training was 8.710080599994399
+Total time for client_15 : local training was 8.682293999998365
+Total time for client_16 : local training was 8.618306199961808
+Total time for client_17 : local training was 8.717239599965978
+Total time for client_18 : local training was 8.462489899946377
+Total time for client_19 : local training was 8.843605600006413
+Total time for client_20 : local training was 8.746466799988411
+Total time for client_21 : local training was 7.697291099990252
+Total time for client_22 : local training was 7.739422200014815
+Total time for client_23 : local training was 7.453925599984359
+Total time for client_24 : local training was 7.702619299991056
+Total time for client_25 : local training was 7.673858200025279
+Total time for client_26 : local training was 7.690548500046134
+Total time for client_27 : local training was 7.78212359995814
+Total time for client_28 : local training was 7.692176100041252
+Total time for client_29 : local training was 7.433845699997619
+Total time for client_30 : local training was 7.848629500018433
+Total time for client_31 : local training was 9.444730299990624
+Total time for client_32 : local training was 9.393315399996936
+Total time for client_33 : local training was 9.520132300036494
+Total time for client_34 : local training was 9.256842700007837
+Total time for client_35 : local training was 9.522514499956742
+Total time for client_36 : local training was 9.554045400000177
+Total time for client_37 : local training was 9.480541099968832
+Total time for client_38 : local training was 9.487286299990956
+Total time for client_39 : local training was 9.189971900021192
+Total time for client_40 : local training was 9.521186400030274
+Total time for client_41 : local training was 10.538078899960965
+Total time for client_42 : local training was 10.570191000006162
+Total time for client_43 : local training was 10.594225499953609
+Total time for client_44 : local training was 10.254561999987345
+Total time for client_45 : local training was 10.249796100019012
+Total time for client_46 : local training was 10.681498999998439
+Total time for client_47 : local training was 10.511678900045808
+Total time for client_48 : local training was 10.527171000023372
+Total time for client_49 : local training was 10.582193700014614
+Total time for client_50 : local training was 10.296677600010298
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 12 | global_acc: 89.049% | global_f1: 0.9150612959719789 | global_precision: 0.8451273756570966 | global bin 0.8904882669448853
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.609125799965113
+Total time for client_2 : local training was 10.49175909999758
+Total time for client_3 : local training was 10.47231559996726
+Total time for client_4 : local training was 10.554362699971534
+Total time for client_5 : local training was 10.335024600033648
+Total time for client_6 : local training was 10.244444500014652
+Total time for client_7 : local training was 10.69111429998884
+Total time for client_8 : local training was 10.553494499996305
+Total time for client_9 : local training was 10.519827200041618
+Total time for client_10 : local training was 10.555305399990175
+Total time for client_11 : local training was 8.450365299999248
+Total time for client_12 : local training was 8.72599619999528
+Total time for client_13 : local training was 8.686660000006668
+Total time for client_14 : local training was 8.690940500004217
+Total time for client_15 : local training was 8.631094999960624
+Total time for client_16 : local training was 8.426682899997104
+Total time for client_17 : local training was 8.444886700017378
+Total time for client_18 : local training was 8.74543900002027
+Total time for client_19 : local training was 8.705946200003382
+Total time for client_20 : local training was 8.707463999977335
+Total time for client_21 : local training was 7.495145099994261
+Total time for client_22 : local training was 7.463419100036845
+Total time for client_23 : local training was 7.704422099981457
+Total time for client_24 : local training was 7.693324799998663
+Total time for client_25 : local training was 7.69714030000614
+Total time for client_26 : local training was 7.488936999987345
+Total time for client_27 : local training was 7.42826979997335
+Total time for client_28 : local training was 7.7351300999871455
+Total time for client_29 : local training was 7.6617022000136785
+Total time for client_30 : local training was 7.71075580001343
+Total time for client_31 : local training was 9.259736000036355
+Total time for client_32 : local training was 9.248181100003421
+Total time for client_33 : local training was 9.57955080003012
+Total time for client_34 : local training was 9.462780400004704
+Total time for client_35 : local training was 9.455924100009724
+Total time for client_36 : local training was 9.192507200001273
+Total time for client_37 : local training was 9.684973500028718
+Total time for client_38 : local training was 9.384426600008737
+Total time for client_39 : local training was 9.443578100006562
+Total time for client_40 : local training was 9.521021299995482
+Total time for client_41 : local training was 10.53129130002344
+Total time for client_42 : local training was 10.303179399983492
+Total time for client_43 : local training was 10.617651099979412
+Total time for client_44 : local training was 10.562146699987352
+Total time for client_45 : local training was 10.486734099977184
+Total time for client_46 : local training was 10.529178600001615
+Total time for client_47 : local training was 10.282275600009598
+Total time for client_48 : local training was 10.576222100004088
+Total time for client_49 : local training was 10.533240300021134
+Total time for client_50 : local training was 10.481930000009015
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 13 | global_acc: 89.317% | global_f1: 0.9169136208978157 | global_precision: 0.8488112172322698 | global bin 0.893169641494751
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.589246699993964
+Total time for client_2 : local training was 10.551755800028332
+Total time for client_3 : local training was 10.318519700027537
+Total time for client_4 : local training was 10.678390799963381
+Total time for client_5 : local training was 10.48927779996302
+Total time for client_6 : local training was 10.494115700013936
+Total time for client_7 : local training was 10.585320299956948
+Total time for client_8 : local training was 10.297307499975432
+Total time for client_9 : local training was 10.719328799983487
+Total time for client_10 : local training was 10.524102299998049
+Total time for client_11 : local training was 8.645250500005204
+Total time for client_12 : local training was 8.73153970000567
+Total time for client_13 : local training was 8.774314299982507
+Total time for client_14 : local training was 8.444206000014674
+Total time for client_15 : local training was 8.694496000010986
+Total time for client_16 : local training was 8.682304899964947
+Total time for client_17 : local training was 8.712641999998596
+Total time for client_18 : local training was 8.661437700036913
+Total time for client_19 : local training was 8.394546900002751
+Total time for client_20 : local training was 8.537429500021972
+Total time for client_21 : local training was 7.844330299994908
+Total time for client_22 : local training was 7.6849053999758326
+Total time for client_23 : local training was 7.721646099991631
+Total time for client_24 : local training was 7.473801599990111
+Total time for client_25 : local training was 7.425515600014478
+Total time for client_26 : local training was 7.713155499950517
+Total time for client_27 : local training was 7.678898599988315
+Total time for client_28 : local training was 7.468178500013892
+Total time for client_29 : local training was 7.4823253999929875
+Total time for client_30 : local training was 7.869963000004645
+Total time for client_31 : local training was 9.467255000025034
+Total time for client_32 : local training was 9.494618099997751
+Total time for client_33 : local training was 9.437646500009578
+Total time for client_34 : local training was 9.246004599961452
+Total time for client_35 : local training was 9.538127499981783
+Total time for client_36 : local training was 9.496006299974397
+Total time for client_37 : local training was 9.438960100000259
+Total time for client_38 : local training was 9.230519600037951
+Total time for client_39 : local training was 9.218240400019567
+Total time for client_40 : local training was 9.524485600006301
+Total time for client_41 : local training was 10.583713400003035
+Total time for client_42 : local training was 10.61141100001987
+Total time for client_43 : local training was 10.507980599999428
+Total time for client_44 : local training was 10.396716599992942
+Total time for client_45 : local training was 10.597236100002192
+Total time for client_46 : local training was 10.528412599989679
+Total time for client_47 : local training was 10.55408069997793
+Total time for client_48 : local training was 10.25010679999832
+Total time for client_49 : local training was 10.6219314999762
+Total time for client_50 : local training was 10.547571800008882
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 14 | global_acc: 90.841% | global_f1: 0.9277685030606566 | global_precision: 0.8692387904066736 | global bin 0.9084109663963318
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.544495199981611
+Total time for client_2 : local training was 10.492721100046765
+Total time for client_3 : local training was 10.589819799992256
+Total time for client_4 : local training was 10.282457699999213
+Total time for client_5 : local training was 10.672265800007153
+Total time for client_6 : local training was 10.564850599970669
+Total time for client_7 : local training was 10.604403500037733
+Total time for client_8 : local training was 10.5278761999798
+Total time for client_9 : local training was 10.321919800015166
+Total time for client_10 : local training was 10.719146499992348
+Total time for client_11 : local training was 8.591640099999495
+Total time for client_12 : local training was 8.680349099973682
+Total time for client_13 : local training was 8.700319399998989
+Total time for client_14 : local training was 8.634733999962918
+Total time for client_15 : local training was 8.4178266999661
+Total time for client_16 : local training was 8.736202700005379
+Total time for client_17 : local training was 8.657036099990364
+Total time for client_18 : local training was 8.71435179997934
+Total time for client_19 : local training was 8.583667300001252
+Total time for client_20 : local training was 8.463661900022998
+Total time for client_21 : local training was 7.744816599995829
+Total time for client_22 : local training was 7.695983399986289
+Total time for client_23 : local training was 7.667179000040051
+Total time for client_24 : local training was 7.706865400017705
+Total time for client_25 : local training was 7.72935320000397
+Total time for client_26 : local training was 7.452963199990336
+Total time for client_27 : local training was 7.832364599977154
+Total time for client_28 : local training was 7.70717390003847
+Total time for client_29 : local training was 7.701767500024289
+Total time for client_30 : local training was 7.7317047999822535
+Total time for client_31 : local training was 9.221842399972957
+Total time for client_32 : local training was 9.571935499960091
+Total time for client_33 : local training was 9.490660700015724
+Total time for client_34 : local training was 9.511822800035588
+Total time for client_35 : local training was 9.501743300003
+Total time for client_36 : local training was 9.535126000002492
+Total time for client_37 : local training was 9.289678500033915
+Total time for client_38 : local training was 9.695617500052322
+Total time for client_39 : local training was 9.503365999960806
+Total time for client_40 : local training was 9.51336620002985
+Total time for client_41 : local training was 10.732303099997807
+Total time for client_42 : local training was 10.384074800007511
+Total time for client_43 : local training was 10.79185940005118
+Total time for client_44 : local training was 10.666834999981802
+Total time for client_45 : local training was 10.589430399995763
+Total time for client_46 : local training was 10.60542350000469
+Total time for client_47 : local training was 10.298455699987244
+Total time for client_48 : local training was 10.75560549995862
+Total time for client_49 : local training was 10.536790199985262
+Total time for client_50 : local training was 10.512061199988239
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 15 | global_acc: 90.277% | global_f1: 0.9235378981245145 | global_precision: 0.8630989421281892 | global bin 0.9027659893035889
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.559885199996643
+Total time for client_2 : local training was 10.287147399969399
+Total time for client_3 : local training was 10.63729450001847
+Total time for client_4 : local training was 10.495272800035309
+Total time for client_5 : local training was 10.556232400005683
+Total time for client_6 : local training was 10.566626199986786
+Total time for client_7 : local training was 10.290378300007433
+Total time for client_8 : local training was 10.685152999998536
+Total time for client_9 : local training was 10.539382999995723
+Total time for client_10 : local training was 10.494676700036507
+Total time for client_11 : local training was 8.749212499998976
+Total time for client_12 : local training was 8.478915499988943
+Total time for client_13 : local training was 8.697790100006387
+Total time for client_14 : local training was 8.686188700026833
+Total time for client_15 : local training was 8.71696129994234
+Total time for client_16 : local training was 8.625291400006972
+Total time for client_17 : local training was 8.430062600004021
+Total time for client_18 : local training was 8.701819599955343
+Total time for client_19 : local training was 8.695128499995917
+Total time for client_20 : local training was 8.713994799996726
+Total time for client_21 : local training was 7.609013200039044
+Total time for client_22 : local training was 7.441051899979357
+Total time for client_23 : local training was 7.435119699977804
+Total time for client_24 : local training was 7.7359630999853835
+Total time for client_25 : local training was 7.651956299960148
+Total time for client_26 : local training was 7.727671600005124
+Total time for client_27 : local training was 7.537179000035394
+Total time for client_28 : local training was 7.824159800016787
+Total time for client_29 : local training was 7.674963199999183
+Total time for client_30 : local training was 7.687953500018921
+Total time for client_31 : local training was 9.491112200019415
+Total time for client_32 : local training was 9.163260900008027
+Total time for client_33 : local training was 9.649205300025642
+Total time for client_34 : local training was 9.39793469995493
+Total time for client_35 : local training was 9.43857100000605
+Total time for client_36 : local training was 9.469308600004297
+Total time for client_37 : local training was 9.207909499993548
+Total time for client_38 : local training was 9.492485099995974
+Total time for client_39 : local training was 9.49911819997942
+Total time for client_40 : local training was 9.364991000038572
+Total time for client_41 : local training was 10.56282300001476
+Total time for client_42 : local training was 10.546930300013628
+Total time for client_43 : local training was 10.324709600012284
+Total time for client_44 : local training was 10.70876790001057
+Total time for client_45 : local training was 10.502229899982922
+Total time for client_46 : local training was 10.531299700029194
+Total time for client_47 : local training was 10.610837600019295
+Total time for client_48 : local training was 10.24361120001413
+Total time for client_49 : local training was 10.276457400002982
+Total time for client_50 : local training was 10.672583100036718
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 16 | global_acc: 93.198% | global_f1: 0.9451150079708495 | global_precision: 0.9037456445993032 | global bin 0.9319785237312317
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.570945199986454
+Total time for client_2 : local training was 10.578615000005811
+Total time for client_3 : local training was 10.296252499974798
+Total time for client_4 : local training was 10.663223000010476
+Total time for client_5 : local training was 10.538227900047787
+Total time for client_6 : local training was 10.485247700009495
+Total time for client_7 : local training was 10.78984370001126
+Total time for client_8 : local training was 10.363610400003381
+Total time for client_9 : local training was 10.63943050004309
+Total time for client_10 : local training was 10.605133700009901
+Total time for client_11 : local training was 8.600990199949592
+Total time for client_12 : local training was 8.740855899988674
+Total time for client_13 : local training was 8.520931000006385
+Total time for client_14 : local training was 8.692046399984974
+Total time for client_15 : local training was 8.670058000017889
+Total time for client_16 : local training was 8.74097789998632
+Total time for client_17 : local training was 8.486832999973558
+Total time for client_18 : local training was 8.45776969997678
+Total time for client_19 : local training was 8.76929879997624
+Total time for client_20 : local training was 8.701399700017646
+Total time for client_21 : local training was 7.768350500031374
+Total time for client_22 : local training was 7.435232300020289
+Total time for client_23 : local training was 7.444533800007775
+Total time for client_24 : local training was 7.8457723000319675
+Total time for client_25 : local training was 7.6780556999729015
+Total time for client_26 : local training was 7.7279685999965295
+Total time for client_27 : local training was 7.466215299966279
+Total time for client_28 : local training was 7.749089999997523
+Total time for client_29 : local training was 7.693052799964789
+Total time for client_30 : local training was 7.657286599976942
+Total time for client_31 : local training was 9.493025499978103
+Total time for client_32 : local training was 9.313365700014401
+Total time for client_33 : local training was 9.236531000002287
+Total time for client_34 : local training was 9.64678609999828
+Total time for client_35 : local training was 9.445186500030104
+Total time for client_36 : local training was 9.516365399991628
+Total time for client_37 : local training was 9.259243500011507
+Total time for client_38 : local training was 9.552304500015453
+Total time for client_39 : local training was 9.472375100012869
+Total time for client_40 : local training was 9.365757599996869
+Total time for client_41 : local training was 10.670173899969086
+Total time for client_42 : local training was 10.32084759999998
+Total time for client_43 : local training was 10.41181229997892
+Total time for client_44 : local training was 10.708641599980183
+Total time for client_45 : local training was 10.53306019998854
+Total time for client_46 : local training was 10.564178300031926
+Total time for client_47 : local training was 10.337667099956889
+Total time for client_48 : local training was 10.742146799981128
+Total time for client_49 : local training was 10.573490499984473
+Total time for client_50 : local training was 10.534540899971034
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 17 | global_acc: 92.041% | global_f1: 0.9366007194244603 | global_precision: 0.885252868678283 | global bin 0.9204064607620239
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.64244280004641
+Total time for client_2 : local training was 10.283816000039224
+Total time for client_3 : local training was 10.64562130003469
+Total time for client_4 : local training was 10.495400600018911
+Total time for client_5 : local training was 10.55629570002202
+Total time for client_6 : local training was 10.607454799988773
+Total time for client_7 : local training was 10.269967400003225
+Total time for client_8 : local training was 10.645738299994264
+Total time for client_9 : local training was 10.529203599959146
+Total time for client_10 : local training was 10.541009399981704
+Total time for client_11 : local training was 8.765260700020008
+Total time for client_12 : local training was 8.45156949997181
+Total time for client_13 : local training was 8.808787699963432
+Total time for client_14 : local training was 8.7070609999937
+Total time for client_15 : local training was 8.580175700015388
+Total time for client_16 : local training was 8.51033900002949
+Total time for client_17 : local training was 8.405450799968094
+Total time for client_18 : local training was 8.74317210004665
+Total time for client_19 : local training was 8.671058400010224
+Total time for client_20 : local training was 8.79158090002602
+Total time for client_21 : local training was 7.487196400004905
+Total time for client_22 : local training was 7.846044200006872
+Total time for client_23 : local training was 7.7180641000159085
+Total time for client_24 : local training was 7.684302200039383
+Total time for client_25 : local training was 7.742355599999428
+Total time for client_26 : local training was 7.433056299982127
+Total time for client_27 : local training was 7.439818599959835
+Total time for client_28 : local training was 7.847033400030341
+Total time for client_29 : local training was 7.702171700017061
+Total time for client_30 : local training was 7.741074200021103
+Total time for client_31 : local training was 9.216451800020877
+Total time for client_32 : local training was 9.567843400000129
+Total time for client_33 : local training was 9.431121399975382
+Total time for client_34 : local training was 9.353968299983535
+Total time for client_35 : local training was 9.529871600039769
+Total time for client_36 : local training was 9.258951399999205
+Total time for client_37 : local training was 9.586523300036788
+Total time for client_38 : local training was 9.465054300031625
+Total time for client_39 : local training was 9.387730999966152
+Total time for client_40 : local training was 9.503374699968845
+Total time for client_41 : local training was 10.37579070002539
+Total time for client_42 : local training was 10.680580499989446
+Total time for client_43 : local training was 10.532230000011623
+Total time for client_44 : local training was 10.531954400008544
+Total time for client_45 : local training was 10.640024600026663
+Total time for client_46 : local training was 10.388426399964374
+Total time for client_47 : local training was 10.280872300034389
+Total time for client_48 : local training was 10.704468000039924
+Total time for client_49 : local training was 10.491165700019337
+Total time for client_50 : local training was 10.561690800008364
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 18 | global_acc: 85.859% | global_f1: 0.8931541906589892 | global_precision: 0.8072474942174248 | global bin 0.8585944175720215
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.337309500027914
+Total time for client_2 : local training was 10.668030700006057
+Total time for client_3 : local training was 10.555616900033783
+Total time for client_4 : local training was 10.515664000005927
+Total time for client_5 : local training was 10.640128300001379
+Total time for client_6 : local training was 10.332841199997347
+Total time for client_7 : local training was 10.323262999998406
+Total time for client_8 : local training was 10.653154300001916
+Total time for client_9 : local training was 10.521776499983389
+Total time for client_10 : local training was 10.2648363999906
+Total time for client_11 : local training was 8.34206890000496
+Total time for client_12 : local training was 8.741705599997658
+Total time for client_13 : local training was 8.682601000007708
+Total time for client_14 : local training was 8.777033899968956
+Total time for client_15 : local training was 8.423785099992529
+Total time for client_16 : local training was 8.458815099962521
+Total time for client_17 : local training was 8.799873300013132
+Total time for client_18 : local training was 8.704193499987014
+Total time for client_19 : local training was 8.730053599982057
+Total time for client_20 : local training was 8.496402500022668
+Total time for client_21 : local training was 7.404862300027162
+Total time for client_22 : local training was 7.712714100023732
+Total time for client_23 : local training was 7.677494700008538
+Total time for client_24 : local training was 7.7290357000310905
+Total time for client_25 : local training was 7.454429799981881
+Total time for client_26 : local training was 7.714589299983345
+Total time for client_27 : local training was 7.663970199995674
+Total time for client_28 : local training was 7.71881290001329
+Total time for client_29 : local training was 7.465497600031085
+Total time for client_30 : local training was 7.426887900044676
+Total time for client_31 : local training was 9.499877199996263
+Total time for client_32 : local training was 9.501000999996904
+Total time for client_33 : local training was 9.404540300020017
+Total time for client_34 : local training was 9.21057659998769
+Total time for client_35 : local training was 9.671371800010093
+Total time for client_36 : local training was 9.434371699986514
+Total time for client_37 : local training was 9.51693250000244
+Total time for client_38 : local training was 9.253410200006329
+Total time for client_39 : local training was 9.593617600039579
+Total time for client_40 : local training was 9.456522800028324
+Total time for client_41 : local training was 10.611487800022587
+Total time for client_42 : local training was 10.615141000016592
+Total time for client_43 : local training was 10.318511099962052
+Total time for client_44 : local training was 10.418417199980468
+Total time for client_45 : local training was 10.711106100003235
+Total time for client_46 : local training was 10.563885000010487
+Total time for client_47 : local training was 10.629873599973507
+Total time for client_48 : local training was 10.396246400021482
+Total time for client_49 : local training was 10.74429100000998
+Total time for client_50 : local training was 10.58167569997022
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 19 | global_acc: 82.218% | global_f1: 0.8692674828802657 | global_precision: 0.768906020558003 | global bin 0.8221845626831055
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.586192800023127
+Total time for client_2 : local training was 10.358422000019345
+Total time for client_3 : local training was 10.688053000019863
+Total time for client_4 : local training was 10.51443510001991
+Total time for client_5 : local training was 10.487969900015742
+Total time for client_6 : local training was 10.59746299998369
+Total time for client_7 : local training was 10.288128799991682
+Total time for client_8 : local training was 10.654219799966086
+Total time for client_9 : local training was 10.52351919998182
+Total time for client_10 : local training was 10.514709199953359
+Total time for client_11 : local training was 8.757896900002379
+Total time for client_12 : local training was 8.42610819998663
+Total time for client_13 : local training was 8.888573300035205
+Total time for client_14 : local training was 8.688418700010516
+Total time for client_15 : local training was 8.700930800056085
+Total time for client_16 : local training was 8.726807300001383
+Total time for client_17 : local training was 8.506381099985447
+Total time for client_18 : local training was 8.452561000012793
+Total time for client_19 : local training was 8.72273740003584
+Total time for client_20 : local training was 8.69334679999156
+Total time for client_21 : local training was 7.764914100000169
+Total time for client_22 : local training was 7.442203100014012
+Total time for client_23 : local training was 7.427269700041506
+Total time for client_24 : local training was 7.867768900003284
+Total time for client_25 : local training was 7.718757499998901
+Total time for client_26 : local training was 7.745105600042734
+Total time for client_27 : local training was 7.448185300047044
+Total time for client_28 : local training was 7.858037900005002
+Total time for client_29 : local training was 7.719960500020534
+Total time for client_30 : local training was 7.6857989999698475
+Total time for client_31 : local training was 9.585653499991167
+Total time for client_32 : local training was 9.219627099984791
+Total time for client_33 : local training was 9.663089199981187
+Total time for client_34 : local training was 9.519030700030271
+Total time for client_35 : local training was 9.561714599956758
+Total time for client_36 : local training was 9.279598799999803
+Total time for client_37 : local training was 9.534446700010449
+Total time for client_38 : local training was 9.50258179998491
+Total time for client_39 : local training was 9.49461389996577
+Total time for client_40 : local training was 9.571475600008853
+Total time for client_41 : local training was 10.35485649999464
+Total time for client_42 : local training was 10.745045799994841
+Total time for client_43 : local training was 10.537055799970403
+Total time for client_44 : local training was 10.605236800038256
+Total time for client_45 : local training was 10.308350199949928
+Total time for client_46 : local training was 10.654804499994498
+Total time for client_47 : local training was 10.584802299970761
+Total time for client_48 : local training was 10.523625399975572
+Total time for client_49 : local training was 10.507961999974214
+Total time for client_50 : local training was 10.277534799999557
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 20 | global_acc: 82.741% | global_f1: 0.872617435683783 | global_precision: 0.774163740528553 | global bin 0.8274061679840088
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.304071700025816
+Total time for client_2 : local training was 10.663923799991608
+Total time for client_3 : local training was 10.450606999977026
+Total time for client_4 : local training was 10.611690000048839
+Total time for client_5 : local training was 10.30989239999326
+Total time for client_6 : local training was 10.678774200030603
+Total time for client_7 : local training was 10.501711199991405
+Total time for client_8 : local training was 10.636803000001237
+Total time for client_9 : local training was 10.298881100025028
+Total time for client_10 : local training was 10.36683680000715
+Total time for client_11 : local training was 8.837892599985935
+Total time for client_12 : local training was 8.777385500026867
+Total time for client_13 : local training was 8.497180600010324
+Total time for client_14 : local training was 8.389770200010389
+Total time for client_15 : local training was 8.734759700018913
+Total time for client_16 : local training was 8.679279800038785
+Total time for client_17 : local training was 8.851995799981523
+Total time for client_18 : local training was 8.391552500019316
+Total time for client_19 : local training was 8.900819099973887
+Total time for client_20 : local training was 8.718350399984047
+Total time for client_21 : local training was 7.68292539997492
+Total time for client_22 : local training was 7.737607699993532
+Total time for client_23 : local training was 7.436875399958808
+Total time for client_24 : local training was 7.870839699986391
+Total time for client_25 : local training was 7.69582880003145
+Total time for client_26 : local training was 7.698285299993586
+Total time for client_27 : local training was 7.5094595000264235
+Total time for client_28 : local training was 7.4517159999813884
+Total time for client_29 : local training was 8.06160810001893
+Total time for client_30 : local training was 7.723914899979718
+Total time for client_31 : local training was 9.52542469999753
+Total time for client_32 : local training was 9.233866400027182
+Total time for client_33 : local training was 9.633437999989837
+Total time for client_34 : local training was 9.540413699985947
+Total time for client_35 : local training was 9.412340299983043
+Total time for client_36 : local training was 9.514142600004561
+Total time for client_37 : local training was 9.24900880001951
+Total time for client_38 : local training was 9.571245300001465
+Total time for client_39 : local training was 9.49606470001163
+Total time for client_40 : local training was 9.535493900009897
+Total time for client_41 : local training was 10.363328000006732
+Total time for client_42 : local training was 10.67053499998292
+Total time for client_43 : local training was 10.612551300029736
+Total time for client_44 : local training was 10.554465499997605
+Total time for client_45 : local training was 10.37096329999622
+Total time for client_46 : local training was 10.311844000010751
+Total time for client_47 : local training was 10.738943899981678
+Total time for client_48 : local training was 10.476166499953251
+Total time for client_49 : local training was 10.542366099951323
+Total time for client_50 : local training was 10.308865600032732
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 21 | global_acc: 81.569% | global_f1: 0.8651383725733167 | global_precision: 0.7624681470695304 | global bin 0.8156929016113281
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.621903099992778
+Total time for client_2 : local training was 10.528800400032196
+Total time for client_3 : local training was 10.57529909996083
+Total time for client_4 : local training was 10.351439599995501
+Total time for client_5 : local training was 10.621054699993692
+Total time for client_6 : local training was 10.513227299961727
+Total time for client_7 : local training was 10.508141700003762
+Total time for client_8 : local training was 10.511845999979414
+Total time for client_9 : local training was 10.595848500030115
+Total time for client_10 : local training was 10.244937299983576
+Total time for client_11 : local training was 8.862246199976653
+Total time for client_12 : local training was 8.72743819997413
+Total time for client_13 : local training was 8.600349399959669
+Total time for client_14 : local training was 8.46401249995688
+Total time for client_15 : local training was 8.873486900003627
+Total time for client_16 : local training was 8.73727050004527
+Total time for client_17 : local training was 8.72981129999971
+Total time for client_18 : local training was 8.682980099983979
+Total time for client_19 : local training was 8.486930699960794
+Total time for client_20 : local training was 8.723922999983188
+Total time for client_21 : local training was 7.700467499962542
+Total time for client_22 : local training was 7.733138300012797
+Total time for client_23 : local training was 7.468101000005845
+Total time for client_24 : local training was 7.8747121000196785
+Total time for client_25 : local training was 7.707109400012996
+Total time for client_26 : local training was 7.705080500047188
+Total time for client_27 : local training was 7.6572531999554485
+Total time for client_28 : local training was 7.762993299984373
+Total time for client_29 : local training was 7.458227400027681
+Total time for client_30 : local training was 7.863119799993001
+Total time for client_31 : local training was 9.471631799999159
+Total time for client_32 : local training was 9.529263100004755
+Total time for client_33 : local training was 9.26134110003477
+Total time for client_34 : local training was 9.550665299990214
+Total time for client_35 : local training was 9.504232699982822
+Total time for client_36 : local training was 9.538317999977153
+Total time for client_37 : local training was 9.12927450001007
+Total time for client_38 : local training was 9.519922600011341
+Total time for client_39 : local training was 9.452380100032315
+Total time for client_40 : local training was 9.50199670001166
+Total time for client_41 : local training was 10.584540100011509
+Total time for client_42 : local training was 10.59304519998841
+Total time for client_43 : local training was 10.262533900036942
+Total time for client_44 : local training was 10.705645499983802
+Total time for client_45 : local training was 10.534203800023533
+Total time for client_46 : local training was 10.673784100043122
+Total time for client_47 : local training was 10.324753299995791
+Total time for client_48 : local training was 10.736800400016364
+Total time for client_49 : local training was 10.532234100042842
+Total time for client_50 : local training was 10.57345389999682
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 22 | global_acc: 81.767% | global_f1: 0.8663632602399668 | global_precision: 0.764512595837897 | global bin 0.817668616771698
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.328634499979671
+Total time for client_2 : local training was 10.325975999992806
+Total time for client_3 : local training was 10.680152699991595
+Total time for client_4 : local training was 10.51152220001677
+Total time for client_5 : local training was 10.517318100028206
+Total time for client_6 : local training was 10.287185600027442
+Total time for client_7 : local training was 10.681244199979119
+Total time for client_8 : local training was 10.538467000005767
+Total time for client_9 : local training was 10.485276799998246
+Total time for client_10 : local training was 10.561647000024095
+Total time for client_11 : local training was 8.472957100020722
+Total time for client_12 : local training was 8.46352749998914
+Total time for client_13 : local training was 8.712650200002827
+Total time for client_14 : local training was 8.680742199998349
+Total time for client_15 : local training was 8.732200599974021
+Total time for client_16 : local training was 8.471869400003925
+Total time for client_17 : local training was 8.758969200018328
+Total time for client_18 : local training was 8.71194629999809
+Total time for client_19 : local training was 8.737092600029428
+Total time for client_20 : local training was 8.817921000008937
+Total time for client_21 : local training was 7.549887000001036
+Total time for client_22 : local training was 7.754273300000932
+Total time for client_23 : local training was 7.6753549999557436
+Total time for client_24 : local training was 7.687654900015332
+Total time for client_25 : local training was 7.741270800004713
+Total time for client_26 : local training was 7.4731387999490835
+Total time for client_27 : local training was 7.840810600027908
+Total time for client_28 : local training was 7.684454099973664
+Total time for client_29 : local training was 7.745069299999159
+Total time for client_30 : local training was 7.437836800003424
+Total time for client_31 : local training was 9.633051600016188
+Total time for client_32 : local training was 9.40373359998921
+Total time for client_33 : local training was 9.455851799983066
+Total time for client_34 : local training was 9.140445799974259
+Total time for client_35 : local training was 9.20425539999269
+Total time for client_36 : local training was 9.517875500023365
+Total time for client_37 : local training was 9.497738900012337
+Total time for client_38 : local training was 9.500620499951765
+Total time for client_39 : local training was 9.15074640000239
+Total time for client_40 : local training was 9.514377699990291
+Total time for client_41 : local training was 10.555323900014628
+Total time for client_42 : local training was 10.525705999985803
+Total time for client_43 : local training was 10.319376799976453
+Total time for client_44 : local training was 10.574763700016774
+Total time for client_45 : local training was 10.501727599999867
+Total time for client_46 : local training was 10.49261849996401
+Total time for client_47 : local training was 10.549365200044122
+Total time for client_48 : local training was 10.307116300042253
+Total time for client_49 : local training was 10.709204900020268
+Total time for client_50 : local training was 10.495249700034037
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 23 | global_acc: 82.416% | global_f1: 0.8705050924963627 | global_precision: 0.7709867452135494 | global bin 0.8241603374481201
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.568133499997202
+Total time for client_2 : local training was 10.2871901000035
+Total time for client_3 : local training was 10.261698199959937
+Total time for client_4 : local training was 10.70511229999829
+Total time for client_5 : local training was 10.564215500024147
+Total time for client_6 : local training was 10.541183200024534
+Total time for client_7 : local training was 10.263873799995054
+Total time for client_8 : local training was 10.55018249998102
+Total time for client_9 : local training was 10.521686399995815
+Total time for client_10 : local training was 10.60301600000821
+Total time for client_11 : local training was 8.366244999982882
+Total time for client_12 : local training was 8.722455299983267
+Total time for client_13 : local training was 8.690399400016759
+Total time for client_14 : local training was 8.676512199977878
+Total time for client_15 : local training was 8.805453000008129
+Total time for client_16 : local training was 8.479753499967046
+Total time for client_17 : local training was 8.841675599978771
+Total time for client_18 : local training was 8.68866279994836
+Total time for client_19 : local training was 8.745958799961954
+Total time for client_20 : local training was 8.491348700015806
+Total time for client_21 : local training was 7.484896099951584
+Total time for client_22 : local training was 7.859282899997197
+Total time for client_23 : local training was 7.7426824000431225
+Total time for client_24 : local training was 7.462433199980296
+Total time for client_25 : local training was 7.426180799957365
+Total time for client_26 : local training was 7.8846004999941215
+Total time for client_27 : local training was 7.698572199966293
+Total time for client_28 : local training was 7.721430300036445
+Total time for client_29 : local training was 7.459861699957401
+Total time for client_30 : local training was 7.849078800005373
+Total time for client_31 : local training was 9.489318199979607
+Total time for client_32 : local training was 9.465452899981756
+Total time for client_33 : local training was 9.364747800049372
+Total time for client_34 : local training was 9.6175077999942
+Total time for client_35 : local training was 9.40313300001435
+Total time for client_36 : local training was 9.528349500033073
+Total time for client_37 : local training was 9.305821800022386
+Total time for client_38 : local training was 9.241956999991089
+Total time for client_39 : local training was 9.522604700003285
+Total time for client_40 : local training was 9.492688199970871
+Total time for client_41 : local training was 10.627871000033338
+Total time for client_42 : local training was 10.319808600004762
+Total time for client_43 : local training was 10.729020799975842
+Total time for client_44 : local training was 10.517093100002967
+Total time for client_45 : local training was 10.545501799962949
+Total time for client_46 : local training was 10.31747979996726
+Total time for client_47 : local training was 10.694343599956483
+Total time for client_48 : local training was 10.531749399960972
+Total time for client_49 : local training was 10.577943600015715
+Total time for client_50 : local training was 10.657283100008499
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 24 | global_acc: 83.940% | global_f1: 0.8803616484440707 | global_precision: 0.7867343104096205 | global bin 0.8394016623497009
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.363260999962222
+Total time for client_2 : local training was 10.744067499996163
+Total time for client_3 : local training was 10.60522480000509
+Total time for client_4 : local training was 10.622155000048224
+Total time for client_5 : local training was 10.30769639997743
+Total time for client_6 : local training was 10.723657299997285
+Total time for client_7 : local training was 10.538738199975342
+Total time for client_8 : local training was 10.622462500003166
+Total time for client_9 : local training was 10.591669699992053
+Total time for client_10 : local training was 10.279105500027072
+Total time for client_11 : local training was 8.410109899996314
+Total time for client_12 : local training was 8.863454999984242
+Total time for client_13 : local training was 8.722596900013741
+Total time for client_14 : local training was 8.713568099949043
+Total time for client_15 : local training was 8.495673099998385
+Total time for client_16 : local training was 8.750419499992859
+Total time for client_17 : local training was 8.691203000023961
+Total time for client_18 : local training was 8.77855239994824
+Total time for client_19 : local training was 8.44638690003194
+Total time for client_20 : local training was 8.72285139997257
+Total time for client_21 : local training was 7.716384700033814
+Total time for client_22 : local training was 7.712499400018714
+Total time for client_23 : local training was 7.481377499992959
+Total time for client_24 : local training was 7.402801399992313
+Total time for client_25 : local training was 7.855979299987666
+Total time for client_26 : local training was 7.7018351999577135
+Total time for client_27 : local training was 7.501059599977452
+Total time for client_28 : local training was 7.435859400022309
+Total time for client_29 : local training was 7.856524500006344
+Total time for client_30 : local training was 7.711109000025317
+Total time for client_31 : local training was 9.303864100016654
+Total time for client_32 : local training was 9.227174300001934
+Total time for client_33 : local training was 9.520075600012206
+Total time for client_34 : local training was 9.491819399991073
+Total time for client_35 : local training was 9.172392099979334
+Total time for client_36 : local training was 9.233071500028018
+Total time for client_37 : local training was 9.573206200031564
+Total time for client_38 : local training was 9.439828499977011
+Total time for client_39 : local training was 9.538074999989476
+Total time for client_40 : local training was 9.283339599962346
+Total time for client_41 : local training was 10.672292199975345
+Total time for client_42 : local training was 10.453070599993225
+Total time for client_43 : local training was 10.587001900014002
+Total time for client_44 : local training was 10.30881539999973
+Total time for client_45 : local training was 10.706565600004978
+Total time for client_46 : local training was 10.50327509996714
+Total time for client_47 : local training was 10.468401499965694
+Total time for client_48 : local training was 10.564918200019747
+Total time for client_49 : local training was 10.297864600026514
+Total time for client_50 : local training was 10.672656399954576
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 25 | global_acc: 83.813% | global_f1: 0.8794788273615636 | global_precision: 0.7856204242538014 | global bin 0.8381315469741821
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.544125000014901
+Total time for client_2 : local training was 10.554639699985273
+Total time for client_3 : local training was 10.360154599999078
+Total time for client_4 : local training was 10.593051799980458
+Total time for client_5 : local training was 10.578663400025107
+Total time for client_6 : local training was 10.603776400035713
+Total time for client_7 : local training was 10.640371499990579
+Total time for client_8 : local training was 10.239185800019186
+Total time for client_9 : local training was 10.242433600011282
+Total time for client_10 : local training was 10.683709400007501
+Total time for client_11 : local training was 8.659437499998603
+Total time for client_12 : local training was 8.487485399993602
+Total time for client_13 : local training was 8.490640899981372
+Total time for client_14 : local training was 8.918097200046759
+Total time for client_15 : local training was 8.697480699978769
+Total time for client_16 : local training was 8.562349399959203
+Total time for client_17 : local training was 8.477661999990232
+Total time for client_18 : local training was 8.872239000047557
+Total time for client_19 : local training was 8.728416200028732
+Total time for client_20 : local training was 8.799336999945808
+Total time for client_21 : local training was 7.444097400002647
+Total time for client_22 : local training was 7.858988800027873
+Total time for client_23 : local training was 7.712020300037693
+Total time for client_24 : local training was 7.720668800000567
+Total time for client_25 : local training was 7.750189899990801
+Total time for client_26 : local training was 7.4326654999749735
+Total time for client_27 : local training was 7.875683700025547
+Total time for client_28 : local training was 7.687856899981853
+Total time for client_29 : local training was 7.742073400004301
+Total time for client_30 : local training was 7.4373918999917805
+Total time for client_31 : local training was 9.645266399951652
+Total time for client_32 : local training was 9.534653700015042
+Total time for client_33 : local training was 9.584647500014398
+Total time for client_34 : local training was 9.242216100043152
+Total time for client_35 : local training was 9.515797399973962
+Total time for client_36 : local training was 9.507906499959063
+Total time for client_37 : local training was 9.477967699989676
+Total time for client_38 : local training was 9.185585600032937
+Total time for client_39 : local training was 9.502286800008733
+Total time for client_40 : local training was 9.482318599999417
+Total time for client_41 : local training was 10.525608299998567
+Total time for client_42 : local training was 10.282604600011837
+Total time for client_43 : local training was 10.670839000027627
+Total time for client_44 : local training was 10.495967100025155
+Total time for client_45 : local training was 10.493493899994064
+Total time for client_46 : local training was 10.532987200014759
+Total time for client_47 : local training was 10.279807100014295
+Total time for client_48 : local training was 10.701784300035797
+Total time for client_49 : local training was 10.532046599953901
+Total time for client_50 : local training was 10.574119800003245
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 26 | global_acc: 85.041% | global_f1: 0.8875689435723377 | global_precision: 0.7987781596029019 | global bin 0.8504092693328857
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.287760599981993
+Total time for client_2 : local training was 10.718973100010771
+Total time for client_3 : local training was 10.600025799998548
+Total time for client_4 : local training was 10.547612299968023
+Total time for client_5 : local training was 10.302365600015037
+Total time for client_6 : local training was 10.241737499949522
+Total time for client_7 : local training was 10.630614400026388
+Total time for client_8 : local training was 10.58287509996444
+Total time for client_9 : local training was 10.297600199992303
+Total time for client_10 : local training was 10.217836199968588
+Total time for client_11 : local training was 8.869071000022814
+Total time for client_12 : local training was 8.745562400028575
+Total time for client_13 : local training was 8.45224660000531
+Total time for client_14 : local training was 8.877501300012227
+Total time for client_15 : local training was 8.703596299979836
+Total time for client_16 : local training was 8.732101500034332
+Total time for client_17 : local training was 8.790818300039973
+Total time for client_18 : local training was 8.44692140002735
+Total time for client_19 : local training was 8.861863900034223
+Total time for client_20 : local training was 8.711945000046398
+Total time for client_21 : local training was 7.6254678999539465
+Total time for client_22 : local training was 7.435687399993185
+Total time for client_23 : local training was 7.865075999987312
+Total time for client_24 : local training was 7.695338800025638
+Total time for client_25 : local training was 7.82533829996828
+Total time for client_26 : local training was 7.372369299991988
+Total time for client_27 : local training was 7.855457099969499
+Total time for client_28 : local training was 7.707346899958793
+Total time for client_29 : local training was 7.7857941999682225
+Total time for client_30 : local training was 7.428033699980006
+Total time for client_31 : local training was 9.627978000033181
+Total time for client_32 : local training was 9.49597609997727
+Total time for client_33 : local training was 9.399614399997517
+Total time for client_34 : local training was 9.524197400023695
+Total time for client_35 : local training was 9.252483500051312
+Total time for client_36 : local training was 9.552179099991918
+Total time for client_37 : local training was 9.454387300007511
+Total time for client_38 : local training was 9.49773980001919
+Total time for client_39 : local training was 9.17062710004393
+Total time for client_40 : local training was 9.549335499992594
+Total time for client_41 : local training was 10.565517199982423
+Total time for client_42 : local training was 10.606599599996116
+Total time for client_43 : local training was 10.643195000011474
+Total time for client_44 : local training was 10.273334399971645
+Total time for client_45 : local training was 10.719170199998189
+Total time for client_46 : local training was 10.541058300004806
+Total time for client_47 : local training was 10.615433700033464
+Total time for client_48 : local training was 10.263047599990387
+Total time for client_49 : local training was 10.657717299996875
+Total time for client_50 : local training was 10.531709999952
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 27 | global_acc: 86.494% | global_f1: 0.8973065779590086 | global_precision: 0.8151686488594267 | global bin 0.8649449348449707
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.515738899994176
+Total time for client_2 : local training was 10.217759000021033
+Total time for client_3 : local training was 10.285144899971783
+Total time for client_4 : local training was 10.831312599999364
+Total time for client_5 : local training was 10.57829189999029
+Total time for client_6 : local training was 10.284484600008
+Total time for client_7 : local training was 10.214534799975809
+Total time for client_8 : local training was 10.69236169999931
+Total time for client_9 : local training was 10.457842400006484
+Total time for client_10 : local training was 10.218795799999498
+Total time for client_11 : local training was 8.854306199995335
+Total time for client_12 : local training was 8.71278479998
+Total time for client_13 : local training was 8.739339200023096
+Total time for client_14 : local training was 8.804073099978268
+Total time for client_15 : local training was 8.47247310000239
+Total time for client_16 : local training was 8.851206000021193
+Total time for client_17 : local training was 8.7506493999972
+Total time for client_18 : local training was 8.783978299994487
+Total time for client_19 : local training was 8.454576599993743
+Total time for client_20 : local training was 8.833931000030134
+Total time for client_21 : local training was 7.75031490001129
+Total time for client_22 : local training was 7.737514100037515
+Total time for client_23 : local training was 7.449644899985287
+Total time for client_24 : local training was 7.851048399985302
+Total time for client_25 : local training was 7.7161564999842085
+Total time for client_26 : local training was 7.7214789999998175
+Total time for client_27 : local training was 7.51587100001052
+Total time for client_28 : local training was 7.412075700005516
+Total time for client_29 : local training was 7.856252199970186
+Total time for client_30 : local training was 7.743729199981317
+Total time for client_31 : local training was 9.2225480999914
+Total time for client_32 : local training was 9.225315399991814
+Total time for client_33 : local training was 9.536906099994667
+Total time for client_34 : local training was 9.553276600025129
+Total time for client_35 : local training was 9.278149000019766
+Total time for client_36 : local training was 9.5290471999906
+Total time for client_37 : local training was 9.442636799998581
+Total time for client_38 : local training was 9.492460299981758
+Total time for client_39 : local training was 9.200061100011226
+Total time for client_40 : local training was 9.215227400010917
+Total time for client_41 : local training was 10.698970099969301
+Total time for client_42 : local training was 10.513578100013547
+Total time for client_43 : local training was 10.332693299977109
+Total time for client_44 : local training was 10.307559200038668
+Total time for client_45 : local training was 10.754113500006497
+Total time for client_46 : local training was 10.51040660002036
+Total time for client_47 : local training was 10.336769099987578
+Total time for client_48 : local training was 10.259934999980032
+Total time for client_49 : local training was 10.683841500023846
+Total time for client_50 : local training was 10.629197300004307
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 28 | global_acc: 89.402% | global_f1: 0.9174453116412005 | global_precision: 0.8504177705318933 | global bin 0.8940163850784302
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.370847600046545
+Total time for client_2 : local training was 10.304163599968888
+Total time for client_3 : local training was 10.682680200028699
+Total time for client_4 : local training was 10.63805340003455
+Total time for client_5 : local training was 10.404939199972432
+Total time for client_6 : local training was 10.73436020000372
+Total time for client_7 : local training was 10.60673639999004
+Total time for client_8 : local training was 10.625471000035759
+Total time for client_9 : local training was 10.339673499984201
+Total time for client_10 : local training was 10.822517000022344
+Total time for client_11 : local training was 8.64374269999098
+Total time for client_12 : local training was 8.705936999991536
+Total time for client_13 : local training was 8.823508800007403
+Total time for client_14 : local training was 8.409058599965647
+Total time for client_15 : local training was 8.727883399988059
+Total time for client_16 : local training was 8.73792709998088
+Total time for client_17 : local training was 8.745711800002027
+Total time for client_18 : local training was 8.43893530004425
+Total time for client_19 : local training was 8.70943529997021
+Total time for client_20 : local training was 8.703450699977111
+Total time for client_21 : local training was 7.753607000049669
+Total time for client_22 : local training was 7.476361199980602
+Total time for client_23 : local training was 7.8582795999827795
+Total time for client_24 : local training was 7.695697500021197
+Total time for client_25 : local training was 7.703966000000946
+Total time for client_26 : local training was 7.756041299959179
+Total time for client_27 : local training was 7.447947600041516
+Total time for client_28 : local training was 7.854829800024163
+Total time for client_29 : local training was 7.713243999984115
+Total time for client_30 : local training was 7.747437100042589
+Total time for client_31 : local training was 9.269600300001912
+Total time for client_32 : local training was 9.188151100010145
+Total time for client_33 : local training was 9.536688400025014
+Total time for client_34 : local training was 9.535499999998137
+Total time for client_35 : local training was 9.277273300045636
+Total time for client_36 : local training was 9.237920799991116
+Total time for client_37 : local training was 9.53830689995084
+Total time for client_38 : local training was 9.490521800005808
+Total time for client_39 : local training was 9.302375700033735
+Total time for client_40 : local training was 9.55707480001729
+Total time for client_41 : local training was 10.654938499967102
+Total time for client_42 : local training was 10.636863699997775
+Total time for client_43 : local training was 10.711842999968212
+Total time for client_44 : local training was 10.345122899976559
+Total time for client_45 : local training was 10.67839889996685
+Total time for client_46 : local training was 10.555330200004391
+Total time for client_47 : local training was 10.613356999994721
+Total time for client_48 : local training was 10.309790700033773
+Total time for client_49 : local training was 10.32717419997789
+Total time for client_50 : local training was 10.736282799975015
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 29 | global_acc: 91.462% | global_f1: 0.9323644494130799 | global_precision: 0.8769716088328076 | global bin 0.9146203994750977
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.716861099994276
+Total time for client_2 : local training was 10.317118899954949
+Total time for client_3 : local training was 10.42309680004837
+Total time for client_4 : local training was 10.693415199988522
+Total time for client_5 : local training was 10.655635400034953
+Total time for client_6 : local training was 10.327516800025478
+Total time for client_7 : local training was 10.788862099987455
+Total time for client_8 : local training was 10.510711400012951
+Total time for client_9 : local training was 10.735944600019138
+Total time for client_10 : local training was 10.232393199985381
+Total time for client_11 : local training was 8.818940999975894
+Total time for client_12 : local training was 8.707202700024936
+Total time for client_13 : local training was 8.751312999986112
+Total time for client_14 : local training was 8.929017399961594
+Total time for client_15 : local training was 8.493864100018982
+Total time for client_16 : local training was 8.884769199998118
+Total time for client_17 : local training was 8.706854499992914
+Total time for client_18 : local training was 8.78033440001309
+Total time for client_19 : local training was 8.46706420002738
+Total time for client_20 : local training was 8.868330999976024
+Total time for client_21 : local training was 7.744554099976085
+Total time for client_22 : local training was 7.763953100016806
+Total time for client_23 : local training was 7.438323199981824
+Total time for client_24 : local training was 7.873605899978429
+Total time for client_25 : local training was 7.72623739996925
+Total time for client_26 : local training was 7.648638500017114
+Total time for client_27 : local training was 7.746075399976689
+Total time for client_28 : local training was 7.480551999993622
+Total time for client_29 : local training was 7.836891499988269
+Total time for client_30 : local training was 7.7263463999843225
+Total time for client_31 : local training was 9.590367199969478
+Total time for client_32 : local training was 9.231486700009555
+Total time for client_33 : local training was 9.513638599950355
+Total time for client_34 : local training was 9.47027959994739
+Total time for client_35 : local training was 9.465421799977776
+Total time for client_36 : local training was 9.200998399988748
+Total time for client_37 : local training was 9.683028800005559
+Total time for client_38 : local training was 9.522088299971074
+Total time for client_39 : local training was 9.53547449997859
+Total time for client_40 : local training was 9.282755699998233
+Total time for client_41 : local training was 10.350771600031294
+Total time for client_42 : local training was 10.678686400002334
+Total time for client_43 : local training was 10.62238499999512
+Total time for client_44 : local training was 10.290494500019122
+Total time for client_45 : local training was 10.732179300044663
+Total time for client_46 : local training was 10.53741709998576
+Total time for client_47 : local training was 10.581220299995039
+Total time for client_48 : local training was 10.77384219999658
+Total time for client_49 : local training was 10.330397799960338
+Total time for client_50 : local training was 10.662188399990555
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 30 | global_acc: 92.958% | global_f1: 0.943468902231789 | global_precision: 0.8979943929264611 | global bin 0.9295794367790222
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.556157300015911
+Total time for client_2 : local training was 10.30402059998596
+Total time for client_3 : local training was 10.642694899986964
+Total time for client_4 : local training was 10.52419479994569
+Total time for client_5 : local training was 10.61822599999141
+Total time for client_6 : local training was 10.731812199985143
+Total time for client_7 : local training was 10.375971200002823
+Total time for client_8 : local training was 10.714385500003118
+Total time for client_9 : local training was 10.530120500014164
+Total time for client_10 : local training was 10.599415500008035
+Total time for client_11 : local training was 8.40590929996688
+Total time for client_12 : local training was 8.860380600031931
+Total time for client_13 : local training was 8.69798069994431
+Total time for client_14 : local training was 8.593991499976255
+Total time for client_15 : local training was 8.49629310000455
+Total time for client_16 : local training was 8.4188227999839
+Total time for client_17 : local training was 8.901428600016516
+Total time for client_18 : local training was 8.754659999976866
+Total time for client_19 : local training was 8.46915140002966
+Total time for client_20 : local training was 8.414069399994332
+Total time for client_21 : local training was 7.8952564999926835
+Total time for client_22 : local training was 7.713697200000752
+Total time for client_23 : local training was 7.481686299957801
+Total time for client_24 : local training was 7.416353899985552
+Total time for client_25 : local training was 7.864714099967387
+Total time for client_26 : local training was 7.827349499973934
+Total time for client_27 : local training was 7.531681899970863
+Total time for client_28 : local training was 7.757714199949987
+Total time for client_29 : local training was 7.667364499997348
+Total time for client_30 : local training was 7.76068160001887
+Total time for client_31 : local training was 9.22612870001467
+Total time for client_32 : local training was 9.675158800033387
+Total time for client_33 : local training was 9.497233400004916
+Total time for client_34 : local training was 9.389108399976976
+Total time for client_35 : local training was 9.508906000002753
+Total time for client_36 : local training was 9.281391999975313
+Total time for client_37 : local training was 9.554011899977922
+Total time for client_38 : local training was 9.466584300040267
+Total time for client_39 : local training was 9.485644400003366
+Total time for client_40 : local training was 9.163725799997337
+Total time for client_41 : local training was 10.681995499995537
+Total time for client_42 : local training was 10.451939299993683
+Total time for client_43 : local training was 10.55956409999635
+Total time for client_44 : local training was 10.652994800009765
+Total time for client_45 : local training was 10.326409899978898
+Total time for client_46 : local training was 10.673675899975933
+Total time for client_47 : local training was 10.55060749995755
+Total time for client_48 : local training was 10.601893200015184
+Total time for client_49 : local training was 10.371673399989959
+Total time for client_50 : local training was 10.66227740002796
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 31 | global_acc: 92.111% | global_f1: 0.9371557054525014 | global_precision: 0.8858660998937301 | global bin 0.921112060546875
+
+Simulate Models Sent to Clients
+
+Total time for client_1 : local training was 10.627788899990264
+Total time for client_2 : local training was 10.53088779997779
+Total time for client_3 : local training was 10.364474000001792
+Total time for client_4 : local training was 10.756010200013407
+Total time for client_5 : local training was 10.55744639999466
+Total time for client_6 : local training was 10.621417000016663
+Total time for client_7 : local training was 10.34902579995105
+Total time for client_8 : local training was 10.706341499986593
+Total time for client_9 : local training was 10.535966800001916
+Total time for client_10 : local training was 10.626201600010972
+Total time for client_11 : local training was 8.398965500004124
+Total time for client_12 : local training was 8.928003300039563
+Total time for client_13 : local training was 8.661320900020655
+Total time for client_14 : local training was 8.68352949997643
+Total time for client_15 : local training was 8.788398100004997
+Total time for client_16 : local training was 8.436429499997757
+Total time for client_17 : local training was 8.73310729995137
+Total time for client_18 : local training was 8.666943799995352
+Total time for client_19 : local training was 8.604760899965186
+Total time for client_20 : local training was 8.436874599952716
+Total time for client_21 : local training was 7.913137399998959
+Total time for client_22 : local training was 7.703063699998893
+Total time for client_23 : local training was 7.690266700054053
+Total time for client_24 : local training was 7.753210700000636
+Total time for client_25 : local training was 7.457420699996874
+Total time for client_26 : local training was 7.871341999969445
+Total time for client_27 : local training was 7.6821957000065595
+Total time for client_28 : local training was 7.759965799981728
+Total time for client_29 : local training was 7.427079499990214
+Total time for client_30 : local training was 7.864425499981735
+Total time for client_31 : local training was 9.500259299995378
+Total time for client_32 : local training was 9.568527499970514
+Total time for client_33 : local training was 9.238492400036193
+Total time for client_34 : local training was 9.557933399977628
+Total time for client_35 : local training was 9.474458099983167
+Total time for client_36 : local training was 9.472413400013465
+Total time for client_37 : local training was 9.211943999980576
+Total time for client_38 : local training was 9.643864899990149
+Total time for client_39 : local training was 9.519503400020767
+Total time for client_40 : local training was 9.40512970002601
+Total time for client_41 : local training was 10.283833599998616
+Total time for client_42 : local training was 10.683350800012704
+Total time for client_43 : local training was 10.552694400015753
+Total time for client_44 : local training was 10.553894899960142
+Total time for client_45 : local training was 10.371199399989564
+Total time for client_46 : local training was 10.665918499988038
+Total time for client_47 : local training was 10.544287000026088
+Total time for client_48 : local training was 10.59026199998334
+Total time for client_49 : local training was 10.262093700002879
+Total time for client_50 : local training was 10.68699529999867
+
+Total Client Grads Scaled : 50 unscaled 50
+
+############################################################################################
+
+############################################################################################
+
+comm_round: 32 | global_acc: 95.907% | global_f1: 0.9663651125028995 | global_precision: 0.9399819494584838 | global bin 0.9590742588043213
