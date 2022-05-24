@@ -307,7 +307,7 @@ def get_model(timesteps,n_features):
     #model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.CategoricalAccuracy(),'accuracy'])
     #model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.BinaryAccuracy()])
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    #with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\dba_1_sybil_SIM_log.txt','a') as f:
+    #with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\model_summary.txt','a') as f:
     #        f.write(str(model.summary()))
     #        f.close()
     #print(model.summary())

@@ -259,10 +259,10 @@ def main():
     '''
        To run just ids - no poison defense and poison attacks
     '''
-    global_tic = time.perf_counter()
-    config.BASELINE = True
-    simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, config.NO_DEFENSE, config.NUM_SYBILS, config.NUM_CLIENTS)
-    '''
+    #global_tic = time.perf_counter()
+    #config.BASELINE = True
+    simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, config.DEFENSE, config.NUM_SYBILS, config.NUM_CLIENTS)
+    ''' 
     for i in range(len(config.ATTACK_LIST)):
         config.ATTACK = config.ATTACK_LIST[i]
         for k in range(len(config.NUM_SYBILS_LIST)):
