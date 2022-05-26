@@ -558,62 +558,6 @@ def asf(path, attack, defense, log_name,grads, num_sybils=1):
         f.close()
     return wv,alpha
 
-'''
-def make_timesteps(X, y, lookback):
-    output_X = []
-    output_y = []
-    for i in range(len(X) - lookback - 1):
-        t = []
-        for j in range(1, lookback + 1):
-            # Gather past records upto the lookback period
-            t.append(X[[(i + j + 1)], :])
-        output_X.append(t)
-        output_y.append(y[i + lookback + 1])
-    return output_X, output_y
-'''
-
-
-def make_sim_timesteps(x_data, y_data, num_steps=3):
-  X = []
-  y = []
-  print("/n In Time Steps\nAppend num_steps:{} rows\n".format(num_steps))
-  #Time steps drops length of arr - num_steps to length of arr - so add num_steps at end to get all
-  x_data_plus_steps = np.copy(x_data)
-  y_data_plus_steps = np.copy(y_data)
-  for x in range(num_steps):
-    x_data_plus_steps = np.vstack([x_data_plus_steps, np.array(x_data[x])])
-  for j in range(num_steps):
-    y_data_plus_steps = np.vstack([y_data_plus_steps,np.array(y_data[j])])
-
-  print("\nCheck Length of x/y_data: {}|{} vs x/y_data_plus_steps: {}|{}\n:::: Start Loop ::::\n".format(x_data.shape[0],y_data.shape[0],x_data_plus_steps.shape[0],y_data_plus_steps.shape[0]))
-  print("x_data_plus\n{}".format(x_data_plus_steps))
-  print("y_data_plus\n{}".format(y_data_plus_steps))
-  #use the length of original array for iterations
-  for i in range(x_data.shape[0]):
-    #new sliding window index
-    end_ix = i + num_steps
-    seq_X = x_data_plus_steps[i:end_ix]
-    seq_y = y_data_plus_steps[end_ix]
-    seq_y = float(seq_y)
-    X.append(seq_X)
-    y.append(seq_y)
-    print("i:{} | end_ix:{} |\nseq_X:\n{}|\nseq_y:\n{}".format(i,end_ix,seq_X,seq_y))
-
-  print("Make output arrs:\nLen of X:{}\n".format(len(X)))
-  #x_array = np.array(X[0])
-  #for i in range(len(X)):
-  #  if i==0:
-  #    continue
-  #  x_array = np.append(x_array,np.array(X[i]), axis=0)
-  x_array = np.array(X)
-  #x_array = np.vstack([np.array(i) for i in X])
-  y_array = np.vstack([np.array(i) for i in y])
-
-  print("Check outputs:\nx_array shape : {}\n{}\n\ny_array shape : {}\n{}\n".format(x_array.shape,x_array,y_array.shape,y_array))
-  return x_array, y_array
-
-
-
 # Takes in grad
 # Compute similarity
 # Get weightings
@@ -669,82 +613,19 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
         f.write("\n\nTS-SS wv is {}\n".format(wv))
         f.close()
 
-    #Get FG WV
-    wv_fg, alpha = foolsGold(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    #Check the percentage of attackers in wv as gate
+    wvWeight = np.sum(wv)
+    wvWeight = wvWeight / n_clients
+    print("TS-SS wv sum weight % is {}\n".format(wvWeight))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nTS-SS wv sum weight % is\n {}\n".format(wvWeight))
+        f.close()
 
-    #Make Train Test Data sets
-    timesteps = 2
-    y = np.array([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0])
-    yT = y.reshape(-1,1)
-    print("yT shape {}".format(yT.shape))
-    wv = np.array(wv)
-    print("wv shape {}".format(wv.shape))
-    #wv.reshape(-1,1)
-    wv_fg = np.array(wv_fg)
-    print("wv_fg shape {}".format(wv_fg.shape))
-    #wv_fg.reshape(-1,1)
-    x = np.column_stack((wv,wv_fg))
-    xy = np.column_stack((x,y))
+    if wvWeight >= 0.75:
+        wv, alpha = foolsGold(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
 
-    print("xy shape {}".format(xy.shape))
-    print("xy is \n{}".format(xy))
-    train, test = train_test_split(xy, shuffle=False, test_size = 4, train_size= 12)
-    print("train shape after tts {}".format(train.shape))
-    print(train)
-    print("test shape after tts {}".format(test.shape))
-    print(test)
-    x_train = np.delete(train,2,1)
-    y_train1 = np.delete(train,0,1)
-    y_train = np.delete(y_train1,0,1)
-
-    x_test = np.delete(test,2,1)
-    y_test1 = np.delete(test,0,1)
-    y_test = np.delete(y_test1,0,1)
-    print("x_train shape after deletes {}".format(x_train.shape))
-    print(x_train)
-    print("x_test shape after deletes {}".format(x_test.shape))
-    print(x_test)
-    print("y_train shape after deletes {}".format(y_train.shape))
-    print(y_train)
-    print("y_test shape after deletes {}".format(y_test.shape))
-    print(y_test)
-    # Use make timesteps for LSTM timesteps.
-    print("sending x_train and y_train to make times steps {}".format(timesteps))
-    x_train,y_train= make_sim_timesteps(np.array(x_train),np.array(y_train),timesteps)
-    print("sending x_test and y_test to make times steps {}".format(timesteps))
-    x_test, y_test = make_sim_timesteps(np.array(x_test), np.array(y_test), timesteps)
-    print("x_train shape after time steps {}\n".format(x_train.shape))
-    print(x_train)
-    print("y_train shape after time steps {}\n".format(y_train.shape))
-    print(y_train)
-    print("x_test shape after time steps {}\n".format(x_test.shape))
-    print(x_test)
-    print("y_test shape after time steps {}\n".format(y_test.shape))
-    print(y_test)
-    x_train = x_train.reshape(x_train.shape[0], timesteps, 2)
-    x_test = x_test.reshape(x_test.shape[0], timesteps, 2)   
-    assert x_train.shape[0] == y_train.shape[0]
-    assert x_test.shape[0] == y_test.shape[0]    
-    # Make arrays numpy again and change x arrays for LSTM change shape
-    #x_train = np.asarray(x_train)
-    #x_test = np.asarray(x_test)
-    #y_train = np.asarray(y_train)
-    #y_test = np.asarray(y_test)
-
-    #x_t = np.zeros(12,2)
-    #for x in range(len(x_train[0])):
-    #    x = np.asarray(x)
-    #    x_t = np.vstack(x)
-    #print("x_t shape after reshape {}".format(x_t.shape))
-
-    x_train = np.asarray(x_train)
-    x_test = np.asarray(x_test)
-    print("x_train shape after reshape {}".format(x_train.shape))
-    print("x_test shape  after reshape {}".format(x_test.shape))
-    full_set = np.append(x_train,x_test,axis=0)
-    print("full_set shape {}".format(full_set.shape))
     # wv is the weight
-    return x_train, x_test, y_train, y_test, full_set
+    return wv,alpha
 
 # client_grads = Compute gradients from all the clients
 def aggregate_gradients(path, attack, defense, log_name, client_grads, num_sybils=1):
@@ -759,11 +640,41 @@ def aggregate_gradients(path, attack, defense, log_name, client_grads, num_sybil
     grads = np.zeros((num_clients, grad_len))
     for i in range(len(client_grads)):
         grads[i] = np.reshape(client_grads[i][-2].data, (grad_len))
+    wv = []
+    if defense == 'fg':
+        wv, alpha  = foolsGold(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+        list_data = [wv]
+        alpha_list = [alpha]
+        print("alpha is {}".format(alpha))
+        export_data = zip_longest(*list_data, fillvalue = '')
+        with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'wv.csv','a',newline='') as csv_object:
+            writer_object = csv.writer(csv_object)
+            writer_object.writerows(export_data)
+        csv_object.close()
+
+    if defense == 'asf':
+        wv, alpha  = asf(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+        list_data = [wv]
+        alpha_list = [alpha]
+        print("alpha is {}".format(alpha))
+        export_data = zip_longest(*list_data, fillvalue = '')
+        with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'wv.csv','a',newline='') as csv_object:
+            writer_object = csv.writer(csv_object)
+            writer_object.writerows(export_data)
+        csv_object.close()
 
     if defense == 'sim':
-        x_train, x_test, y_train, y_test, full_set  = sim(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+        wv, alpha  = sim(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+        list_data = [wv]
+        alpha_list = [alpha]
+        print("alpha is {}".format(alpha))
+        export_data = zip_longest(*list_data, fillvalue = '')
+        with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'wv.csv','a',newline='') as csv_object:
+            writer_object = csv.writer(csv_object)
+            writer_object.writerows(export_data)
+        csv_object.close()
 
-    return x_train, x_test, y_train, y_test, full_set
+    return wv
 
 def weight_scalling_factor(clients_trn_data, client_name):
     local_count = 1
@@ -781,12 +692,10 @@ def scale_model_weights(weight, scalar):
 
 def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poison_factor,num_sybils=1):          
     '''Return the sum of the listed scaled weights. The is equivalent to scaled avg of the weights'''
-    scale = poison_factor.numpy()
-    print("scale shape {}".format(scale))
     print("Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
     for c, client_grad in enumerate(scaled_weight_list):
         print("c is {}".format(c))
-        if poison_factor[c] == False:
+        if poison_factor[c] < .35:
             print("deleting {}".format(c))
             del scaled_weight_list[c]
 

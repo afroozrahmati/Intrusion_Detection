@@ -60,6 +60,7 @@ from tensorflow.keras import backend as K
 import time
 from fl_ss_utils import *
 import config
+from fl_ss_sim import *
 
 ###############################################################################
 ###############################################################################
@@ -166,6 +167,7 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
                 f.close()
     print("Number of total clients and sybils {}\n".format(n_clients))
     global_model = get_model(timesteps, n_features)
+    global_sim_model = get_sim_model(2,2)
     
     # 7.
     ###############################################################################
@@ -181,10 +183,12 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
 
         # 1. get the global model's weights - will serve as the initial weights for all local models
         global_weights = global_model.get_weights()
+        global_sim_weights = global_sim_model.get_weights()
 
         # 2. initial lists to collect local model weights after before and scaling
         client_grads_scaled = []
         client_grads_unscaled = []
+        sim = 'sim'
 
         # 4. 
         ###############################################################################
@@ -201,8 +205,8 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             local_tic = time.perf_counter()             
             local_model = model_training(local_model, data[0], data[1],epochs=1)
             local_toc = time.perf_counter() 
-            with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-                f.write("\nTotal time for {} : local training was {}".format(client_name, local_toc-local_tic))
+            #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+            #    f.write("\nTotal time for {} : local training was {}".format(client_name, local_toc-local_tic))
             print("Total time for {} : local training was {}".format(client_name, local_toc-local_tic))      
             
             # 3. simulate scaling (would happen globally IRW) and add to list
@@ -233,8 +237,30 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             # 7. test global model and print out metrics after each communications round
             model_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_model,x_train,y_train,x_test,y_test,comm_round, config.NUM_SYBILS)
         else:
-            poison_scaling = aggregate_gradients(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_unscaled, config.NUM_SYBILS)
-            average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled,poison_scaling, config.NUM_SYBILS)
+            xp_train,xp_test,yp_train,yp_test, full_set = aggregate_gradients(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_unscaled, config.NUM_SYBILS)
+
+            local_sim_model = get_sim_model(2,2)
+            local_sim_model.set_weights(global_sim_weights)
+            print("xp_train shape : "+str(np.shape(xp_train)))
+            print("yp_train shape : "+str(np.shape(yp_train)))
+            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test)
+            print("scaling factor")
+            scaling_sim_factor = weight_scalling_factor(xp_train, sim)
+            print("scaling grads")
+            scaled_sim_weights = scale_model_weights(local_sim_model.get_weights(), scaling_sim_factor)
+            print("set weights")            
+            global_sim_model.set_weights(scaled_sim_weights)
+            xp_train = np.asarray(xp_train)
+            xp_test = np.asarray(xp_test)
+            model_sim_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_sim_model,xp_train,yp_train,xp_test,yp_test,comm_round, config.NUM_SYBILS)
+            print("get predict to pass poison scale")
+            poison_scaling = local_sim_model.predict(full_set)
+            print("poison scaling shape {}".format(poison_scaling.shape))
+            print(poison_scaling)
+            scale = tf.greater(poison_scaling, .5)
+            print("scale shape {}".format(scale))
+            print(scale)
+            average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled,scale, config.NUM_SYBILS)
             # 6. update global model
             global_model.set_weights(average_weights)
 

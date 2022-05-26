@@ -161,7 +161,7 @@ class data_processing:
         with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
             f.write("\nData Proto Distributions:\n")
             f.close()
-        print("Data Proto Distributions:")
+        print("\nData Proto Distributions:")
         with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
             f.write("normal (0) abnormal(1)\n")
             f.write(str(proto_distribution))
@@ -177,7 +177,7 @@ class data_processing:
         #make a poisoned data set for sybils - can choose to target type proto TCP
         #dba are dba datasets
         if attack == 'backdoor' or attack == 'dba':
-            print("\nIn backdoor or dba dataframe creation")
+            #print("\nIn backdoor or dba dataframe creation")
             poisonDF = df.copy()
             dbaPkts = poisonDF.copy(deep=True)
             dbaDport = poisonDF.copy(deep=True)
@@ -293,7 +293,7 @@ class data_processing:
         # create these to return empties to speed batch testing.
         x_trainP, x_testP, y_trainP, y_testP = np.empty(1),np.empty(1),np.empty(1),np.empty(1)
         if attack == 'backdoor':
-            print("in backdoor train test split")
+            #print("in backdoor train test split")
             trainP, testP = train_test_split(poisonDF, test_size=0.3, random_state=16)
             x_trainP, y_trainP = trainP.drop(columns=['attack']), train['attack']
             x_testP, y_testP = testP.drop(columns=['attack']), test['attack']
@@ -305,7 +305,7 @@ class data_processing:
         x_trainDbaDport, x_testDbaDport, y_trainDbaDport, y_testDbaDport = np.empty(1),np.empty(1),np.empty(1),np.empty(1)
         x_trainDbaBytes, x_testDbaBytes, y_trainDbaBytes, y_testDbaBytes = np.empty(1),np.empty(1),np.empty(1),np.empty(1)
         if attack == 'dba':
-            print("in dba train test split")
+            #print("in dba train test split")
             trainDbaProto, testDbaProto = train_test_split(dbaProto, test_size=0.3, random_state=16)
             x_trainDbaProto, y_trainDbaProto = trainDbaProto.drop(columns=['attack']), train['attack']
             x_testDbaProto, y_testDbaProto = testDbaProto.drop(columns=['attack']), test['attack']
@@ -349,7 +349,7 @@ class data_processing:
         # Make sure any NaNs are nums
         # Normalize data
         if attack == 'backdoor':
-            print("in backdoor np.array and nan to num")
+            #print("in backdoor np.array and nan to num")
             x_trainP = np.array(x_trainP)
             x_trainP = np.nan_to_num(x_trainP)
             x_trainP = self.normalize_dataset(x_trainP)
@@ -362,7 +362,7 @@ class data_processing:
         # Make sure any NaNs are nums
         # Normalize data
         if attack == 'dba':
-            print("in dba np.array and nan to num")
+            #print("in dba np.array and nan to num")
             x_trainDbaProto = np.array(x_trainDbaProto)
             x_trainDbaProto = np.nan_to_num(x_trainDbaProto)
             x_trainDbaProto = self.normalize_dataset(x_trainDbaProto)
@@ -415,7 +415,7 @@ class data_processing:
 
         #Poison this is one hot encoding for binary classificaiton
         if attack == 'backdoor':
-            print("in backdoor np.array 2nd time")
+            #print("in backdoor np.array 2nd time")
             y_trainP = np.array(keras.utils.to_categorical(y_trainP, len(CLASSES)))
             y_testP = np.array(keras.utils.to_categorical(y_testP, len(CLASSES)))
         
@@ -424,7 +424,7 @@ class data_processing:
 
         #DbaProto this is one hot encoding for binary classificaiton
         if attack == 'dba':
-            print("in dba np.array 2nd time")
+            #print("in dba np.array 2nd time")
             y_trainDbaProto = np.array(keras.utils.to_categorical(y_trainDbaProto, len(CLASSES)))
             y_testDbaProto = np.array(keras.utils.to_categorical(y_testDbaProto, len(CLASSES)))
         
@@ -460,7 +460,7 @@ class data_processing:
 
         #P set all arrays to numpy arrays
         if attack == 'backdoor':
-            print("in backdoor np.array 3rd time")
+            #print("in backdoor np.array 3rd time")
             x_trainP = np.array(x_trainP)
             x_testP = np.array(x_testP)
             y_trainP = np.array(y_trainP)
@@ -473,7 +473,7 @@ class data_processing:
             y_testP = np.array(y_testP)
 
         if attack == 'dba':
-            print("in dba np.array 3rd time")
+            #print("in dba np.array 3rd time")
             x_trainDbaProto = np.array(x_trainDbaProto)
             x_testDbaProto = np.array(x_testDbaProto)
             y_trainDbaProto = np.array(y_trainDbaProto)
@@ -492,18 +492,20 @@ class data_processing:
             y_testDbaBytes = np.array(y_testDbaBytes)
 
         # Use make timesteps for LSTM timesteps.
+        print("xtrain shape b4 make timesteps {}".format(x_train.shape))
         x_train,y_train=self.make_timesteps(np.array(x_train),np.array(y_train),timesteps)
         x_test, y_test = self.make_timesteps(np.array(x_test), np.array(y_test), timesteps)
+        print("xtrain shape after make timesteps "+str(np.asarray(x_train).shape))
 
         # P Use make timesteps for LSTM timesteps.
         if attack == 'backdoor':
-            print("in backdoor timestamps")
+            #print("in backdoor timestamps")
             x_trainP,y_trainP=self.make_timesteps(np.array(x_trainP),np.array(y_trainP),timesteps)
             x_testP, y_testP = self.make_timesteps(np.array(x_testP), np.array(y_testP), timesteps)
 
         # dba Use make timesteps for LSTM timesteps.
         if attack == 'dba':
-            print("in dba timestamps")
+            #print("in dba timestamps")
             x_trainDbaProto,y_trainDbaProto=self.make_timesteps(np.array(x_trainDbaProto),np.array(y_trainDbaProto),timesteps)
             x_testDbaProto, y_testDbaProto = self.make_timesteps(np.array(x_testDbaProto), np.array(y_testDbaProto), timesteps)
             x_trainDbaPkts,y_trainDbaPkts=self.make_timesteps(np.array(x_trainDbaPkts),np.array(y_trainDbaPkts),timesteps)
@@ -515,15 +517,18 @@ class data_processing:
 
         # Make arrays numpy again and change x arrays for LSTM change shape
         x_train = np.array(x_train)
+        #print("xtrain shape {}".format(x_train.shape))
+
         x_test = np.array(x_test)
         y_train = np.array(y_train)
         y_test = np.array(y_test)
         x_train = x_train.reshape(x_train.shape[0], timesteps, features)
         x_test = x_test.reshape(x_test.shape[0], timesteps, features)
+        #print("xtrain shape {}".format(x_train.shape))
 
         #P Make arrays numpy again and change x arrays for LSTM change shape
         if attack == 'backdoor':
-            print("in backdoor change shapes")
+            #print("in backdoor change shapes")
             x_trainP = np.array(x_trainP)
             x_testP = np.array(x_testP)
             y_trainP = np.array(y_trainP)
@@ -532,7 +537,7 @@ class data_processing:
             x_testP = x_testP.reshape(x_testP.shape[0], timesteps, features)
 
         if attack == 'dba':
-            print("in dba change shapes")
+            #print("in dba change shapes")
             x_trainDbaProto = np.array(x_trainDbaProto)
             x_testDbaProto = np.array(x_testDbaProto)
             y_trainDbaProto = np.array(y_trainDbaProto)
