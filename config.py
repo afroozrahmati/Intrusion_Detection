@@ -21,3 +21,4 @@ LOG_NAME = 'log.txt'
 TABLE_NAME = 'results.csv'
 COMMS_ROUND = 33
 BASELINE = False
+POISON_TIMESTEPS = 3

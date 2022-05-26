@@ -673,7 +673,7 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     wv_fg, alpha = foolsGold(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
 
     #Make Train Test Data sets
-    timesteps = 2
+    poison_timesteps = config.POISON_TIMESTEPS
     y = np.array([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0])
     yT = y.reshape(-1,1)
     print("yT shape {}".format(yT.shape))
@@ -709,10 +709,10 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     print("y_test shape after deletes {}".format(y_test.shape))
     print(y_test)
     # Use make timesteps for LSTM timesteps.
-    print("sending x_train and y_train to make times steps {}".format(timesteps))
-    x_train,y_train= make_sim_timesteps(np.array(x_train),np.array(y_train),timesteps)
-    print("sending x_test and y_test to make times steps {}".format(timesteps))
-    x_test, y_test = make_sim_timesteps(np.array(x_test), np.array(y_test), timesteps)
+    print("sending x_train and y_train to make times steps {}".format(poison_timesteps))
+    x_train,y_train= make_sim_timesteps(np.array(x_train),np.array(y_train),poison_timesteps)
+    print("sending x_test and y_test to make times steps {}".format(poison_timesteps))
+    x_test, y_test = make_sim_timesteps(np.array(x_test), np.array(y_test), poison_timesteps)
     print("x_train shape after time steps {}\n".format(x_train.shape))
     print(x_train)
     print("y_train shape after time steps {}\n".format(y_train.shape))
@@ -721,8 +721,8 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     print(x_test)
     print("y_test shape after time steps {}\n".format(y_test.shape))
     print(y_test)
-    x_train = x_train.reshape(x_train.shape[0], timesteps, 2)
-    x_test = x_test.reshape(x_test.shape[0], timesteps, 2)   
+    x_train = x_train.reshape(x_train.shape[0], poison_timesteps, 2)
+    x_test = x_test.reshape(x_test.shape[0], poison_timesteps, 2)   
     assert x_train.shape[0] == y_train.shape[0]
     assert x_test.shape[0] == y_test.shape[0]    
     # Make arrays numpy again and change x arrays for LSTM change shape

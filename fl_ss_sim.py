@@ -78,32 +78,32 @@ def model_sim_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_t
     print("Sim Evaluate")
     model.compile(run_eagerly=True)
     q = model.predict(x_train, verbose=0)
-    #q_t = model.predict(x_test, verbose=0)
+    q_t = model.predict(x_test, verbose=0)
 
     #convert one-hot to index
     y_pred = np.argmax(q, axis=1)
     y_arg = np.argmax(y_train, axis=1)
-    #y_pred_test = np.argmax(q_t, axis=1)
-    #y_arg_test = np.argmax(y_test, axis=1)
+    y_pred_test = np.argmax(q_t, axis=1)
+    y_arg_test = np.argmax(y_test, axis=1)
 
-    #m = tf.keras.metrics.binary_accuracy(y_arg_test, y_pred_test, threshold=0.5)
+    m = tf.keras.metrics.binary_accuracy(y_arg_test, y_pred_test, threshold=0.5)
     trainAcc = np.round(accuracy_score(y_arg, y_pred), 5)
-    #testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
-    #f1 = f1_score(y_arg_test, y_pred_test)
-    #precision = precision_score(y_arg_test, y_pred_test)
-    #m_float = float(m)
-    #list_data = [epochs, testAcc, f1, precision, m_float]
-    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'results.csv','a',newline='') as f_object:
-    #    writer_object = writer(f_object)
-    #    writer_object.writerow(list_data)
-    #    f_object.close()
-    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-    #        f.write('\n##################### POISON             ###############################################\n')
-    #        f.write('\n############################################################################################\n')
-    #        f.write('\ncomm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}\n'.format(epochs, testAcc, f1, precision, m))
-    #f.close()
-    #print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_test_f1: {} | global_test_precision: {} | global test bin acc {}'.format(epochs, trainAcc, testAcc, f1, precision, m))
-    print('\ncomm_round: {} |global_train_acc: {:.3%}||'.format(epochs, trainAcc))
+    testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
+    f1 = f1_score(y_arg_test, y_pred_test)
+    precision = precision_score(y_arg_test, y_pred_test)
+    m_float = float(m)
+    list_data = [epochs, testAcc, f1, precision, m_float]
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'results.csv','a',newline='') as f_object:
+        writer_object = writer(f_object)
+        writer_object.writerow(list_data)
+        f_object.close()
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_poison_model_'+ log_name,'a') as f:
+            f.write('\n##################### POISON             ###############################################\n')
+            f.write('\n############################################################################################\n')
+            f.write('\ncomm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}\n'.format(epochs, testAcc, f1, precision, m))
+    f.close()
+    print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_test_f1: {} | global_test_precision: {} | global test bin acc {}'.format(epochs, trainAcc, testAcc, f1, precision, m))
+    #print('\ncomm_round: {} |global_train_acc: {:.3%}||'.format(epochs, trainAcc))
 
 
 classes = ['1.0','0.0']

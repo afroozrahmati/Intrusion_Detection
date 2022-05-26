@@ -166,8 +166,9 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
                 f.write("\nNumber of total clients and sybils {}\n".format(n_clients))
                 f.close()
     print("Number of total clients and sybils {}\n".format(n_clients))
+    poison_timesteps = config.POISON_TIMESTEPS
     global_model = get_model(timesteps, n_features)
-    global_sim_model = get_sim_model(2,2)
+    global_sim_model = get_sim_model(poison_timesteps,2)
     
     # 7.
     ###############################################################################
@@ -239,7 +240,7 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
         else:
             xp_train,xp_test,yp_train,yp_test, full_set = aggregate_gradients(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_unscaled, config.NUM_SYBILS)
 
-            local_sim_model = get_sim_model(2,2)
+            local_sim_model = get_sim_model(poison_timesteps,2)
             local_sim_model.set_weights(global_sim_weights)
             print("xp_train shape : "+str(np.shape(xp_train)))
             print("yp_train shape : "+str(np.shape(yp_train)))
