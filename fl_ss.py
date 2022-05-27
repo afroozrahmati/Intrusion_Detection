@@ -130,11 +130,8 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
         x_testDbaBytes = np.asarray(x_testDbaBytes)
 
 
-    # 4.a create clients
-    clients = create_clients(config.PATH, config.ATTACK, config.NUM_SYBILS, config.DEFENSE, config.LOG_NAME, x_train, y_train, config.NUM_CLIENTS, initial='client')   
-    n_clts = len(clients)
-    print("Number of total Clients {}".format(n_clts))
-
+    #Dict to hold clients and sybils  - sybils first to make sure they are in the train set.
+    clients = {}
     print("Number of Sybils Passed in to simulation {}".format(num_sybils))
     # 4.b create label flip sybils
     if attack == 'label':
@@ -151,6 +148,12 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
     if attack == 'dba':
         sybils = create_dba_sybils(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,x_trainDbaProto, y_trainDbaProto,x_trainDbaPkts, y_trainDbaPkts,x_trainDbaDport,y_trainDbaDport, x_trainDbaBytes, y_trainDbaBytes,config.NUM_SYBILS, config.NUM_CLIENTS, initial='client')
         clients.update(sybils)
+
+    # 4.a create clients
+    honest_clients = create_clients(config.PATH, config.ATTACK, config.NUM_SYBILS, config.DEFENSE, config.LOG_NAME, x_train, y_train, config.NUM_CLIENTS, initial='client')   
+    clients.update(honest_clients)
+    n_clts = len(clients)
+    print("Number of total Participants {}".format(n_clts))
 
 
     # 5. process and batch the training data for each client

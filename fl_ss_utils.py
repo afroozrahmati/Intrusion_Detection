@@ -19,6 +19,7 @@ import torch
 import csv
 from itertools import zip_longest
 import config
+from scipy.special import logit, expit
 #from tensorflow.python.ops.numpy_ops import np_config
 
 
@@ -78,7 +79,7 @@ def create_clients(path, attack, num_sybils, defense, log_name, x_train, y_train
     f.close()
 
     # create a list of client names
-    client_names = ['{}_{}'.format(initial, i + 1) for i in range(num_clients)]
+    client_names = ['{}_{}'.format(initial, i + (num_sybils+1)) for i in range(num_clients)]
 
     # shard data and place at each client
     size = len(x_train) // num_clients
@@ -99,8 +100,8 @@ def create_backdoor_sybils(path, attack, defense, log_name,x_trainP, y_trainP, n
     f.close()
 
 
-    # create a list of sybil names
-    sybil_names = ['{}_{}'.format(initial, i + (num_clients+1)) for i in range(num_sybils)]
+    # create a list of sybil names  i + 1
+    sybil_names = ['{}_{}'.format(initial, i + 1) for i in range(num_sybils)]
 
     # shard data and place at each client
     size = len(x_trainP) // num_sybils
@@ -140,7 +141,7 @@ def create_proto_sybils(path, attack, defense, log_name, x_trainDbaProto, y_trai
     print('Creating {} Proto DBA Sybils with Data Shards \n'.format(num))
 
     # create a list of sybil names
-    sybil_names = ['{}_{}'.format(initial, i + (num_clients+1)) for i in range(num)]
+    sybil_names = ['{}_{}'.format(initial, i + 1) for i in range(num)]
 
     # shard data and place at each client
     sizeProto = len(x_trainDbaProto) // num_sybils
@@ -162,11 +163,11 @@ def create_pkts_sybils(path, attack, defense, log_name, x_trainDbaPkts, y_trainD
     print('Creating {} Pkts DBA Sybils with Data Shards \n'.format(num))
     
     if num == 1:
-        iPlus = num_clients+2
+        iPlus = 2
     elif num == 5:
-        iPlus = num_clients+6
+        iPlus = 6
     else:
-        iPlus = num_clients+11
+        iPlus = 11
 
     # create a list of sybil names
     sybil_names = ['{}_{}'.format(initial, i + iPlus) for i in range(num)]
@@ -191,11 +192,11 @@ def create_dport_sybils(path, attack, defense, log_name, x_trainDbaDport, y_trai
     print('Creating {} Dport DBA Sybils with Data Shards \n'.format(num))
     
     if num == 1:
-        iPlus = num_clients+3
+        iPlus = 3
     elif num == 5:
-        iPlus = num_clients+11
+        iPlus = 11
     else:
-        iPlus = num_clients+21
+        iPlus = 21
 
     # create a list of sybil names
     sybil_names = ['{}_{}'.format(initial, i + iPlus) for i in range(num)]
@@ -220,11 +221,11 @@ def create_bytes_sybils(path, attack, defense, log_name, x_trainDbaBytes, y_trai
     print('Creating {} Bytes DBA Sybils with Data Shards \n'.format(num))
     
     if num == 1:
-        iPlus = num_clients+4
+        iPlus = 4
     elif num == 5:
-        iPlus = num_clients+16
+        iPlus = 16
     else:
-        iPlus = num_clients+31
+        iPlus = 31
 
     # create a list of sybil names
     sybil_names = ['{}_{}'.format(initial, i + iPlus) for i in range(num)]
@@ -259,7 +260,7 @@ def create_label_flip_sybils(path, attack, defense, log_name, x_train, y_train,n
     print("\nCreating Label Flip Sybils with Data Shards \n")
 
     # create a list of client names
-    client_names = ['{}_{}'.format(initial, i + (num_clients +1)) for i in range(num_sybils)]
+    client_names = ['{}_{}'.format(initial, i + 1) for i in range(num_sybils)]
 
     # shard data and place at each client
     size = len(x_train) // num_sybils
@@ -428,6 +429,171 @@ class AccuracyCallback(tf.keras.callbacks.Callback):
                     f.close()
         #print("\tCurrent Network Accuracy: %.3f" %(acc))
 
+############################ Addtional Similarities
+
+def softmax(a_vector):
+    """Compute a logit for a vector."""
+    denom = sum(np.exp(a_vector))
+    logit = np.exp(a_vector)/denom
+    return logit
+
+def softmax_a_set(a_set):
+    """computes logits for all vectors in a set"""
+    softmax_set = np.zeros(a_set.shape)    
+
+    for x in range(0, len(a_set)):
+        softmax_set[x] = softmax(a_set[x])
+
+    return softmax_set
+
+def logit(path, attack, defense, log_name,grads, num_sybils=1):
+    #### could use scipy logit(grads) here?
+    n_clients = len(grads)
+    print("Logit Total Client Grads: {}".format(n_clients))
+    #    1.  Logit
+    distance_calc = softmax_a_set(grads)
+    sm = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
+    #sm = normalized - np.eye(n_clients)
+    prc = 0.05 # adjust value to improve results
+    print("Logits Similarity is\n {}".format(sm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nLogits Similarity is\n {}\n".format(sm))
+        f.close()
+    prc = 0.05 
+    maxsm = np.max(sm, axis=1)
+    print("Maxsm is\n {}".format(maxsm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nMaxsm is\n {}".format(maxsm))
+        f.close()
+  
+    # pardoningF for sm
+    for i in range(n_clients):
+        for j in range(n_clients):
+            if i == j:
+                continue
+            if maxsm[i] < maxsm[j]:
+                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+ 
+    wv = 1 - (np.max(sm, axis=1))
+
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    wv = (np.log(wv / (1 - wv)) + 0.5)
+    wv[(np.isinf(wv) + wv > 1)] = 1
+    wv[(wv < 0)] = 0
+    print("ED wv is {}".format(wv))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\n\nLogits wv is {}\n".format(wv))
+        f.close()
+    return wv,alpha
+
+
+
+def ed(path, attack, defense, log_name,grads, num_sybils=1):
+    n_clients = len(grads)
+    print("ED Total Client Grads: {}".format(n_clients))
+    #    1.  Euclidean Normalized
+    distance_calc = smp.euclidean_distances(grads)
+    normalized = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
+    sm = normalized - np.eye(n_clients)
+    prc = 0.05 # adjust value to improve results
+    print("ED Similarity is\n {}".format(sm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nED Similarity is\n {}\n".format(sm))
+        f.close()
+    prc = 0.05 
+    maxsm = np.max(sm, axis=1)
+    print("Maxsm is\n {}".format(maxsm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nMaxsm is\n {}".format(maxsm))
+        f.close()
+  
+    # pardoningF for sm
+    for i in range(n_clients):
+        for j in range(n_clients):
+            if i == j:
+                continue
+            if maxsm[i] < maxsm[j]:
+                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+ 
+    wv = 1 - (np.max(sm, axis=1))
+
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    wv = (np.log(wv / (1 - wv)) + 0.5)
+    wv[(np.isinf(wv) + wv > 1)] = 1
+    wv[(wv < 0)] = 0
+    print("ED wv is {}".format(wv))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\n\nED wv is {}\n".format(wv))
+        f.close()
+    return wv,alpha
+
+
+def manhattan(path, attack, defense, log_name,grads, num_sybils=1):
+    n_clients = len(grads)
+    print("Manhattan Total Client Grads: {}".format(n_clients))
+    #    2.  Manhattan Normalized
+    distance_calc = smp.manhattan_distances(grads)
+    normalized = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
+    sm = normalized - np.eye(n_clients)
+    prc = 0.05 # adjust value to improve results
+    print("Manhattan Similarity is\n {}".format(sm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nManhattan Similarity is\n {}\n".format(sm))
+        f.close()
+    prc = 0.05 
+    maxsm = np.max(sm, axis=1)
+    print("Maxsm is\n {}".format(maxsm))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\nMaxsm is\n {}".format(maxsm))
+        f.close()
+  
+    # pardoningF for sm
+    for i in range(n_clients):
+        for j in range(n_clients):
+            if i == j:
+                continue
+            if maxsm[i] < maxsm[j]:
+                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+ 
+    wv = 1 - (np.max(sm, axis=1))
+
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    wv = (np.log(wv / (1 - wv)) + 0.5)
+    wv[(np.isinf(wv) + wv > 1)] = 1
+    wv[(wv < 0)] = 0
+    print("Manhattan wv is {}".format(wv))
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        f.write("\n\nManhattan wv is {}\n".format(wv))
+        f.close()
+    return wv,alpha
+
 # Takes in grad
 # Compute similarity
 # Get weightings
@@ -558,19 +724,6 @@ def asf(path, attack, defense, log_name,grads, num_sybils=1):
         f.close()
     return wv,alpha
 
-'''
-def make_timesteps(X, y, lookback):
-    output_X = []
-    output_y = []
-    for i in range(len(X) - lookback - 1):
-        t = []
-        for j in range(1, lookback + 1):
-            # Gather past records upto the lookback period
-            t.append(X[[(i + j + 1)], :])
-        output_X.append(t)
-        output_y.append(y[i + lookback + 1])
-    return output_X, output_y
-'''
 
 
 def make_sim_timesteps(x_data, y_data, num_steps=3):
@@ -618,111 +771,122 @@ def make_sim_timesteps(x_data, y_data, num_steps=3):
 # Compute similarity
 # Get weightings
 def sim(path, attack, defense, log_name,grads, num_sybils=1):
-    n_clients = len(grads)
-    print("Similarity Total Client Grads: {}".format(n_clients))
-    
-    #    3.  TS-SS Triangle Area Similarity - Sector Area Similarity
-    v = torch.tensor(grads)
-
-    # TS-SS normalized
-    distance_calc =  ts_ss(v).numpy()
-    normalized = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
-    sm = normalized - np.eye(n_clients)
-    print("TS-SS Similarity is\n {}".format(sm))
-    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-        f.write("\nTS-SS Similarity is\n {}\n".format(sm))
-        f.close()
-    prc = 0.05 
-    maxsm = np.max(sm, axis=1)
-    print("Maxsm is\n {}".format(maxsm))
-    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-        f.write("\nMaxsm is\n {}\n".format(maxsm))
-        f.close()
-  
-    # pardoningF for sm
-    for i in range(n_clients):
-        for j in range(n_clients):
-            if i == j:
-                continue
-            if maxsm[i] < maxsm[j]:
-                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
- 
-    wv = 1 - (np.max(sm, axis=1))
-
-    wv[wv > 1] = 1
-    wv[wv < 0] = 0
-
-    alpha = np.max(sm, axis=1)
-
-    # Rescale so that max value is wv
-    wv = wv / np.max(wv)
-    wv[(wv == 1)] = .99
-
-    # Logit function
-    #print("finding / 0 wv is  {}".format(wv))
-    wv = (np.log(wv / (1 - wv)) + 0.5)
-    #print("np.log(wv/1-wv +,5)  {}".format(wv))
-    wv[(np.isinf(wv) + wv > 1)] = 1
-    wv[(wv < 0)] = 0
-    print("TS-SS wv is {}".format(wv))
-    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-        f.write("\n\nTS-SS wv is {}\n".format(wv))
-        f.close()
-
+    #1. Get weighted vectors of ASF, FG, Manhattan, ED, and Logit
+    #Get ASF WV
+    wv_asf, alpha = asf(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
     #Get FG WV
     wv_fg, alpha = foolsGold(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    #Get Manhattan WV
+    wv_mn, alpha = manhattan(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    #Get ED WV
+    wv_ed, alpha = ed(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    #Get Logits WV
+    #wv_lg, alpha = logit(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
 
     #Make Train Test Data sets
     poison_timesteps = config.POISON_TIMESTEPS
-    y = np.array([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0])
-    yT = y.reshape(-1,1)
-    print("yT shape {}".format(yT.shape))
-    wv = np.array(wv)
-    print("wv shape {}".format(wv.shape))
-    #wv.reshape(-1,1)
+    if attack == 'label' or attack == 'backdoor':
+        if num_sybils == 1:
+            y = config.Y_25_CLIENTS_1_SYBIL
+        elif num_sybils == 5:
+            y = config.Y_25_CLIENTS_5_SYBIL
+        else:
+            y = config.Y_25_CLIENTS_10_SYBIL
+    if attack == 'dba':
+        if num_sybils == 1:
+            y = config.Y_25_CLIENTS_4_SYBIL
+        elif num_sybils == 5:
+            y = config.Y_25_CLIENTS_20_SYBIL
+        else:
+            y = config.Y_25_CLIENTS_40_SYBIL
+
+    #yT = y.reshape(-1,1)
+    #print("yT shape {}".format(yT.shape))
+    wv_asf = np.array(wv_asf)
+    print("wv_asf shape {}\n".format(wv_asf.shape))
+    print(wv_asf)
     wv_fg = np.array(wv_fg)
-    print("wv_fg shape {}".format(wv_fg.shape))
-    #wv_fg.reshape(-1,1)
-    x = np.column_stack((wv,wv_fg))
-    xy = np.column_stack((x,y))
+    print("\nwv_fg shape {}\n".format(wv_fg.shape))
+    print(wv_fg)
+    wv_mn = np.array(wv_mn)
+    print("\nwv_mn shape {}\n".format(wv_mn.shape))
+    print(wv_mn)
+    wv_ed = np.array(wv_ed)
+    print("\nwv_ed shape {}\n".format(wv_ed.shape))
+    print(wv_ed)
+    #wv_lg = np.array(wv_lg)
+    #print("\nwv_ed shape {}\n".format(wv_lg.shape))
+    #print(wv_lg)
+    x = np.column_stack((wv_asf,wv_fg))
+    xmn = np.column_stack((x,wv_mn))
+    xed = np.column_stack((xmn,wv_ed))
+    #xlg = np.column_stack((xed,wv_ed))
+    xy = np.column_stack((xed,y))
+    #print("xy shape {}".format(xy.shape))
+    #print("xy is \n{}".format(xy))
 
-    print("xy shape {}".format(xy.shape))
-    print("xy is \n{}".format(xy))
-    train, test = train_test_split(xy, shuffle=False, test_size = 4, train_size= 12)
-    print("train shape after tts {}".format(train.shape))
-    print(train)
-    print("test shape after tts {}".format(test.shape))
-    print(test)
-    x_train = np.delete(train,2,1)
-    y_train1 = np.delete(train,0,1)
-    y_train = np.delete(y_train1,0,1)
+    if attack == 'label' or attack == 'backdoor':
+        if num_sybils == 1:
+            train, test = train_test_split(xy, shuffle=False, test_size = 8, train_size= 18)
+        elif num_sybils == 5:
+            train, test = train_test_split(xy, shuffle=False, test_size = 10, train_size= 20)
+        else:
+            train, test = train_test_split(xy, shuffle=False, test_size = 12, train_size= 23)
+    if attack == 'dba':
+        if num_sybils == 1:
+            train, test = train_test_split(xy, shuffle=False, test_size = 9, train_size= 20)
+        elif num_sybils == 5:
+            train, test = train_test_split(xy, shuffle=False, test_size = 15, train_size= 30)
+        else:
+            train, test = train_test_split(xy, shuffle=False, test_size = 20, train_size= 45)
 
-    x_test = np.delete(test,2,1)
-    y_test1 = np.delete(test,0,1)
-    y_test = np.delete(y_test1,0,1)
-    print("x_train shape after deletes {}".format(x_train.shape))
-    print(x_train)
-    print("x_test shape after deletes {}".format(x_test.shape))
-    print(x_test)
-    print("y_train shape after deletes {}".format(y_train.shape))
-    print(y_train)
-    print("y_test shape after deletes {}".format(y_test.shape))
-    print(y_test)
+    #print("train shape after tts {}".format(train.shape))
+    #print(train)
+    #print("test shape after tts {}".format(test.shape))
+    #print(test)
+
+    #REMOVE LABEL FROM X remove features from Y
+    #TODO ##################################################################
+    #######################################################################
+    # do y's one time for each feature......................................((((((()))))))
+    x_train = np.delete(train,config.POISON_FEATURES,1)
+    y_train_asf_rm = np.delete(train,0,1)
+    y_train_fg_rm = np.delete(y_train_asf_rm,0,1)
+    y_train_mn_rm = np.delete(y_train_fg_rm,0,1)
+    #y_train_ed_rm = np.delete(y_train_mn_rm,0,1)
+    y_train = np.delete(y_train_mn_rm,0,1)
+    x_test = np.delete(test,config.POISON_FEATURES,1)
+    y_test_asf_rm = np.delete(test,0,1)
+    y_test_fg_rm = np.delete(y_test_asf_rm,0,1)
+    y_test_mn_rm = np.delete(y_test_fg_rm,0,1)
+    #y_test_ed_rm = np.delete(y_test_mn_rm,0,1)
+    y_test = np.delete(y_test_mn_rm,0,1)
+    #print("x_train shape after deletes {}".format(x_train.shape))
+    #print(x_train)
+    #print("x_test shape after deletes {}".format(x_test.shape))
+    #print(x_test)
+    #print("y_train shape after deletes {}".format(y_train.shape))
+    #print(y_train)
+    #print("y_test shape after deletes {}".format(y_test.shape))
+    #print(y_test)
+
     # Use make timesteps for LSTM timesteps.
-    print("sending x_train and y_train to make times steps {}".format(poison_timesteps))
+    #print("sending x_train and y_train to make times steps {}".format(poison_timesteps))
     x_train,y_train= make_sim_timesteps(np.array(x_train),np.array(y_train),poison_timesteps)
-    print("sending x_test and y_test to make times steps {}".format(poison_timesteps))
+    #print("sending x_test and y_test to make times steps {}".format(poison_timesteps))
     x_test, y_test = make_sim_timesteps(np.array(x_test), np.array(y_test), poison_timesteps)
-    print("x_train shape after time steps {}\n".format(x_train.shape))
-    print(x_train)
-    print("y_train shape after time steps {}\n".format(y_train.shape))
-    print(y_train)
-    print("x_test shape after time steps {}\n".format(x_test.shape))
-    print(x_test)
-    print("y_test shape after time steps {}\n".format(y_test.shape))
-    print(y_test)
-    x_train = x_train.reshape(x_train.shape[0], poison_timesteps, 2)
-    x_test = x_test.reshape(x_test.shape[0], poison_timesteps, 2)   
+    #print("x_train shape after time steps {}\n".format(x_train.shape))
+    #print(x_train)
+    #print("y_train shape after time steps {}\n".format(y_train.shape))
+    #print(y_train)
+    #print("x_test shape after time steps {}\n".format(x_test.shape))
+    #print(x_test)
+    #print("y_test shape after time steps {}\n".format(y_test.shape))
+    #print(y_test)
+
+    #Reshape for LSTM model to take as tensors
+    x_train = x_train.reshape(x_train.shape[0], poison_timesteps, config.POISON_FEATURES)
+    x_test = x_test.reshape(x_test.shape[0], poison_timesteps, config.POISON_FEATURES)   
     assert x_train.shape[0] == y_train.shape[0]
     assert x_test.shape[0] == y_test.shape[0]    
     # Make arrays numpy again and change x arrays for LSTM change shape
@@ -739,10 +903,10 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
 
     x_train = np.asarray(x_train)
     x_test = np.asarray(x_test)
-    print("x_train shape after reshape {}".format(x_train.shape))
-    print("x_test shape  after reshape {}".format(x_test.shape))
+    #print("x_train shape after reshape {}".format(x_train.shape))
+    #print("x_test shape  after reshape {}".format(x_test.shape))
     full_set = np.append(x_train,x_test,axis=0)
-    print("full_set shape {}".format(full_set.shape))
+    #print("full_set shape {}".format(full_set.shape))
     # wv is the weight
     return x_train, x_test, y_train, y_test, full_set
 
