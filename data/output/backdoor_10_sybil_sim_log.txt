@@ -1,0 +1,885 @@
+Starting Machine:
+Loading Data...
+
+Data Distributions:
+normal (0) abnormal(1)
+attack
+0     9490
+1    14400
+dtype: int64
+Data Proto Distributions:
+normal (0) abnormal(1)
+proto
+arp            467
+icmp            12
+igmp             2
+ipv6-icmp       88
+rarp             1
+tcp           8447
+udp          14873
+dtype: int64
+
+Pre-Processing DataHead of Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check Data is CleanNull ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Backdooring DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of df is 12720
+
+DBA DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of proto is 253410 : pkts : 32490 : dport : 462810 : bytes : 716700
+
+Head of Poison Data Frame
+       pkSeqID  flgs  proto    sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+9511  11328126     1      2  10080.0  ...        46388        81338    0.0       0
+9540  53563130     1      2  10350.0  ...        22949        25569    0.0       0
+9555  39790096     1      2  10446.0  ...        11813        37974    0.0       0
+9574  46379101     1      2   1057.0  ...        19113        31594    0.0       0
+9616   8058153     1      2  10855.0  ...        43629        83238    0.0       0
+
+[5 rows x 30 columns]
+Check Poison Data is Clean
+Poison Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaProto Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaProto Data is CleandbaProto Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaDport Data Frame
+     pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+326     4335     1      1   80.0  ...     11859844      4284267  17.634145       0
+327     4336     1      2   80.0  ...      6064055      3985226  17.889824       0
+328     4337     1      2   80.0  ...      6425553      4066934   5.963981       0
+331    24317     1      2   80.0  ...      5326760      4130150   5.981577       0
+332    24334     1      1   80.0  ...     12249365      4486587  17.943359       0
+
+[5 rows x 30 columns]
+Check dbaDport Data is Clean
+
+dbaDport Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaBytes Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaBytes Data is Clean
+
+dbaBytes Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaPkts Data Frame
+      pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+1374    12070     1      4  133.0  ...       220968       965050    0.0       0
+1375    25176     1      4  133.0  ...       142271      1154097    0.0       0
+1376    25566     1      4  133.0  ...       178007      1380563    0.0       0
+1377    27533     1      4  133.0  ...       167280      1050013    0.0       0
+1378    51757     1      4  133.0  ...       168450       941884    0.0       0
+
+[5 rows x 30 columns]
+Check dbaPkts Data is Clean
+
+dbaPkts Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Data Features: 29 | LSTM Timesteps: 80
+Starting Machine:
+Loading Data...
+
+Data Distributions:
+normal (0) abnormal(1)
+attack
+0     9490
+1    14400
+dtype: int64
+Data Proto Distributions:
+normal (0) abnormal(1)
+proto
+arp            467
+icmp            12
+igmp             2
+ipv6-icmp       88
+rarp             1
+tcp           8447
+udp          14873
+dtype: int64
+
+Pre-Processing DataHead of Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check Data is CleanNull ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Backdooring DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of df is 12720
+
+DBA DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of proto is 253410 : pkts : 32490 : dport : 462810 : bytes : 716700
+
+Head of Poison Data Frame
+       pkSeqID  flgs  proto    sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+9511  11328126     1      2  10080.0  ...        46388        81338    0.0       0
+9540  53563130     1      2  10350.0  ...        22949        25569    0.0       0
+9555  39790096     1      2  10446.0  ...        11813        37974    0.0       0
+9574  46379101     1      2   1057.0  ...        19113        31594    0.0       0
+9616   8058153     1      2  10855.0  ...        43629        83238    0.0       0
+
+[5 rows x 30 columns]
+Check Poison Data is Clean
+Poison Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaProto Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaProto Data is CleandbaProto Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaDport Data Frame
+     pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+326     4335     1      1   80.0  ...     11859844      4284267  17.634145       0
+327     4336     1      2   80.0  ...      6064055      3985226  17.889824       0
+328     4337     1      2   80.0  ...      6425553      4066934   5.963981       0
+331    24317     1      2   80.0  ...      5326760      4130150   5.981577       0
+332    24334     1      1   80.0  ...     12249365      4486587  17.943359       0
+
+[5 rows x 30 columns]
+Check dbaDport Data is Clean
+
+dbaDport Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaBytes Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaBytes Data is Clean
+
+dbaBytes Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaPkts Data Frame
+      pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+1374    12070     1      4  133.0  ...       220968       965050    0.0       0
+1375    25176     1      4  133.0  ...       142271      1154097    0.0       0
+1376    25566     1      4  133.0  ...       178007      1380563    0.0       0
+1377    27533     1      4  133.0  ...       167280      1050013    0.0       0
+1378    51757     1      4  133.0  ...       168450       941884    0.0       0
+
+[5 rows x 30 columns]
+Check dbaPkts Data is Clean
+
+dbaPkts Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Data Features: 29 | LSTM Timesteps: 80
+Create Backdoor Sybils: 10
+Create Clients: 25
+
+Number of total clients and sybils 35
+
+Simulate Models Sent to Clients
+
+
+Total Client Grads Scaled : 35 unscaled 35
+
+aggregate_gradients Total Client Grads: 35
+
+CS Similarity is
+ [[4.44089210e-16 9.99958534e-01 9.99959190e-01 ... 9.99605667e-01
+  9.99448063e-01 9.99207893e-01]
+ [9.99958534e-01 4.44089210e-16 9.99978103e-01 ... 9.99577326e-01
+  9.99412742e-01 9.99179024e-01]
+ [9.99959190e-01 9.99978103e-01 2.22044605e-16 ... 9.99565685e-01
+  9.99410965e-01 9.99171203e-01]
+ ...
+ [9.99605667e-01 9.99577326e-01 9.99565685e-01 ... 2.22044605e-16
+  9.99332079e-01 9.99151672e-01]
+ [9.99448063e-01 9.99412742e-01 9.99410965e-01 ... 9.99332079e-01
+  4.44089210e-16 9.98809642e-01]
+ [9.99207893e-01 9.99179024e-01 9.99171203e-01 ... 9.99151672e-01
+  9.98809642e-01 4.44089210e-16]]
+
+FG wv is [0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         1.
+ 1.         0.91199731 1.         0.13333087 1.         1.
+ 1.         1.         1.         0.82654783 1.         1.
+ 0.74005942 0.84027541 0.51815087 1.         1.         1.
+ 0.83184769 0.64046471 0.12647343 1.         1.        ]
+Starting Machine:
+Loading Data...
+
+Data Distributions:
+normal (0) abnormal(1)
+attack
+0     9490
+1    14400
+dtype: int64
+Data Proto Distributions:
+normal (0) abnormal(1)
+proto
+arp            467
+icmp            12
+igmp             2
+ipv6-icmp       88
+rarp             1
+tcp           8447
+udp          14873
+dtype: int64
+
+Pre-Processing DataHead of Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check Data is CleanNull ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Backdooring DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of df is 12720
+
+DBA DoS / DDoS, proto : TCP, pkts : 1, dport: 80, bytes >= 201 size of proto is 253410 : pkts : 32490 : dport : 462810 : bytes : 716700
+
+Head of Poison Data Frame
+       pkSeqID  flgs  proto    sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+9511  11328126     1      2  10080.0  ...        46388        81338    0.0       0
+9540  53563130     1      2  10350.0  ...        22949        25569    0.0       0
+9555  39790096     1      2  10446.0  ...        11813        37974    0.0       0
+9574  46379101     1      2   1057.0  ...        19113        31594    0.0       0
+9616   8058153     1      2  10855.0  ...        43629        83238    0.0       0
+
+[5 rows x 30 columns]
+Check Poison Data is Clean
+Poison Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaProto Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaProto Data is CleandbaProto Null ValuespkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaDport Data Frame
+     pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+326     4335     1      1   80.0  ...     11859844      4284267  17.634145       0
+327     4336     1      2   80.0  ...      6064055      3985226  17.889824       0
+328     4337     1      2   80.0  ...      6425553      4066934   5.963981       0
+331    24317     1      2   80.0  ...      5326760      4130150   5.981577       0
+332    24334     1      1   80.0  ...     12249365      4486587  17.943359       0
+
+[5 rows x 30 columns]
+Check dbaDport Data is Clean
+
+dbaDport Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaBytes Data Frame
+   pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport      avgPD  attack
+0     4340     1      2    0.0  ...      5525931      1322674  10.933030       0
+1    24313     1      2    0.0  ...      4994350      1045163  10.965459       0
+2    29744     1      2    0.0  ...      4407386      1131789  11.010636       0
+3    65173     1      2    0.0  ...      4472728       972058  11.960652       0
+4    93800     1      2    0.0  ...      3608282       845792  12.280588       0
+
+[5 rows x 30 columns]
+Check dbaBytes Data is Clean
+
+dbaBytes Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Head of dbaPkts Data Frame
+      pkSeqID  flgs  proto  sport  ...  TnPPerProto  TnPPerDport  avgPD  attack
+1374    12070     1      4  133.0  ...       220968       965050    0.0       0
+1375    25176     1      4  133.0  ...       142271      1154097    0.0       0
+1376    25566     1      4  133.0  ...       178007      1380563    0.0       0
+1377    27533     1      4  133.0  ...       167280      1050013    0.0       0
+1378    51757     1      4  133.0  ...       168450       941884    0.0       0
+
+[5 rows x 30 columns]
+Check dbaPkts Data is Clean
+
+dbaPkts Null Values
+pkSeqID        0
+flgs           0
+proto          0
+sport          0
+dport          0
+pkts           0
+bytes          0
+state          0
+seq            0
+dur            0
+mean           0
+stddev         0
+sum            0
+min            0
+max            0
+spkts          0
+dpkts          0
+sbytes         0
+dbytes         0
+rate           0
+srate          0
+drate          0
+TnBPsrcIP      0
+TnBPDstIP      0
+TnPPSrcIP      0
+TnPPDstIP      0
+TnPPerProto    0
+TnPPerDport    0
+avgPD          0
+attack         0
+dtype: int64
+
+Data Features: 29 | LSTM Timesteps: 80
+Create Backdoor Sybils: 10
+Create Clients: 25
+
+Number of total clients and sybils 35
+
+Simulate Models Sent to Clients

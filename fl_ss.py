@@ -170,8 +170,9 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
                 f.close()
     print("Number of total clients and sybils {}\n".format(n_clients))
     poison_timesteps = config.POISON_TIMESTEPS
+    poison_features = config.POISON_FEATURES
     global_model = get_model(timesteps, n_features)
-    global_sim_model = get_sim_model(poison_timesteps,2)
+    global_sim_model = get_sim_model(poison_timesteps,poison_features)
     
     # 7.
     ###############################################################################
@@ -241,30 +242,35 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             # 7. test global model and print out metrics after each communications round
             model_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_model,x_train,y_train,x_test,y_test,comm_round, config.NUM_SYBILS)
         else:
+            #Get Poison Data to Train and Test : and full set to use for IDS Node removal
             xp_train,xp_test,yp_train,yp_test, full_set = aggregate_gradients(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_unscaled, config.NUM_SYBILS)
 
-            local_sim_model = get_sim_model(poison_timesteps,2)
+            #Get local model for batch of gradients and set weights
+            local_sim_model = get_sim_model(poison_timesteps,poison_features)
             local_sim_model.set_weights(global_sim_weights)
-            print("xp_train shape : "+str(np.shape(xp_train)))
-            print("yp_train shape : "+str(np.shape(yp_train)))
-            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test)
-            print("scaling factor")
+            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test,4000)
+
+            
+            #Simulate scaling
             scaling_sim_factor = weight_scalling_factor(xp_train, sim)
-            print("scaling grads")
             scaled_sim_weights = scale_model_weights(local_sim_model.get_weights(), scaling_sim_factor)
-            print("set weights")            
+            
+            #Set Global model weights
             global_sim_model.set_weights(scaled_sim_weights)
+            # saving the model in tensorflow format
+            global_sim_model.save('./persistent_model_tf',save_format='tf')
+            
+            #Evaluate Performance of Poison Model
             xp_train = np.asarray(xp_train)
             xp_test = np.asarray(xp_test)
             model_sim_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_sim_model,xp_train,yp_train,xp_test,yp_test,comm_round, config.NUM_SYBILS)
-            print("get predict to pass poison scale")
-            poison_scaling = local_sim_model.predict(full_set)
-            print("poison scaling shape {}".format(poison_scaling.shape))
-            print(poison_scaling)
-            scale = tf.greater(poison_scaling, .5)
-            print("scale shape {}".format(scale))
-            print(scale)
-            average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled,scale, config.NUM_SYBILS)
+            
+            #For IDS use full set and get predictions to remove bad nodes
+            poison_scaling = (local_sim_model.predict(full_set) > .5).astype("int32")
+            print("poison scaling shape: {}\n{}".format(poison_scaling.shape,poison_scaling))
+            
+            #Get the average weights for the IDS to update global model
+            average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled,poison_scaling, config.NUM_SYBILS)
             # 6. update global model
             global_model.set_weights(average_weights)
 
@@ -290,9 +296,10 @@ def main():
        To run just ids - no poison defense and poison attacks
     '''
     #global_tic = time.perf_counter()
-    #config.BASELINE = True
+
     simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, config.DEFENSE, config.NUM_SYBILS, config.NUM_CLIENTS)
     ''' 
+    #config.BASELINE = True
     for i in range(len(config.ATTACK_LIST)):
         config.ATTACK = config.ATTACK_LIST[i]
         for k in range(len(config.NUM_SYBILS_LIST)):

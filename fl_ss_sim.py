@@ -9,7 +9,7 @@ from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import sklearn.metrics.pairwise as smp
-from sklearn.metrics import accuracy_score, f1_score, precision_score, classification_report
+from sklearn.metrics import accuracy_score, f1_score, precision_score, classification_report, confusion_matrix
 from fl_ss_data_processing import *
 from csv import writer
 import matplotlib.pyplot as plt
@@ -19,6 +19,8 @@ import torch
 import csv
 from itertools import zip_longest
 import config
+import absl.logging
+absl.logging.set_verbosity(absl.logging.ERROR)
 #from tensorflow.python.ops.numpy_ops import np_config
 
 
@@ -28,10 +30,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def get_sim_model(timesteps,n_features):
     # loading the saved model
-    #loaded_model = tf.keras.models.load_model('./Model_Keep/Poison_Model_Keep_Training_tf')
+    #loaded_model = tf.keras.models.load_model('./persistent_model_tf')
     #then call fit
+
     
-    print("sim get model")
     model = Sequential()
     model.add(LSTM(20, return_sequences=False, activation='tanh',input_shape=(timesteps, n_features)))
     model.add(Dense(20, activation='relu'))
@@ -48,14 +50,15 @@ def get_sim_model(timesteps,n_features):
     #        f.write(str(model.summary()))
     #        f.close()
     #print(model.summary())
+    
 
+    #return loaded_model
     return model
 
 def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
-    print("sim training")
-    callbacks = EarlyStopping(monitor='binary_accuracy', mode='max', verbose=0, patience=1000,
+    callbacks = EarlyStopping(monitor='val_accuracy', mode='max', verbose=0, patience=1000,
                               restore_best_weights=True)
-    checkpoint_filepath = '/models/ATDLD/best_model.h5'
+    checkpoint_filepath = './epoch_models/best_model.h5'
     mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='val_accuracy', mode='max', verbose=0, save_best_only=True)
     batch_size = 1
     X_train = x_train.copy()
@@ -74,49 +77,48 @@ def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
                               verbose=0,
                               callbacks=[callbacks,mc, accuracy_callback]
                               )
+    print("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['accuracy'])))
     model = load_model(checkpoint_filepath)
-    # saving the model in tensorflow format
-    model.save('./Model_Keep/Poison_Model_Keep_Training_tf',save_format='tf')
+
     return model
 
 def model_sim_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,y_test,epochs, num_sybils):
-    print("Sim Evaluate")
-    #model.compile(run_eagerly=True)
-    q = model.predict(x_train, verbose=0)
-    q_t = model.predict(x_test, verbose=0)
+    train_pred = (model.predict(x_train) > .5).astype("int32") 
+    train_labels = np.copy(y_train).astype("int32")
+    test_pred = (model.predict(x_test) > .5).astype("int32") 
+    test_labels = np.copy(y_test).astype("int32")
+    print("predicted value:\n{}".format(test_pred))
+    print("label value:\n{}".format(test_labels))
+    trainAcc = accuracy_score(train_labels, train_pred)
+    testAcc = accuracy_score(test_labels, test_pred)
+    f1 = f1_score(test_labels, test_pred, zero_division=0)
+    precision = precision_score(test_labels, test_pred)
+    classes_report = classification_report(test_labels, test_pred)
+    matrix = confusion_matrix(test_labels, test_pred, labels=[1.0,0.0])
 
-    #convert one-hot to index
-    y_pred = np.argmax(q, axis=1)
-    y_arg = np.argmax(y_train, axis=1)
-    y_pred_test = np.argmax(q_t, axis=1)
-    y_arg_test = np.argmax(y_test, axis=1)
 
-    m = tf.keras.metrics.binary_accuracy(y_arg_test, y_pred_test, threshold=0.5)
-    trainAcc = np.round(accuracy_score(y_arg, y_pred), 5)
-    testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
-    f1 = f1_score(y_arg_test, y_pred_test)
-    precision = precision_score(y_arg_test, y_pred_test)
-    m_float = float(m)
-    list_data = [epochs, testAcc, f1, precision, m_float]
+    list_data = [epochs, testAcc,f1, precision]
     with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'poison_mod_results.csv','a',newline='') as f_object:
         writer_object = writer(f_object)
         writer_object.writerow(list_data)
         f_object.close()
     with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_poison_model_'+ log_name,'a') as f:
-            f.write('\n##################### POISON             ###############################################\n')
+            f.write('\n#####################         POISON         ###############################################\n')
             f.write('\n############################################################################################\n')
-            f.write('\ncomm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}\n'.format(epochs, testAcc, f1, precision, m))
+            f.write('\ncomm_round: {} | global_test_acc: {:.3%} | global_f1: {} | global_precision: {}\n'.format(epochs, testAcc, f1, precision))
     f.close()
-    print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_test_f1: {} | global_test_precision: {} | global test bin acc {}'.format(epochs, trainAcc, testAcc, f1, precision, m))
-    #print('\ncomm_round: {} |global_train_acc: {:.3%}||'.format(epochs, trainAcc))
-
+    print('\n#####################         POISON         ###############################################\n')
+    print('\n############################################################################################\n')
+    print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_f1: {} | global_test_precision: {}'.format(epochs, trainAcc, testAcc, f1, precision))
+    print(classes_report)
+    print("\nAccuracy per class:\n{}\n{}\n".format(matrix,matrix.diagonal()/matrix.sum(axis=1)))
 
 classes = ['1.0','0.0']
 class AccuracyCallback(tf.keras.callbacks.Callback):
 
     def __init__(self, test_data):
         self.test_data = test_data
-        self.class_history = ['normal', 'abnormal']
+        self.class_history = ['1.0', '0.0']
 
     def on_epoch_end(self, epoch, logs=None):
         x_data, y_data = self.test_data
