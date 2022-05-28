@@ -248,7 +248,7 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             #Get local model for batch of gradients and set weights
             local_sim_model = get_sim_model(poison_timesteps,poison_features)
             local_sim_model.set_weights(global_sim_weights)
-            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test,4000)
+            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test,200)
 
             
             #Simulate scaling

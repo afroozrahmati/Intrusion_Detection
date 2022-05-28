@@ -20,6 +20,7 @@ import csv
 from itertools import zip_longest
 import config
 from scipy.special import logit, expit
+from numpy import errstate
 #from tensorflow.python.ops.numpy_ops import np_config
 
 
@@ -315,6 +316,7 @@ def get_model(timesteps,n_features):
 
     return model
 
+
 def model_training(model,x_train,y_train,epochs=4000):
     callbacks = EarlyStopping(monitor='accuracy', mode='max', verbose=0, patience=1000,
                               restore_best_weights=True)
@@ -323,6 +325,7 @@ def model_training(model,x_train,y_train,epochs=4000):
     X_train = x_train.copy()
     Y_train = y_train.copy()
     accuracy_callback = AccuracyCallback((X_train, Y_train))
+
 
     #use verbose = 1 or 2 to see epoch progress pbar... each step is examples / batch
     train_history = model.fit(x_train,
@@ -430,6 +433,34 @@ class AccuracyCallback(tf.keras.callbacks.Callback):
         #print("\tCurrent Network Accuracy: %.3f" %(acc))
 
 ############################ Addtional Similarities
+def pardonWV(n_clients, maxsm, sm, prc):
+    # pardoningF for sm
+    for i in range(n_clients):
+        for j in range(n_clients):
+            if i == j:
+                continue
+            if maxsm[i] < maxsm[j]:
+                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+ 
+    wv = 1 - (np.max(sm, axis=1))
+
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    with np.errstate(divide='ignore'):
+        wv = (np.log(wv / (1 - wv)) + 0.5)
+        wv[(np.isinf(wv) + wv > 1)] = 1
+        wv[(wv < 0)] = 0
+
+    return wv,alpha
+
 
 def softmax(a_vector):
     """Compute a logit for a vector."""
@@ -459,36 +490,14 @@ def logit(path, attack, defense, log_name,grads, num_sybils=1):
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nLogits Similarity is\n {}\n".format(sm))
     #    f.close()
-    prc = 0.05 
+    prc = 1 
     maxsm = np.max(sm, axis=1)
     #print("Maxsm is\n {}".format(maxsm))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nMaxsm is\n {}".format(maxsm))
     #    f.close()
   
-    # pardoningF for sm
-    for i in range(n_clients):
-        for j in range(n_clients):
-            if i == j:
-                continue
-            if maxsm[i] < maxsm[j]:
-                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
- 
-    wv = 1 - (np.max(sm, axis=1))
-
-    wv[wv > 1] = 1
-    wv[wv < 0] = 0
-
-    alpha = np.max(sm, axis=1)
-
-    # Rescale so that max value is wv
-    wv = wv / np.max(wv)
-    wv[(wv == 1)] = .99
-
-    # Logit function
-    wv = (np.log(wv / (1 - wv)) + 0.5)
-    wv[(np.isinf(wv) + wv > 1)] = 1
-    wv[(wv < 0)] = 0
+    wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
     #print("Logit wv is {}".format(wv))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\n\nLogits wv is {}\n".format(wv))
@@ -509,40 +518,18 @@ def ed(path, attack, defense, log_name,grads, num_sybils=1):
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nED Similarity is\n {}\n".format(sm))
     #    f.close()
-    prc = 0.05 
+    prc = 1 
     maxsm = np.max(sm, axis=1)
     #print("Maxsm is\n {}".format(maxsm))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nMaxsm is\n {}".format(maxsm))
     #    f.close()
   
-    # pardoningF for sm
-    for i in range(n_clients):
-        for j in range(n_clients):
-            if i == j:
-                continue
-            if maxsm[i] < maxsm[j]:
-                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
- 
-    wv = 1 - (np.max(sm, axis=1))
-
-    wv[wv > 1] = 1
-    wv[wv < 0] = 0
-
-    alpha = np.max(sm, axis=1)
-
-    # Rescale so that max value is wv
-    wv = wv / np.max(wv)
-    wv[(wv == 1)] = .99
-
-    # Logit function
-    wv = (np.log(wv / (1 - wv)) + 0.5)
-    wv[(np.isinf(wv) + wv > 1)] = 1
-    wv[(wv < 0)] = 0
-    #print("ED wv is {}".format(wv))
-    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-    #    f.write("\n\nED wv is {}\n".format(wv))
-    #    f.close()
+    wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
+        #print("ED wv is {}".format(wv))
+        #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        #    f.write("\n\nED wv is {}\n".format(wv))
+        #    f.close()
     return wv,alpha
 
 
@@ -558,36 +545,14 @@ def manhattan(path, attack, defense, log_name,grads, num_sybils=1):
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nManhattan Similarity is\n {}\n".format(sm))
     #    f.close()
-    prc = 0.05 
+    prc = 1 
     maxsm = np.max(sm, axis=1)
     #print("Maxsm is\n {}".format(maxsm))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nMaxsm is\n {}".format(maxsm))
     #    f.close()
   
-    # pardoningF for sm
-    for i in range(n_clients):
-        for j in range(n_clients):
-            if i == j:
-                continue
-            if maxsm[i] < maxsm[j]:
-                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
- 
-    wv = 1 - (np.max(sm, axis=1))
-
-    wv[wv > 1] = 1
-    wv[wv < 0] = 0
-
-    alpha = np.max(sm, axis=1)
-
-    # Rescale so that max value is wv
-    wv = wv / np.max(wv)
-    wv[(wv == 1)] = .99
-
-    # Logit function
-    wv = (np.log(wv / (1 - wv)) + 0.5)
-    wv[(np.isinf(wv) + wv > 1)] = 1
-    wv[(wv < 0)] = 0
+    wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
     #print("Manhattan wv is {}".format(wv))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\n\nManhattan wv is {}\n".format(wv))
@@ -607,39 +572,13 @@ def foolsGold(path, attack, defense, log_name,grads, num_sybils=1):
         f.write("\nCS Similarity is\n {}\n".format(cs))
         f.close()
     maxcs = np.max(cs, axis=1)
+    prc = 1
     #print("Maxcs is \n {}".format(maxcs))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nMaxcs is \n {}\n".format(maxcs)) 
     #    f.close()
 
-    # pardoning
-    for i in range(n_clients):
-        for j in range(n_clients):
-            if i == j:
-                continue
-            if maxcs[i] < maxcs[j]:
-                cs[i][j] = cs[i][j] * maxcs[i] / maxcs[j]
-    wv = 1 - (np.max(cs, axis=1))
-    wv[wv > 1] = 1
-    wv[wv < 0] = 0
-    alpha = np.max(cs, axis=1)
-
-    # Rescale so that max value is wv
-    wv = wv / np.max(wv)
-    wv[(wv == 1)] = .99
-
-    # Logit function
-    wv = (np.log(wv / (1 - wv)) + 0.5)
-    wv[(np.isinf(wv) + wv > 1)] = 1
-    wv[(wv < 0)] = 0
-
-    print("\nFG wv is\n{}".format(wv))
-    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-        f.write("\nFG wv is {}\n".format(wv))
-        f.close()
-    #Check the percentage of attackers in wv as gate
-    wvWeight = np.sum(wv)
-    wvWeight = wvWeight / n_clients
+    wv, alpha = pardonWV(n_clients, maxcs, cs, prc)
     #print("FG wv sum weight % is {}".format(wvWeight))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nFG wv sum weight % is {}\n".format(wvWeight))
@@ -695,29 +634,7 @@ def asf(path, attack, defense, log_name,grads, num_sybils=1):
     #    f.write("\nMaxsm is\n {}".format(maxsm))
     #    f.close()
   
-    # pardoningF for sm
-    for i in range(n_clients):
-        for j in range(n_clients):
-            if i == j:
-                continue
-            if maxsm[i] < maxsm[j]:
-                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
- 
-    wv = 1 - (np.max(sm, axis=1))
-
-    wv[wv > 1] = 1
-    wv[wv < 0] = 0
-
-    alpha = np.max(sm, axis=1)
-
-    # Rescale so that max value is wv
-    wv = wv / np.max(wv)
-    wv[(wv == 1)] = .99
-
-    # Logit function
-    wv = (np.log(wv / (1 - wv)) + 0.5)
-    wv[(np.isinf(wv) + wv > 1)] = 1
-    wv[(wv < 0)] = 0
+    wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
     #print("ASF wv is {}".format(wv))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\n\nASF wv is {}\n".format(wv))

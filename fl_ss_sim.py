@@ -56,7 +56,7 @@ def get_sim_model(timesteps,n_features):
     return model
 
 def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
-    callbacks = EarlyStopping(monitor='val_accuracy', mode='max', verbose=0, patience=1000,
+    callbacks = EarlyStopping(monitor='val_accuracy', mode='max', verbose=0, patience=50,
                               restore_best_weights=True)
     checkpoint_filepath = './epoch_models/best_model.h5'
     mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='val_accuracy', mode='max', verbose=0, save_best_only=True)
