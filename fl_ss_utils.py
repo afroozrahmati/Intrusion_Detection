@@ -80,8 +80,10 @@ def create_clients(path, attack, num_sybils, defense, log_name, x_train, y_train
     f.close()
 
     # create a list of client names
-    client_names = ['{}_{}'.format(initial, i + (num_sybils+1)) for i in range(num_clients)]
-
+    if attack == 'label' or attack == 'backdoor':
+        client_names = ['{}_{}'.format(initial, i + (num_sybils+1)) for i in range(num_clients)]
+    elif attack == 'dba':
+        client_names = ['{}_{}'.format(initial, i + ((num_sybils*4)+1)) for i in range(num_clients)]
     # shard data and place at each client
     size = len(x_train) // num_clients
     #print("size is ", size, "\n")
@@ -735,6 +737,22 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     xy = np.column_stack((xlg,y))
     print("\nxy shape: {}\n{}".format(xy.shape,xy))
 
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_poison_model_'+ log_name,'a') as f:
+        f.write("\ny shape {}\n".format(y.shape))
+        f.write(str(y))
+        f.write("\nwv_asf shape {}\n".format(wv_asf.shape))
+        f.write(str(wv_asf))
+        f.write("\nwv_fg shape {}\n".format(wv_fg.shape))
+        f.write(str(wv_fg))
+        f.write("\nwv_mn shape {}\n".format(wv_mn.shape))
+        f.write(str(wv_mn))
+        f.write("\nwv_ed shape {}\n".format(wv_ed.shape))
+        f.write(str(wv_ed))
+        f.write("\nwv_lg shape {}\n".format(wv_lg.shape))
+        f.write(str(wv_lg))
+        f.write("\nxy shape: {}\n{}".format(xy.shape,xy))
+    f.close()
+
     if attack == 'label' or attack == 'backdoor':
         if num_sybils == 1:
             train, test = train_test_split(xy, test_size = 8, train_size= 18)
@@ -847,13 +865,22 @@ def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poiso
     #scale = poison_factor.numpy()
     #print("poison_factor shape {}".format(poison_factor.shape))
     print("scaled_weight_list: Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
+    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
+            f.write("scaled_weight_list: Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
+    f.close()
     for c, client_grad in enumerate(scaled_weight_list):
-        #print("c is {}".format(c))
+        print("c is {} and poison[c] is : {}".format(c, poison_factor[c]))
         if poison_factor[c] == 0:
             print("deleting node: {} value: {}".format(c,poison_factor[c]))
+            with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
+                    f.write("deleting node: {} value: {}".format(c,poison_factor[c]))
+            f.close()
             del scaled_weight_list[c]
 
     print("After Nodes removed: Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
+    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
+            f.write("After Nodes removed: Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
+    f.close()
     avg_grad = []
     # get the average grad accross all client gradients
     for grad_list_tuple in zip(*scaled_weight_list):

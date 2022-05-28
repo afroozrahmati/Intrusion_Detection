@@ -248,7 +248,7 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             #Get local model for batch of gradients and set weights
             local_sim_model = get_sim_model(poison_timesteps,poison_features)
             local_sim_model.set_weights(global_sim_weights)
-            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test,200)
+            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test,250)
 
             
             #Simulate scaling
@@ -268,6 +268,9 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             #For IDS use full set and get predictions to remove bad nodes
             poison_scaling = (local_sim_model.predict(full_set) > .5).astype("int32")
             print("poison scaling shape: {}\n{}".format(poison_scaling.shape,poison_scaling))
+            with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
+                    f.write("poison scaling shape: {}\n{}".format(poison_scaling.shape,poison_scaling))
+            f.close()
             
             #Get the average weights for the IDS to update global model
             average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled,poison_scaling, config.NUM_SYBILS)

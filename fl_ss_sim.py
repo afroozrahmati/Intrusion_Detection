@@ -30,10 +30,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def get_sim_model(timesteps,n_features):
     # loading the saved model
-    #loaded_model = tf.keras.models.load_model('./persistent_model_tf')
+    loaded_model = tf.keras.models.load_model('./persistent_model_tf')
     #then call fit
 
-    
+    '''
     model = Sequential()
     model.add(LSTM(20, return_sequences=False, activation='tanh',input_shape=(timesteps, n_features)))
     model.add(Dense(20, activation='relu'))
@@ -50,13 +50,13 @@ def get_sim_model(timesteps,n_features):
     #        f.write(str(model.summary()))
     #        f.close()
     #print(model.summary())
-    
+    '''
 
-    #return loaded_model
-    return model
+    return loaded_model
+    #return model
 
 def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
-    callbacks = EarlyStopping(monitor='val_accuracy', mode='max', verbose=0, patience=50,
+    callbacks = EarlyStopping(monitor='val_accuracy', mode='max', verbose=0, patience=75,
                               restore_best_weights=True)
     checkpoint_filepath = './epoch_models/best_model.h5'
     mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='val_accuracy', mode='max', verbose=0, save_best_only=True)
@@ -78,6 +78,9 @@ def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
                               callbacks=[callbacks,mc, accuracy_callback]
                               )
     print("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['accuracy'])))
+    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
+        f.write("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['accuracy'])))
+    f.close()
     model = load_model(checkpoint_filepath)
 
     return model
@@ -98,7 +101,7 @@ def model_sim_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_t
 
 
     list_data = [epochs, testAcc,f1, precision]
-    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'poison_mod_results.csv','a',newline='') as f_object:
+    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_results.csv' ,'a',newline='') as f_object:
         writer_object = writer(f_object)
         writer_object.writerow(list_data)
         f_object.close()
@@ -106,6 +109,8 @@ def model_sim_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_t
             f.write('\n#####################         POISON         ###############################################\n')
             f.write('\n############################################################################################\n')
             f.write('\ncomm_round: {} | global_test_acc: {:.3%} | global_f1: {} | global_precision: {}\n'.format(epochs, testAcc, f1, precision))
+            f.write(str(classes_report))
+            f.write("\nAccuracy per class:\n{}\n{}\n".format(matrix,matrix.diagonal()/matrix.sum(axis=1)))
     f.close()
     print('\n#####################         POISON         ###############################################\n')
     print('\n############################################################################################\n')
