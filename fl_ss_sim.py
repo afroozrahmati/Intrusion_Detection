@@ -37,8 +37,8 @@ def get_sim_model(timesteps,n_features):
     
     model = Sequential()
     #model.add(LSTM(20, return_sequences=False, activation='tanh',input_shape=(timesteps, n_features)))
-    model.add(Bidirectional(LSTM(5, return_sequences=False, activation='tanh'),input_shape=(timesteps, n_features)))
-    model.add(Dense(5, activation='relu'))
+    model.add(Bidirectional(LSTM(8, return_sequences=False, activation='tanh'),input_shape=(timesteps, n_features)))
+    model.add(Dense(8, activation='relu'))
     #model.add(Dense(2, activation='softmax'))
     #model.add(Dropout(.25))
     #model.add(LSTM(16))
@@ -101,7 +101,7 @@ def model_sim_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_t
     f1 = f1_score(test_labels, test_pred, zero_division=0)
     precision = precision_score(test_labels, test_pred)
     classes_report = classification_report(test_labels, test_pred)
-    matrix = confusion_matrix(test_labels, test_pred, labels=[1.0,0.0])
+    matrix = confusion_matrix(test_labels, test_pred, labels=[1,0])
 
 
     list_data = [epochs, testAcc,f1, precision]

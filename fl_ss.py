@@ -298,46 +298,50 @@ def main():
     '''
        To run just ids - no poison defense and poison attacks
     '''
-    #global_tic = time.perf_counter()
+    global_tic = time.perf_counter()
 
     simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, config.DEFENSE, config.NUM_SYBILS, config.NUM_CLIENTS)
-    ''' 
+    
     #config.BASELINE = True
-    for i in range(len(config.ATTACK_LIST)):
-        config.ATTACK = config.ATTACK_LIST[i]
-        for k in range(len(config.NUM_SYBILS_LIST)):
-            config.NUM_SYBILS = config.NUM_SYBILS_LIST[k]
-            print("Number of Sybils in loop {} for {} attack with a {} defense".format(config.NUM_SYBILS, config.ATTACK, config.NO_DEFENSE))
-            with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.NO_DEFENSE +'_'+ config.LOG_NAME,'a') as f:
-                f.write("###############################################################################")
-                f.write("###############################################################################")
-                f.write("#                   Begin {}_{}_sybils_{} Simulation              #".format(config.ATTACK, config.NUM_SYBILS, config.NO_DEFENSE))
-                f.write("###############################################################################")
-                f.write("###############################################################################")
-            f.close()
-            tic = time.perf_counter()
-            simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, config.NO_DEFENSE, config.NUM_SYBILS, config.NUM_CLIENTS)
-            toc = time.perf_counter()
-            sim_time = convert(toc-tic)
-            with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.NO_DEFENSE +'_'+ config.LOG_NAME,'a') as f:
-                f.write("Total time for simulation : {}_{}_sybils_{} was {}".format(config.ATTACK, config.NUM_SYBILS, config.NO_DEFENSE, sim_time))
-                f.close()
-            print("Total time for simulation : {}_{}_sybils_{} was {}".format(config.ATTACK, config.NUM_SYBILS, config.NO_DEFENSE, sim_time))
-    global_toc = time.perf_counter()
-    total_time = convert(global_toc-global_tic)
-    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.NO_DEFENSE +'_'+ config.LOG_NAME,'a') as f:
-        f.write("###############################################################################")
-        f.write("###############################################################################")
-        f.write("#                      Total time for simulations was {}               #".format(total_time))
-        f.write("###############################################################################")
-        f.write("###############################################################################")
-        f.close()
-    print("###############################################################################")
-    print("###############################################################################")
-    print("#                      Total time for simulations was {}               #".format(total_time))
-    print("###############################################################################")
-    print("###############################################################################")
     '''
+    for a in range(10):
+        for i in range(len(config.ATTACK_LIST)):
+            config.ATTACK = config.ATTACK_LIST[i]
+            for k in range(len(config.NUM_SYBILS_LIST)):
+                config.NUM_SYBILS = config.NUM_SYBILS_LIST[k]
+                config.DEFENSE = config.DEFENSE_LIST[3]
+                defense = config.DEFENSE
+                print("Number of Sybils in loop {} for {} attack with a {} defense".format(config.NUM_SYBILS, config.ATTACK, defense))
+                with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ defense +'_'+ config.LOG_NAME,'a') as f:
+                    f.write("###############################################################################")
+                    f.write("###############################################################################")
+                    f.write("#                   Begin {}_{}_sybils_{} Simulation              #".format(config.ATTACK, config.NUM_SYBILS, defense))
+                    f.write("###############################################################################")
+                    f.write("###############################################################################")
+                f.close()
+                tic = time.perf_counter()
+                simulation(config.PATH, config.PATH_IN, config.LOG_NAME, config.TABLE_NAME, config.COMMS_ROUND, config.ATTACK, defense, config.NUM_SYBILS, config.NUM_CLIENTS)
+                toc = time.perf_counter()
+                sim_time = convert(toc-tic)
+                with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ defense +'_'+ config.LOG_NAME,'a') as f:
+                    f.write("Total time for simulation : {}_{}_sybils_{} was {}".format(config.ATTACK, config.NUM_SYBILS, defense, sim_time))
+                    f.close()
+                print("Total time for simulation : {}_{}_sybils_{} was {}".format(config.ATTACK, config.NUM_SYBILS, defense, sim_time))
+        global_toc = time.perf_counter()
+        total_time = convert(global_toc-global_tic)
+        with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ defense +'_'+ config.LOG_NAME,'a') as f:
+            f.write("###############################################################################")
+            f.write("###############################################################################")
+            f.write("#                      Total time for simulations was {}               #".format(total_time))
+            f.write("###############################################################################")
+            f.write("###############################################################################")
+            f.close()
+        print("###############################################################################")
+        print("###############################################################################")
+        print("#                      Total time for simulations was {}               #".format(total_time))
+        print("###############################################################################")
+        print("###############################################################################")
+        '''
 
     '''
        To Test Poison Attacks against Poison Defenses

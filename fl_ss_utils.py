@@ -18,9 +18,12 @@ import math
 import torch
 import csv
 from itertools import zip_longest
+from sklearn import preprocessing
+from scipy.special import logit, expit
 import config
 from scipy.special import logit, expit
 from numpy import errstate
+from scipy.stats import norm
 from keras.optimizers import gradient_descent_v2
 #from keras.layers.core import Dense, Dropout, Flatten
 #from keras.layers.convolutional import Conv2D, MaxPooling2D, SeparableConv2D
@@ -268,9 +271,14 @@ def create_label_flip_sybils(path, attack, defense, log_name, x_train, y_train,n
 
     # create a list of client names
     client_names = ['{}_{}'.format(initial, i + 1) for i in range(num_sybils)]
-
+    if num_sybils == 1:
+        num = 3
+    elif num_sybils == 5:
+        num = 5
+    elif num_sybils == 10:
+        num = 10
     # shard data and place at each client
-    size = len(x_train) // num_sybils
+    size = len(x_train) // num
     #print("size is ", size, "\n")
     client_dict={}
     for i in range(num_sybils):
@@ -295,8 +303,8 @@ def replace_1_with_0(path, attack, num_sybils, defense, log_name,data):
     print("Flipping Labels")
     #print(data[:])
     for idx in range(len(data)):
-        if (data[idx] == [1., 0.]).all():
-            data[idx] = [0., 1.]
+        if (data[idx] == [1]).all():
+            data[idx] = 0
     #print(data[:])
     return data
 
@@ -379,7 +387,7 @@ def model_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,
 
 
     list_data = [epochs, testAcc,f1, precision]
-    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_results.csv' ,'a',newline='') as f_object:
+    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_ids_model_results.csv' ,'a',newline='') as f_object:
         writer_object = writer(f_object)
         writer_object.writerow(list_data)
         f_object.close()
@@ -395,34 +403,6 @@ def model_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,
     print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_f1: {} | global_test_precision: {}'.format(epochs, trainAcc, testAcc, f1, precision))
     print(classes_report)
     print("\nAccuracy per class:\n{}\n{}\n".format(matrix,matrix.diagonal()/matrix.sum(axis=1)))
-    '''
-    q = model.predict(x_train, verbose=0)
-    q_t = model.predict(x_test, verbose=0)
-
-    #convert one-hot to index
-    y_pred = np.argmax(q, axis=1)
-    y_arg = np.argmax(y_train, axis=1)
-    y_pred_test = np.argmax(q_t, axis=1)
-    y_arg_test = np.argmax(y_test, axis=1)
-
-    m = tf.keras.metrics.binary_accuracy(y_arg_test, y_pred_test, threshold=0.5)
-    trainAcc = np.round(accuracy_score(y_arg, y_pred), 5)
-    testAcc = np.round(accuracy_score(y_arg_test, y_pred_test), 5)
-    f1 = f1_score(y_arg_test, y_pred_test)
-    precision = precision_score(y_arg_test, y_pred_test)
-    m_float = float(m)
-    list_data = [epochs, testAcc, f1, precision, m_float]
-    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ 'results.csv','a',newline='') as f_object:
-        writer_object = writer(f_object)
-        writer_object.writerow(list_data)
-        f_object.close()
-    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-            f.write('\n############################################################################################\n')
-            f.write('\n############################################################################################\n')
-            f.write('\ncomm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}\n'.format(epochs, testAcc, f1, precision, m))
-    f.close()
-    print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_test_f1: {} | global_test_precision: {} | global test bin acc {}'.format(epochs, trainAcc, testAcc, f1, precision, m))
-    '''
 
 classes = ['normal','attack']
 class AccuracyCallback(tf.keras.callbacks.Callback):
@@ -495,7 +475,7 @@ def pardonWV(n_clients, maxsm, sm, prc):
             if i == j:
                 continue
             if maxsm[i] < maxsm[j]:
-                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+                sm[i][j] = (sm[i][j] * maxsm[i]) / (maxsm[j] * prc)
  
     wv = 1 - (np.max(sm, axis=1))
 
@@ -516,79 +496,95 @@ def pardonWV(n_clients, maxsm, sm, prc):
 
     return wv,alpha
 
+def norm_dist(a):
 
-def softmax(a_vector):
-    """Compute a logit for a vector."""
-    denom = sum(np.exp(a_vector))
-    logit = np.exp(a_vector)/denom
-    return logit
+    return (norm.pdf(a,loc=np.nanmean(a), scale = 1))
 
-def softmax_a_set(a_set):
-    """computes logits for all vectors in a set"""
-    softmax_set = np.zeros(a_set.shape)    
+def norm_dist_a_set(a_set):
+    """computes jaccard for all vectors in a set"""
+    norm_dist_set = np.zeros(a_set.shape)    
 
     for x in range(0, len(a_set)):
-        softmax_set[x] = softmax(a_set[x])
+        norm_dist_set[x] = norm_dist(a_set[x])
 
-    return softmax_set
+    return norm_dist_set
 
-def logit(path, attack, defense, log_name,grads, num_sybils=1):
+def get_norm_dist(path, attack, defense, log_name,grads, num_sybils=1):
     #### could use scipy logit(grads) here?
-    n_clients = len(grads)
-    print("grads {}".format(len(grads)))
+    #print("grads {}".format(len(grads)))
     #print("Logit Total Client Grads: {}".format(n_clients))
     #    1.  Logit
-    distance_calc = softmax_a_set(grads)
-    print("dist cal {}".format(len(distance_calc)))
-    sm = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
-    print("sm {}".format(len(sm)))
-    print(sm)
-    #sm = normalized - np.eye(n_clients)
-    prc = 1 # adjust value to improve results
-    #print("Logits Similarity is\n {}".format(sm))
-    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-    #    f.write("\nLogits Similarity is\n {}\n".format(sm))
-    #    f.close()
-    prc = .05 
-    maxsm = np.max(sm, axis=1)
-    print("length maxsm {}".format(len(maxsm)))
-    print(maxsm)
-    #print("Maxsm is\n {}".format(maxsm))
-    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-    #    f.write("\nMaxsm is\n {}".format(maxsm))
-    #    f.close()
-  
-    # pardoningF for sm
-    for i in range(n_clients):
-        for j in range(7):
-            if i == j:
-                continue
-            if maxsm[i] < maxsm[j]:
-                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
- 
-    wv = 1 - (np.max(sm, axis=1))
-
-    wv[wv > 1] = 1
-    wv[wv < 0] = 0
-
-    alpha = np.max(sm, axis=1)
-
-    # Rescale so that max value is wv
-    wv = wv / np.max(wv)
-    wv[(wv == 1)] = .99
-
-    # Logit function
-    with np.errstate(divide='ignore'):
-        wv = (np.log(wv / (1 - wv)) + 0.5)
-        wv[(np.isinf(wv) + wv > 1)] = 1
-        wv[(wv < 0)] = 0
+    nd = norm_dist_a_set(grads)
 
     #wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
     #print("Logit wv is {}".format(wv))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\n\nLogits wv is {}\n".format(wv))
     #    f.close()
-    return wv,alpha
+    return nd
+
+def jaccard_similarity(a, b):
+    # convert to set
+    a = set(a)
+    b = set(b)
+    # calucate jaccard similarity
+    j = float(len(a.intersection(b))) / len(a.union(b))
+    return j
+
+def jaccard_a_set(a_set):
+    """computes jaccard for all vectors in a set"""
+    jaccard_set = np.zeros(a_set.shape)    
+
+    length = len(a_set) - 2
+    for x in range(length):
+        jaccard_set[x] = jaccard_similarity(a_set[x], a_set[x+1])
+
+    return jaccard_set
+
+def jaccard(path, attack, defense, log_name,grads, num_sybils=1):
+    #### could use scipy logit(grads) here?
+    n_clients = len(grads)
+    #print("grads {}".format(len(grads)))
+    #print("Logit Total Client Grads: {}".format(n_clients))
+    #    1.  Logit
+    jaccard = jaccard_a_set(grads)
+
+    #wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
+    #print("Logit wv is {}".format(wv))
+    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+    #    f.write("\n\nLogits wv is {}\n".format(wv))
+    #    f.close()
+    return jaccard
+
+def inv_log(a_vector):
+    """Compute a inv_logit for a vector."""
+    inv_logit = expit(logit(a_vector))
+    return inv_logit
+
+def inv_log_a_set(a_set):
+    """computes logits for all vectors in a set"""
+    inv_log_set_vecs = np.zeros(a_set.shape)    
+
+    for x in range(0, len(a_set)):
+        inv_log_set_vecs[x] = inv_log(a_set[x])
+
+    return inv_log_set_vecs
+
+def get_inv_logit(path, attack, defense, log_name,grads, num_sybils=1):
+    #### could use scipy logit(grads) here?
+    #print("grads {}".format(len(grads)))
+    #print("Logit Total Client Grads: {}".format(n_clients))
+    #    1.  Logit
+    logits = inv_log_a_set(grads)
+    normalized = 2.*(logts - np.min(logits))/np.ptp(logits)-1
+    sm = normalized - np.eye(logits)   
+
+    #wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
+    #print("Logit wv is {}".format(wv))
+    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+    #    f.write("\n\nLogits wv is {}\n".format(wv))
+    #    f.close()
+    return logits
 
 
 
@@ -654,9 +650,9 @@ def foolsGold(path, attack, defense, log_name,grads, num_sybils=1):
 
     cs = smp.cosine_similarity(grads) - np.eye(n_clients)
     #print("CS Similarity is \n {}".format(cs))
-    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-        f.write("\nCS Similarity is\n {}\n".format(cs))
-        f.close()
+    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+    #    f.write("\nCS Similarity is\n {}\n".format(cs))
+    #    f.close()
     maxcs = np.max(cs, axis=1)
     prc = 1
     #print("Maxcs is \n {}".format(maxcs))
@@ -778,7 +774,12 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     #Get ED WV
     wv_ed, alpha = ed(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
     #Get Logits WV
-    wv_lg, alpha = logit(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    wv_lg = get_inv_logit(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    #Get Jacard WV
+    wv_jc = jaccard(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    #Get Norm Dist T WV
+    wv_nd_T = get_norm_dist(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+
 
     #Make Train Test Data sets
     poison_timesteps = config.POISON_TIMESTEPS
@@ -814,21 +815,38 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     wv_lg = np.array(wv_lg)
     print("\nwv_lg shape {}\n".format(wv_lg.shape))
     print(wv_lg)
+    wv_jc = np.array(wv_jc)
+    print("\nwv_jc shape {}\n".format(wv_jc.shape))
+    print(wv_jc)
+    wv_nd_T = np.array(wv_nd_T)
+    print("\nwv_nd_T shape {}\n".format(wv_nd_T.shape))
+    print(wv_nd_T)
+
     x = np.column_stack((wv_asf,wv_fg))
     xmn = np.column_stack((x,wv_mn))
     xed = np.column_stack((xmn,wv_ed))
     xlg = np.column_stack((xed,wv_lg))
-    # pardoning
-    '''
-    prc = 1
-    xlgT = np.transpose(xlg)
-    n_clients = len(xlgT)
-    maxsm = np.max(xlgT, axis=1)
-    xlgT_pardoned, alpha = pardonWV(n_clients, maxsm, xlgT, prc)
-    xlg_pardoned = np.transpose(xlgT_pardoned)
-    '''
-    xy = np.column_stack((xlg,y))
+    xjc = np.column_stack((xlg,wv_jc))
+    xndT = np.column_stack((xjc,wv_nd_T))
+    xy = np.column_stack((xndT,y))
+
     print("\nxy shape: {}\n{}".format(xy.shape,xy))
+    rows, cols = xy.shape
+    xy = np.nan_to_num(xy, nan=np.nanmean(xy))   
+    for i in range(rows):
+        asf_val = xy[i][0]
+        fg_val = xy[i][1]
+        mn_val = xy[i][2]
+        ed_val = xy[i][3]
+        lg_val = xy[i][4]
+        jc_val = xy[i][5]
+        ndT_val = xy[i][6]
+        y_val = xy[i][8]
+        list_data = [asf_val,fg_val,mn_val,ed_val,lg_val,jc_val,ndT_val,y_val]
+        with open(config.PATH +'poison_training.csv' ,'a',newline='') as f_object:
+            writer_object = writer(f_object)
+            writer_object.writerow(list_data)
+            f_object.close()
 
     with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_poison_model_'+ log_name,'a') as f:
         f.write("\ny shape {}\n".format(y.shape))
@@ -843,6 +861,12 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
         f.write(str(wv_ed))
         f.write("\nwv_lg shape {}\n".format(wv_lg.shape))
         f.write(str(wv_lg))
+        f.write("\nwv_jc shape {}\n".format(wv_jc.shape))
+        f.write(str(wv_jc))
+        f.write("\nwv_ndT shape {}\n".format(wv_nd_T.shape))
+        f.write(str(wv_nd_T))
+        f.write("\nwv_nd shape {}\n".format(wv_nd.shape))
+        f.write(str(wv_nd))
         f.write("\nxy shape: {}\n{}".format(xy.shape,xy))
     f.close()
 
@@ -884,13 +908,19 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     y_train_fg_rm = np.delete(y_train_asf_rm,0,1)
     y_train_mn_rm = np.delete(y_train_fg_rm,0,1)
     y_train_ed_rm = np.delete(y_train_mn_rm,0,1)
-    y_train = np.delete(y_train_ed_rm,0,1)
+    y_train_lg_rm = np.delete(y_train_ed_rm,0,1)
+    y_train_jc_rm = np.delete(y_train_lg_rm,0,1)
+    y_train_ndT_rm = np.delete(y_train_jc_rm,0,1)
+    y_train = np.delete(y_train_ndT_rm,0,1)
     x_test = np.delete(test,config.POISON_FEATURES,1)
     y_test_asf_rm = np.delete(test,0,1)
     y_test_fg_rm = np.delete(y_test_asf_rm,0,1)
     y_test_mn_rm = np.delete(y_test_fg_rm,0,1)
     y_test_ed_rm = np.delete(y_test_mn_rm,0,1)
-    y_test = np.delete(y_test_ed_rm,0,1)
+    y_test_lg_rm = np.delete(y_test_ed_rm,0,1)
+    y_test_jc_rm = np.delete(y_test_lg_rm,0,1)
+    y_test_ndT_rm = np.delete(y_test_jc_rm,0,1)
+    y_test = np.delete(y_test_ndT_rm,0,1)
     #print("x_train shape after deletes {}".format(x_train.shape))
     #print(x_train)
     #print("x_test shape after deletes {}".format(x_test.shape))
@@ -980,7 +1010,7 @@ def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poiso
             f.close()
             honest_clients.append(client_grad)
 
-    print("After Nodes removed: Rows {} cols {}".format(len(honest_clients),len(honest_clients[0])))
+    #print("After Nodes removed: Rows {} cols {}".format(len(honest_clients),len(honest_clients[0])))
     with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
             f.write("After Nodes removed: Rows {} cols {}".format(len(honest_clients),len(honest_clients[0])))
     f.close()
