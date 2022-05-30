@@ -230,9 +230,9 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
         num_grads_unscaled = len(client_grads_unscaled)
         # to get the average over all the local model, we simply take the sum of the scaled weights
         with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-             f.write("\n\nTotal Client Grads Scaled : {} unscaled {}\n".format(num_grads_scaled, num_grads_unscaled))
+             f.write("\n\nTotal Client Grads scaled: {} unscaled {}\n".format(num_grads_scaled, num_grads_unscaled))
              f.close()
-        print("\nTotal Client Grads Scaled : {} unscaled {}\n".format(num_grads_scaled, num_grads_unscaled))
+        print("\nTotal Client Grads scaled: {} unscaled {}\n".format(num_grads_scaled,num_grads_unscaled))
         baseline = config.BASELINE
         if baseline == True:
             average_weights = baseline_sum_scaled_weights_ids(config.PATH, config.ATTACK, config.NO_DEFENSE, config.LOG_NAME,client_grads_scaled, config.NUM_SYBILS)
@@ -248,7 +248,7 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             #Get local model for batch of gradients and set weights
             local_sim_model = get_sim_model(poison_timesteps,poison_features)
             local_sim_model.set_weights(global_sim_weights)
-            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test,250)
+            local_sim_model = model_sim_training(local_sim_model, xp_train, yp_train, xp_test,yp_test,config.POISON_EPOCHS)
 
             
             #Simulate scaling

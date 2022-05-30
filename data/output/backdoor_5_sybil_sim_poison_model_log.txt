@@ -1,0 +1,110 @@
+
+y shape (30,)
+[0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+wv_asf shape (30,)
+[0. 0. 0. 0. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 1. 1. 1. 1. 0. 1. 1.
+ 1. 1. 1. 1. 1. 1.]
+wv_fg shape (30,)
+[0.         0.         0.         0.         0.         0.
+ 1.         0.07130525 0.96141271 0.         0.         0.
+ 0.5879732  0.         0.         0.807999   0.         0.
+ 1.         0.         0.         0.         0.         0.
+ 1.         0.         0.         1.         0.         0.10266328]
+wv_mn shape (30,)
+[0.         0.         0.         0.         0.         1.
+ 1.         0.         0.         0.70257065 0.         0.
+ 0.         1.         1.         0.34666084 0.         1.
+ 0.4104949  0.07815401 1.         0.         0.86341375 1.
+ 1.         1.         1.         0.36030338 0.30147789 0.        ]
+wv_ed shape (30,)
+[0.         0.         0.         0.         0.         0.82818139
+ 1.         0.         0.         0.8421951  0.25782212 0.19883048
+ 0.         0.95561866 1.         0.27754256 0.         0.5855509
+ 0.         0.         1.         0.         0.81001438 1.
+ 1.         1.         1.         1.         0.         0.76460503]
+wv_lg shape (30,)
+[0. 0. 1. 1. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 0. 0. 0. 0. 0.]
+xy shape: (30, 6)
+[[0.         0.         0.         0.         0.         0.        ]
+ [0.         0.         0.         0.         0.         0.        ]
+ [0.         0.         0.         0.         1.         0.        ]
+ [0.         0.         0.         0.         1.         0.        ]
+ [0.         0.         0.         0.         1.         0.        ]
+ [1.         0.         1.         0.82818139 0.         1.        ]
+ [1.         1.         1.         1.         0.         1.        ]
+ [1.         0.07130525 0.         0.         0.         1.        ]
+ [1.         0.96141271 0.         0.         0.         1.        ]
+ [1.         0.         0.70257065 0.8421951  0.         1.        ]
+ [1.         0.         0.         0.25782212 0.         1.        ]
+ [1.         0.         0.         0.19883048 0.         1.        ]
+ [1.         0.5879732  0.         0.         0.         1.        ]
+ [1.         0.         1.         0.95561866 0.         1.        ]
+ [1.         0.         1.         1.         0.         1.        ]
+ [1.         0.807999   0.34666084 0.27754256 0.         1.        ]
+ [0.         0.         0.         0.         0.         1.        ]
+ [1.         0.         1.         0.5855509  0.         1.        ]
+ [1.         1.         0.4104949  0.         0.         1.        ]
+ [1.         0.         0.07815401 0.         0.         1.        ]
+ [1.         0.         1.         1.         0.         1.        ]
+ [0.         0.         0.         0.         0.         1.        ]
+ [1.         0.         0.86341375 0.81001438 0.         1.        ]
+ [1.         0.         1.         1.         0.         1.        ]
+ [1.         1.         1.         1.         0.         1.        ]
+ [1.         0.         1.         1.         0.         1.        ]
+ [1.         0.         1.         1.         0.         1.        ]
+ [1.         1.         0.36030338 1.         0.         1.        ]
+ [1.         0.         0.30147789 0.         0.         1.        ]
+ [1.         0.10266328 0.         0.76460503 0.         1.        ]]
+
+Best Training Poisoning Accuracy:
+0.7857142686843872
+#####################         POISON         ###############################################
+
+############################################################################################
+
+comm_round: 0 | global_test_acc: 90.000% | global_f1: 0.9473684210526316 | global_precision: 0.9
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00         1
+           1       0.90      1.00      0.95         9
+
+    accuracy                           0.90        10
+   macro avg       0.45      0.50      0.47        10
+weighted avg       0.81      0.90      0.85        10
+
+Accuracy per class:
+[[9 0]
+ [1 0]]
+[1. 0.]
+poison scaling shape: (30, 1)
+[[1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]scaled_weight_list: Rows 30 cols 21Adding node: 0 value: [1] to honest_clientsAdding node: 1 value: [1] to honest_clientsAdding node: 2 value: [1] to honest_clientsAdding node: 3 value: [1] to honest_clientsAdding node: 4 value: [1] to honest_clientsAdding node: 5 value: [1] to honest_clientsAdding node: 6 value: [1] to honest_clientsAdding node: 7 value: [1] to honest_clientsAdding node: 8 value: [1] to honest_clientsAdding node: 9 value: [1] to honest_clientsAdding node: 10 value: [1] to honest_clientsAdding node: 11 value: [1] to honest_clientsAdding node: 12 value: [1] to honest_clientsAdding node: 13 value: [1] to honest_clientsAdding node: 14 value: [1] to honest_clientsAdding node: 15 value: [1] to honest_clientsAdding node: 16 value: [1] to honest_clientsAdding node: 17 value: [1] to honest_clientsAdding node: 18 value: [1] to honest_clientsAdding node: 19 value: [1] to honest_clientsAdding node: 20 value: [1] to honest_clientsAdding node: 21 value: [1] to honest_clientsAdding node: 22 value: [1] to honest_clientsAdding node: 23 value: [1] to honest_clientsAdding node: 24 value: [1] to honest_clientsAdding node: 25 value: [1] to honest_clientsAdding node: 26 value: [1] to honest_clientsAdding node: 27 value: [1] to honest_clientsAdding node: 28 value: [1] to honest_clientsAdding node: 29 value: [1] to honest_clientsAfter Nodes removed: Rows 30 cols 21

@@ -110,6 +110,41 @@ class data_processing:
         #df.to_csv(r'C:\Users\ChristianDunham\Source\Repos\Intrusion_Detection\data\cleaned.csv', index=False)
         return df
 
+
+
+    def make_mod_timesteps(self,x_data, y_data, num_steps=3):
+      X = []
+      y = []
+      #print("In Time Steps\nAppend num_steps:{} rows\n".format(num_steps))
+      #Time steps drops length of arr - num_steps to length of arr - so add num_steps at end to get all
+      x_data_plus_steps = np.copy(x_data)
+      y_data_plus_steps = np.copy(y_data)
+      for x in range(num_steps):
+        x_data_plus_steps = np.vstack([x_data_plus_steps, np.array(x_data[x])])
+      for j in range(num_steps):
+        y_data_plus_steps = np.vstack([y_data_plus_steps,np.array(y_data[j])])
+
+      #print("\nCheck Length of x/y_data: {}|{} vs x/y_data_plus_steps: {}|{}\n:::: Start Loop ::::\n".format(x_data.shape[0],y_data.shape[0],x_data_plus_steps.shape[0],y_data_plus_steps.shape[0]))
+      #print("x_data_plus\n{}".format(x_data_plus_steps))
+      #print("y_data_plus\n{}".format(y_data_plus_steps))
+      #use the length of original array for iterations
+      for i in range(x_data.shape[0]):
+        #new sliding window index
+        end_ix = i + num_steps
+        seq_X = x_data_plus_steps[i:end_ix]
+        seq_y = y_data_plus_steps[end_ix]
+        seq_y = float(seq_y)
+        X.append(seq_X)
+        y.append(seq_y)
+        #print("i:{} | end_ix:{} |\nseq_X:\n{}|\nseq_y:\n{}".format(i,end_ix,seq_X,seq_y))
+
+      #print("Make output arrs:\nLen of X:{}\n".format(len(X)))
+      x_array = np.array(X)
+      y_array = np.vstack([np.array(i) for i in y])
+
+      print("Check outputs:\nx_array shape : {}\n{}\n\ny_array shape : {}\n{}\n".format(x_array.shape,x_array,y_array.shape,y_array))
+      return x_array, y_array
+
     '''
     A UDF to convert input data into 3-D
     array as required for LSTM network.
@@ -405,52 +440,52 @@ class data_processing:
             del dbaBytes
 
         #Create two classes and use keras.utils to create binary label arrays
-        CLASSES = ['normal', 'abnormal']
+        #CLASSES = ['normal', 'abnormal']
         # this is one hot encoding for binary classificaiton
-        y_train = np.array(keras.utils.to_categorical(y_train, len(CLASSES)))
-        y_test = np.array(keras.utils.to_categorical(y_test, len(CLASSES)))
+        #y_train = np.array(keras.utils.to_categorical(y_train, len(CLASSES)))
+        #y_test = np.array(keras.utils.to_categorical(y_test, len(CLASSES)))
         
         y_train = np.asarray(y_train)
         y_test = np.asarray(y_test)
 
         #Poison this is one hot encoding for binary classificaiton
-        if attack == 'backdoor':
+        #if attack == 'backdoor':
             #print("in backdoor np.array 2nd time")
-            y_trainP = np.array(keras.utils.to_categorical(y_trainP, len(CLASSES)))
-            y_testP = np.array(keras.utils.to_categorical(y_testP, len(CLASSES)))
+            #y_trainP = np.array(keras.utils.to_categorical(y_trainP, len(CLASSES)))
+            #y_testP = np.array(keras.utils.to_categorical(y_testP, len(CLASSES)))
         
-            y_trainP = np.asarray(y_trainP)
-            y_testP = np.asarray(y_testP)
+            #y_trainP = np.asarray(y_trainP)
+            #y_testP = np.asarray(y_testP)
 
         #DbaProto this is one hot encoding for binary classificaiton
-        if attack == 'dba':
+        #if attack == 'dba':
             #print("in dba np.array 2nd time")
-            y_trainDbaProto = np.array(keras.utils.to_categorical(y_trainDbaProto, len(CLASSES)))
-            y_testDbaProto = np.array(keras.utils.to_categorical(y_testDbaProto, len(CLASSES)))
+            #y_trainDbaProto = np.array(keras.utils.to_categorical(y_trainDbaProto, len(CLASSES)))
+            #y_testDbaProto = np.array(keras.utils.to_categorical(y_testDbaProto, len(CLASSES)))
         
-            y_trainDbaProto = np.asarray(y_trainDbaProto)
-            y_testDbaProto = np.asarray(y_testDbaProto)
+            #y_trainDbaProto = np.asarray(y_trainDbaProto)
+            #y_testDbaProto = np.asarray(y_testDbaProto)
 
             #DbaPkts this is one hot encoding for binary classificaiton
-            y_trainDbaPkts = np.array(keras.utils.to_categorical(y_trainDbaPkts, len(CLASSES)))
-            y_testDbaPkts = np.array(keras.utils.to_categorical(y_testDbaPkts, len(CLASSES)))
+            #y_trainDbaPkts = np.array(keras.utils.to_categorical(y_trainDbaPkts, len(CLASSES)))
+            #y_testDbaPkts = np.array(keras.utils.to_categorical(y_testDbaPkts, len(CLASSES)))
         
-            y_trainDbaPkts = np.asarray(y_trainDbaPkts)
-            y_testDbaPkts = np.asarray(y_testDbaPkts)
+            #y_trainDbaPkts = np.asarray(y_trainDbaPkts)
+            #y_testDbaPkts = np.asarray(y_testDbaPkts)
 
             #DbaDport this is one hot encoding for binary classificaiton
-            y_trainDbaDport = np.array(keras.utils.to_categorical(y_trainDbaDport, len(CLASSES)))
-            y_testDbaDport = np.array(keras.utils.to_categorical(y_testDbaDport, len(CLASSES)))
+            #y_trainDbaDport = np.array(keras.utils.to_categorical(y_trainDbaDport, len(CLASSES)))
+            #y_testDbaDport = np.array(keras.utils.to_categorical(y_testDbaDport, len(CLASSES)))
         
-            y_trainDbaDport = np.asarray(y_trainDbaDport)
-            y_testDbaDport = np.asarray(y_testDbaDport)
+            #y_trainDbaDport = np.asarray(y_trainDbaDport)
+            #y_testDbaDport = np.asarray(y_testDbaDport)
 
             #DbaBytes this is one hot encoding for binary classificaiton
-            y_trainDbaBytes = np.array(keras.utils.to_categorical(y_trainDbaBytes, len(CLASSES)))
-            y_testDbaBytes = np.array(keras.utils.to_categorical(y_testDbaBytes, len(CLASSES)))
+            #y_trainDbaBytes = np.array(keras.utils.to_categorical(y_trainDbaBytes, len(CLASSES)))
+            #y_testDbaBytes = np.array(keras.utils.to_categorical(y_testDbaBytes, len(CLASSES)))
         
-            y_trainDbaBytes = np.asarray(y_trainDbaBytes)
-            y_testDbaBytes = np.asarray(y_testDbaBytes)
+            #y_trainDbaBytes = np.asarray(y_trainDbaBytes)
+            #y_testDbaBytes = np.asarray(y_testDbaBytes)
 
         # set all arrays to numpy arrays
         x_train = np.array(x_train)

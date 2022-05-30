@@ -6,10 +6,10 @@ from tensorflow import keras
 from tensorflow.python.ops.gen_array_ops import scatter_nd_non_aliasing_add_eager_fallback
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense, Dropout, LSTM
+from tensorflow.keras.layers import Dense, Dropout, LSTM,  Bidirectional 
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import sklearn.metrics.pairwise as smp
-from sklearn.metrics import accuracy_score, f1_score, precision_score, classification_report
+from sklearn.metrics import accuracy_score, f1_score, precision_score, classification_report, confusion_matrix
 from fl_ss_data_processing import *
 from csv import writer
 import matplotlib.pyplot as plt
@@ -21,6 +21,9 @@ from itertools import zip_longest
 import config
 from scipy.special import logit, expit
 from numpy import errstate
+from keras.optimizers import gradient_descent_v2
+#from keras.layers.core import Dense, Dropout, Flatten
+#from keras.layers.convolutional import Conv2D, MaxPooling2D, SeparableConv2D
 #from tensorflow.python.ops.numpy_ops import np_config
 
 
@@ -34,7 +37,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # returns:  4 arrays
 def load_processed_data(file_path_normal,file_path_abnormal,path, attack, defense, log_name,num_sybils=1):
     data_process= data_processing()
-    x_train,y_train,x_test,y_test,x_trainP,y_trainP,x_testP,y_testP, x_trainDbaProto, x_testDbaProto, y_trainDbaProto, y_testDbaProto , x_trainDbaPkts, x_testDbaPkts, y_trainDbaPkts, y_testDbaPkts, x_trainDbaDport, x_testDbaDport, y_trainDbaDport, y_testDbaDport, x_trainDbaBytes, x_testDbaBytes, y_trainDbaBytes, y_testDbaBytes = data_process.load_data(file_path_normal,file_path_abnormal,config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,config.NUM_SYBILS, timesteps=80)
+    timesteps = config.IDS_TIMESTEPS
+    x_train,y_train,x_test,y_test,x_trainP,y_trainP,x_testP,y_testP, x_trainDbaProto, x_testDbaProto, y_trainDbaProto, y_testDbaProto , x_trainDbaPkts, x_testDbaPkts, y_trainDbaPkts, y_testDbaPkts, x_trainDbaDport, x_testDbaDport, y_trainDbaDport, y_testDbaDport, x_trainDbaBytes, x_testDbaBytes, y_trainDbaBytes, y_testDbaBytes = data_process.load_data(file_path_normal,file_path_abnormal,config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,config.NUM_SYBILS, timesteps)
 
     #print("train shape: ", np.shape(x_train))
     #print("test shape: ", np.shape(x_test))
@@ -297,7 +301,10 @@ def replace_1_with_0(path, attack, num_sybils, defense, log_name,data):
     return data
 
 def get_model(timesteps,n_features):
+    sgd = gradient_descent_v2.SGD(learning_rate=0.001, momentum=0.9, nesterov=True)
+    
     model = Sequential()
+    '''
     model.add(LSTM(256, return_sequences=True, input_shape=(timesteps, n_features)))
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(.2))
@@ -306,11 +313,21 @@ def get_model(timesteps,n_features):
     model.add(Dropout(.25))
     model.add(LSTM(64))
     model.add(Dropout(.25))
-    model.add(Dense(2, activation='softmax'))
-    #model.add(Dense(2, activation='sigmoid'))
+    '''
+    model.add(Bidirectional(LSTM(29, return_sequences=True), input_shape=(timesteps, n_features)))
+    model.add(Dense(29, activation='relu'))
+    model.add(Dropout(.2))
+    model.add(Bidirectional(LSTM(14, return_sequences=True)))
+    model.add(Dense(14, activation='relu'))
+    model.add(Dropout(.25))
+    model.add(LSTM(7,return_sequences=False))
+    model.add(Dropout(.25))
+    #model.add(Dense(2, activation='softmax'))
+    
+    model.add(Dense(1, activation='sigmoid'))
     #model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.CategoricalAccuracy(),'accuracy'])
-    #model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.BinaryAccuracy()])
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=sgd, loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.BinaryAccuracy()])
+    #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     #with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\model_summary.txt','a') as f:
     #        f.write(str(model.summary()))
     #        f.close()
@@ -320,10 +337,12 @@ def get_model(timesteps,n_features):
 
 
 def model_training(model,x_train,y_train,epochs=4000):
-    callbacks = EarlyStopping(monitor='accuracy', mode='max', verbose=0, patience=1000,
+    #callbacks = EarlyStopping(monitor='accuracy', mode='max', verbose=0, patience=10,
+    callbacks = EarlyStopping(monitor='binary_accuracy', mode='max', verbose=0, patience=10,
+
                               restore_best_weights=True)
     # mc = ModelCheckpoint('best_model.h5', monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
-    batch_size = 10
+    batch_size = 5
     X_train = x_train.copy()
     Y_train = y_train.copy()
     accuracy_callback = AccuracyCallback((X_train, Y_train))
@@ -334,6 +353,7 @@ def model_training(model,x_train,y_train,epochs=4000):
                               y_train,
                               epochs=epochs,
                               validation_split=0.2,
+                              shuffle=False,
                               #validation_data=(x_test, (y_test, x_test)),
                               batch_size=batch_size,
                               verbose=0,
@@ -344,6 +364,38 @@ def model_training(model,x_train,y_train,epochs=4000):
     return model
 
 def model_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,y_test,epochs, num_sybils):
+    train_pred = (model.predict(x_train, steps=None, callbacks=None, max_queue_size=10, workers=1, use_multiprocessing=False,verbose=0) > .5).astype("int32") 
+    train_labels = np.copy(y_train).astype("int32")
+    test_pred = (model.predict(x_test) > .5).astype("int32") 
+    test_labels = np.copy(y_test).astype("int32")
+    print("predicted value:\n{}".format(test_pred))
+    print("label value:\n{}".format(test_labels))
+    trainAcc = accuracy_score(train_labels, train_pred)
+    testAcc = accuracy_score(test_labels, test_pred)
+    f1 = f1_score(test_labels, test_pred, zero_division=0)
+    precision = precision_score(test_labels, test_pred)
+    classes_report = classification_report(test_labels, test_pred)
+    matrix = confusion_matrix(test_labels, test_pred, labels=[1,0])
+
+
+    list_data = [epochs, testAcc,f1, precision]
+    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_results.csv' ,'a',newline='') as f_object:
+        writer_object = writer(f_object)
+        writer_object.writerow(list_data)
+        f_object.close()
+    with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_model_'+ log_name,'a') as f:
+            f.write('\n#####################         IDS         ###############################################\n')
+            f.write('\n############################################################################################\n')
+            f.write('\ncomm_round: {} | global_test_acc: {:.3%} | global_f1: {} | global_precision: {}\n'.format(epochs, testAcc, f1, precision))
+            f.write(str(classes_report))
+            f.write("\nAccuracy per class:\n{}\n{}\n".format(matrix,matrix.diagonal()/matrix.sum(axis=1)))
+    f.close()
+    print('\n#####################         IDS         ###############################################\n')
+    print('\n############################################################################################\n')
+    print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_f1: {} | global_test_precision: {}'.format(epochs, trainAcc, testAcc, f1, precision))
+    print(classes_report)
+    print("\nAccuracy per class:\n{}\n{}\n".format(matrix,matrix.diagonal()/matrix.sum(axis=1)))
+    '''
     q = model.predict(x_train, verbose=0)
     q_t = model.predict(x_test, verbose=0)
 
@@ -370,6 +422,7 @@ def model_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,
             f.write('\ncomm_round: {} | global_acc: {:.3%} | global_f1: {} | global_precision: {} | global bin {}\n'.format(epochs, testAcc, f1, precision, m))
     f.close()
     print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_test_f1: {} | global_test_precision: {} | global test bin acc {}'.format(epochs, trainAcc, testAcc, f1, precision, m))
+    '''
 
 classes = ['normal','attack']
 class AccuracyCallback(tf.keras.callbacks.Callback):
@@ -482,24 +535,55 @@ def softmax_a_set(a_set):
 def logit(path, attack, defense, log_name,grads, num_sybils=1):
     #### could use scipy logit(grads) here?
     n_clients = len(grads)
+    print("grads {}".format(len(grads)))
     #print("Logit Total Client Grads: {}".format(n_clients))
     #    1.  Logit
     distance_calc = softmax_a_set(grads)
+    print("dist cal {}".format(len(distance_calc)))
     sm = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
+    print("sm {}".format(len(sm)))
+    print(sm)
     #sm = normalized - np.eye(n_clients)
-    prc = 0.05 # adjust value to improve results
+    prc = 1 # adjust value to improve results
     #print("Logits Similarity is\n {}".format(sm))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nLogits Similarity is\n {}\n".format(sm))
     #    f.close()
-    prc = 1 
+    prc = .05 
     maxsm = np.max(sm, axis=1)
+    print("length maxsm {}".format(len(maxsm)))
+    print(maxsm)
     #print("Maxsm is\n {}".format(maxsm))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\nMaxsm is\n {}".format(maxsm))
     #    f.close()
   
-    wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
+    # pardoningF for sm
+    for i in range(n_clients):
+        for j in range(7):
+            if i == j:
+                continue
+            if maxsm[i] < maxsm[j]:
+                sm[i][j] = sm[i][j] * maxsm[i] / maxsm[j] * prc
+ 
+    wv = 1 - (np.max(sm, axis=1))
+
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    with np.errstate(divide='ignore'):
+        wv = (np.log(wv / (1 - wv)) + 0.5)
+        wv[(np.isinf(wv) + wv > 1)] = 1
+        wv[(wv < 0)] = 0
+
+    #wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
     #print("Logit wv is {}".format(wv))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
     #    f.write("\n\nLogits wv is {}\n".format(wv))
@@ -675,7 +759,7 @@ def make_sim_timesteps(x_data, y_data, num_steps=3):
   x_array = np.array(X)
   y_array = np.vstack([np.array(i) for i in y])
 
-  #print("Check outputs:\nx_array shape : {}\n{}\n\ny_array shape : {}\n{}\n".format(x_array.shape,x_array,y_array.shape,y_array))
+  print("Check outputs:\nx_array shape : {}\n{}\n\ny_array shape : {}\n{}\n".format(x_array.shape,x_array,y_array.shape,y_array))
   return x_array, y_array
 
 
@@ -734,6 +818,15 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     xmn = np.column_stack((x,wv_mn))
     xed = np.column_stack((xmn,wv_ed))
     xlg = np.column_stack((xed,wv_lg))
+    # pardoning
+    '''
+    prc = 1
+    xlgT = np.transpose(xlg)
+    n_clients = len(xlgT)
+    maxsm = np.max(xlgT, axis=1)
+    xlgT_pardoned, alpha = pardonWV(n_clients, maxsm, xlgT, prc)
+    xlg_pardoned = np.transpose(xlgT_pardoned)
+    '''
     xy = np.column_stack((xlg,y))
     print("\nxy shape: {}\n{}".format(xy.shape,xy))
 
@@ -772,6 +865,15 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     #print(train)
     #print("test shape after tts {}".format(test.shape))
     #print(test)
+
+    ##### to categorical if you want to use softmax
+    #CLASSES = ['1.0', '0.0']
+    # this is one hot encoding for binary classificaiton
+    #y_train = np.array(keras.utils.to_categorical(y_train, len(CLASSES)))
+    #y_test = np.array(keras.utils.to_categorical(y_test, len(CLASSES)))
+        
+    #y_train = np.asarray(y_train)
+    #y_test = np.asarray(y_test)
 
     #REMOVE LABEL FROM X remove features from Y
     #TODO ##################################################################
@@ -813,10 +915,10 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     #print(y_test)
 
     #Reshape for LSTM model to take as tensors
-    x_train = x_train.reshape(x_train.shape[0], poison_timesteps, config.POISON_FEATURES)
-    x_test = x_test.reshape(x_test.shape[0], poison_timesteps, config.POISON_FEATURES)   
-    assert x_train.shape[0] == y_train.shape[0]
-    assert x_test.shape[0] == y_test.shape[0]    
+    #x_train = x_train.reshape(x_train.shape[0], poison_timesteps, config.POISON_FEATURES)
+    #x_test = x_test.reshape(x_test.shape[0], poison_timesteps, config.POISON_FEATURES)   
+    #assert x_train.shape[0] == y_train.shape[0]
+    #assert x_test.shape[0] == y_test.shape[0]    
 
     x_train = np.asarray(x_train)
     x_test = np.asarray(x_test)
@@ -868,22 +970,25 @@ def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poiso
     with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
             f.write("scaled_weight_list: Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
     f.close()
+    honest_clients = []
     for c, client_grad in enumerate(scaled_weight_list):
         print("c is {} and poison[c] is : {}".format(c, poison_factor[c]))
-        if poison_factor[c] == 0:
-            print("deleting node: {} value: {}".format(c,poison_factor[c]))
+        if poison_factor[c] == 1:
+            print("Adding node: {} value: {} to honest_clients".format(c,poison_factor[c]))
             with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
-                    f.write("deleting node: {} value: {}".format(c,poison_factor[c]))
+                    f.write("Adding node: {} value: {} to honest_clients".format(c,poison_factor[c]))
             f.close()
-            del scaled_weight_list[c]
+            honest_clients.append(client_grad)
 
-    print("After Nodes removed: Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
+    print("After Nodes removed: Rows {} cols {}".format(len(honest_clients),len(honest_clients[0])))
     with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
-            f.write("After Nodes removed: Rows {} cols {}".format(len(scaled_weight_list),len(scaled_weight_list[0])))
+            f.write("After Nodes removed: Rows {} cols {}".format(len(honest_clients),len(honest_clients[0])))
     f.close()
+
+
     avg_grad = []
     # get the average grad accross all client gradients
-    for grad_list_tuple in zip(*scaled_weight_list):
+    for grad_list_tuple in zip(*honest_clients):
         layer_mean = tf.math.reduce_sum(grad_list_tuple, axis=0)
         avg_grad.append(layer_mean)
     return avg_grad

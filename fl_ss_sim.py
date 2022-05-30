@@ -6,7 +6,7 @@ from tensorflow import keras
 from tensorflow.python.ops.gen_array_ops import scatter_nd_non_aliasing_add_eager_fallback
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense, Dropout, LSTM
+from tensorflow.keras.layers import Dense, Dropout, LSTM, Bidirectional 
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import sklearn.metrics.pairwise as smp
 from sklearn.metrics import accuracy_score, f1_score, precision_score, classification_report, confusion_matrix
@@ -19,6 +19,7 @@ import torch
 import csv
 from itertools import zip_longest
 import config
+from keras.optimizers import gradient_descent_v2
 import absl.logging
 absl.logging.set_verbosity(absl.logging.ERROR)
 #from tensorflow.python.ops.numpy_ops import np_config
@@ -30,36 +31,38 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def get_sim_model(timesteps,n_features):
     # loading the saved model
-    loaded_model = tf.keras.models.load_model('./persistent_model_tf')
+    #loaded_model = tf.keras.models.load_model('./persistent_model_tf')
     #then call fit
-
-    '''
+    sgd = gradient_descent_v2.SGD(learning_rate=0.001, momentum=0.9, nesterov=True)
+    
     model = Sequential()
-    model.add(LSTM(20, return_sequences=False, activation='tanh',input_shape=(timesteps, n_features)))
-    model.add(Dense(20, activation='relu'))
+    #model.add(LSTM(20, return_sequences=False, activation='tanh',input_shape=(timesteps, n_features)))
+    model.add(Bidirectional(LSTM(5, return_sequences=False, activation='tanh'),input_shape=(timesteps, n_features)))
+    model.add(Dense(5, activation='relu'))
+    #model.add(Dense(2, activation='softmax'))
     #model.add(Dropout(.25))
     #model.add(LSTM(16))
-    model.add(Dense(units=1, activation='linear'))
+    #model.add(Dense(units=1, activation='linear'))
     #model.add(Dropout(.25))
     #model.add(Dense(2, activation='softmax'))
     model.add(Dense(1, activation='sigmoid'))
     #model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.CategoricalAccuracy(),'accuracy'])
-    model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.BinaryAccuracy(),'accuracy'])
+    model.compile(optimizer=sgd, loss=keras.losses.BinaryCrossentropy(), metrics=[keras.metrics.BinaryAccuracy()])
     #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     #with open('C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\model_summary.txt','a') as f:
     #        f.write(str(model.summary()))
     #        f.close()
     #print(model.summary())
-    '''
+    
 
-    return loaded_model
-    #return model
+    #return loaded_model
+    return model
 
 def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
-    callbacks = EarlyStopping(monitor='val_accuracy', mode='max', verbose=0, patience=75,
+    callbacks = EarlyStopping(monitor='binary_accuracy', mode='max', verbose=0, patience=75,
                               restore_best_weights=True)
     checkpoint_filepath = './epoch_models/best_model.h5'
-    mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='val_accuracy', mode='max', verbose=0, save_best_only=True)
+    mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
     batch_size = 1
     X_train = x_train.copy()
     Y_train = y_train.copy()
@@ -71,22 +74,23 @@ def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
                               y_train,
                               epochs=epochs,
                               validation_split=.3,
+                              shuffle=False,
                               #validation_data=(x_test, (y_test, x_test)),
                               #validation_data=(x_test, y_test),
                               batch_size=batch_size,
                               verbose=0,
                               callbacks=[callbacks,mc, accuracy_callback]
                               )
-    print("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['accuracy'])))
+    print("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['binary_accuracy'])))
     with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
-        f.write("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['accuracy'])))
+        f.write("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['binary_accuracy'])))
     f.close()
     model = load_model(checkpoint_filepath)
 
     return model
 
 def model_sim_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,y_test,epochs, num_sybils):
-    train_pred = (model.predict(x_train) > .5).astype("int32") 
+    train_pred = (model.predict(x_train,  steps=None, callbacks=None, max_queue_size=10, workers=1, use_multiprocessing=False,verbose=0) > .5).astype("int32") 
     train_labels = np.copy(y_train).astype("int32")
     test_pred = (model.predict(x_test) > .5).astype("int32") 
     test_labels = np.copy(y_test).astype("int32")
