@@ -61,7 +61,7 @@ def get_sim_model(timesteps,n_features):
 def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
     callbacks = EarlyStopping(monitor='binary_accuracy', mode='max', verbose=0, patience=75,
                               restore_best_weights=True)
-    checkpoint_filepath = './epoch_models/best_model.h5'
+    checkpoint_filepath = './epoch_models/POISON/best_model.h5'
     mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
     batch_size = 1
     X_train = x_train.copy()
@@ -82,7 +82,7 @@ def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
                               callbacks=[callbacks,mc, accuracy_callback]
                               )
     print("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['binary_accuracy'])))
-    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
+    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_POISON_model_'+ config.LOG_NAME,'a') as f:
         f.write("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['binary_accuracy'])))
     f.close()
     model = load_model(checkpoint_filepath)

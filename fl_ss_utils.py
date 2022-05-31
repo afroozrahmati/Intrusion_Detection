@@ -19,11 +19,11 @@ import torch
 import csv
 from itertools import zip_longest
 from sklearn import preprocessing
-from scipy.special import logit, expit
 import config
 from scipy.special import logit, expit
 from numpy import errstate
 from scipy.stats import norm
+from sklearn.metrics import jaccard_score
 from keras.optimizers import gradient_descent_v2
 #from keras.layers.core import Dense, Dropout, Flatten
 #from keras.layers.convolutional import Conv2D, MaxPooling2D, SeparableConv2D
@@ -309,6 +309,9 @@ def replace_1_with_0(path, attack, num_sybils, defense, log_name,data):
     return data
 
 def get_model(timesteps,n_features):
+    # loading the saved model
+    #loaded_model = tf.keras.models.load_model('./persistent_model_tf')
+    #then call fit
     sgd = gradient_descent_v2.SGD(learning_rate=0.001, momentum=0.9, nesterov=True)
     
     model = Sequential()
@@ -341,15 +344,16 @@ def get_model(timesteps,n_features):
     #        f.close()
     #print(model.summary())
 
+    #return loaded_model
     return model
 
 
 def model_training(model,x_train,y_train,epochs=4000):
     #callbacks = EarlyStopping(monitor='accuracy', mode='max', verbose=0, patience=10,
-    callbacks = EarlyStopping(monitor='binary_accuracy', mode='max', verbose=0, patience=10,
-
+    callbacks = EarlyStopping(monitor='binary_accuracy', mode='max', verbose=0, patience=75,
                               restore_best_weights=True)
-    # mc = ModelCheckpoint('best_model.h5', monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
+    checkpoint_filepath = './epoch_models/IDS/best_model.h5'
+    mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
     batch_size = 5
     X_train = x_train.copy()
     Y_train = y_train.copy()
@@ -365,9 +369,14 @@ def model_training(model,x_train,y_train,epochs=4000):
                               #validation_data=(x_test, (y_test, x_test)),
                               batch_size=batch_size,
                               verbose=0,
-                              callbacks=[callbacks, accuracy_callback]
+                              callbacks=[callbacks,mc, accuracy_callback]
                               )
-    #saved_model = load_model('best_model.h5')
+    #print("\n\nBest Training Poisoning Accuracy:\n{}".format(max(train_history.history['binary_accuracy'])))
+    #with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_IDS_model_'+ config.LOG_NAME,'a') as f:
+    #    f.write("\n\nBest Training IDS Accuracy:\n{}".format(max(train_history.history['binary_accuracy'])))
+    #f.close()
+    model = load_model(checkpoint_filepath)
+
 
     return model
 
@@ -471,7 +480,7 @@ class AccuracyCallback(tf.keras.callbacks.Callback):
 def pardonWV(n_clients, maxsm, sm, prc):
     # pardoningF for sm
     for i in range(n_clients):
-        for j in range(n_clients):
+        for j in range(config.POISON_FEATURES - 1):
             if i == j:
                 continue
             if maxsm[i] < maxsm[j]:
@@ -496,8 +505,49 @@ def pardonWV(n_clients, maxsm, sm, prc):
 
     return wv,alpha
 
-def norm_dist(a):
+def std(a):
+    return (np.std(a))
 
+def std_set(a_set):
+    """computes jaccard for all vectors in a set"""
+    std_a_set = np.zeros(a_set.shape)    
+
+    for x in range(0, len(a_set)):
+        std_a_set[x] = std(a_set[x])
+
+    return std_a_set
+
+def get_std(path, attack, defense, log_name,grads, num_sybils=1):
+    #### could use scipy logit(grads) here?
+    n_clients = len(grads)
+    #print("grads {}".format(len(grads)))
+    #print("Logit Total Client Grads: {}".format(n_clients))
+    #    1.  Logit
+    std = std_set(grads)
+    sm = 2.*(std - np.min(std))/np.ptp(std)-1
+    #sm = normalized - np.eye(n_clients)
+    prc = 0.05 # adjust value to improve results
+    #print("ED Similarity is\n {}".format(sm))
+    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+    #    f.write("\nED Similarity is\n {}\n".format(sm))
+    #    f.close()
+    prc = 1 
+    maxsm = np.max(sm, axis=1)
+    #print("Maxsm is\n {}".format(maxsm))
+    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+    #    f.write("\nMaxsm is\n {}".format(maxsm))
+    #    f.close()
+  
+    prc = 1 
+    maxsm = np.max(sm, axis=1)
+    wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
+        #print("ED wv is {}".format(wv))
+        #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        #    f.write("\n\nED wv is {}\n".format(wv))
+        #    f.close()
+    return wv,alpha
+
+def norm_dist(a):
     return (norm.pdf(a,loc=np.nanmean(a), scale = 1))
 
 def norm_dist_a_set(a_set):
@@ -511,17 +561,34 @@ def norm_dist_a_set(a_set):
 
 def get_norm_dist(path, attack, defense, log_name,grads, num_sybils=1):
     #### could use scipy logit(grads) here?
+    n_clients = len(grads)
     #print("grads {}".format(len(grads)))
     #print("Logit Total Client Grads: {}".format(n_clients))
     #    1.  Logit
     nd = norm_dist_a_set(grads)
-
-    #wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
-    #print("Logit wv is {}".format(wv))
+    sm = 2.*(nd - np.min(nd))/np.ptp(nd)-1
+    #sm = normalized - np.eye(n_clients)
+    prc = 0.05 # adjust value to improve results
+    #print("ED Similarity is\n {}".format(sm))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-    #    f.write("\n\nLogits wv is {}\n".format(wv))
+    #    f.write("\nED Similarity is\n {}\n".format(sm))
     #    f.close()
-    return nd
+    prc = 1 
+    maxsm = np.max(sm, axis=1)
+    #print("Maxsm is\n {}".format(maxsm))
+    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+    #    f.write("\nMaxsm is\n {}".format(maxsm))
+    #    f.close()
+  
+    prc = 1 
+    maxsm = np.max(sm, axis=1)
+    wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
+        #print("ED wv is {}".format(wv))
+        #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        #    f.write("\n\nED wv is {}\n".format(wv))
+        #    f.close()
+    return wv,alpha
+
 
 def jaccard_similarity(a, b):
     # convert to set
@@ -547,45 +614,74 @@ def jaccard(path, attack, defense, log_name,grads, num_sybils=1):
     #print("grads {}".format(len(grads)))
     #print("Logit Total Client Grads: {}".format(n_clients))
     #    1.  Logit
-    jaccard = jaccard_a_set(grads)
+    sm = jaccard_a_set(grads)
+   
+    # pardoningF for sm
+    wv = np.zeros(n_clients)
+    for i in range(n_clients):
+        wv[i] = np.sum(sm[i])
 
-    #wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
-    #print("Logit wv is {}".format(wv))
-    #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-    #    f.write("\n\nLogits wv is {}\n".format(wv))
-    #    f.close()
-    return jaccard
+ 
+    wv = 1 - (np.max(sm, axis=1))
 
-def inv_log(a_vector):
-    """Compute a inv_logit for a vector."""
-    inv_logit = expit(logit(a_vector))
-    return inv_logit
+    wv[wv > 1] = 1
+    wv[wv < 0] = 0
+
+    alpha = np.max(sm, axis=1)
+
+    # Rescale so that max value is wv
+    wv = wv / np.max(wv)
+    wv[(wv == 1)] = .99
+
+    # Logit function
+    with np.errstate(divide='ignore'):
+        wv = (np.log(wv / (1 - wv)) + 0.5)
+        wv[(np.isinf(wv) + wv > 1)] = 1
+        wv[(wv < 0)] = 0
+
+    return wv,alpha
+
+def softmax(a_vector):
+    """Compute a logit for a vector."""
+    denom = sum(np.exp(a_vector))
+    logit = np.exp(a_vector)/denom
+    return logit
 
 def inv_log_a_set(a_set):
     """computes logits for all vectors in a set"""
-    inv_log_set_vecs = np.zeros(a_set.shape)    
+    softmax_set = np.zeros(a_set.shape)    
 
     for x in range(0, len(a_set)):
-        inv_log_set_vecs[x] = inv_log(a_set[x])
+        softmax_set[x] = softmax(a_set[x])
 
-    return inv_log_set_vecs
+    return softmax_set
 
 def get_inv_logit(path, attack, defense, log_name,grads, num_sybils=1):
     #### could use scipy logit(grads) here?
+    n_clients = len(grads)
     #print("grads {}".format(len(grads)))
     #print("Logit Total Client Grads: {}".format(n_clients))
     #    1.  Logit
-    logits = inv_log_a_set(grads)
-    normalized = 2.*(logts - np.min(logits))/np.ptp(logits)-1
-    sm = normalized - np.eye(logits)   
+    sm = inv_log_a_set(grads)
+    prc = 1 
+    #sm = np.delete(sm,0,1)
+    print("\nwv_lg shape {}\n".format(sm.shape))
+    print(sm)
 
-    #wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
-    #print("Logit wv is {}".format(wv))
+    maxsm = np.max(sm, axis=1)
+    #print("Maxsm is\n {}".format(maxsm))
     #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
-    #    f.write("\n\nLogits wv is {}\n".format(wv))
+    #    f.write("\nMaxsm is\n {}".format(maxsm))
     #    f.close()
-    return logits
-
+  
+    prc = 1 
+    maxsm = np.max(sm, axis=1)
+    wv, alpha = pardonWV(n_clients, maxsm, sm, prc)
+        #print("ED wv is {}".format(wv))
+        #with open(path + attack +'_'+ str(num_sybils) +'_sybil_'+ defense +'_'+ log_name,'a') as f:
+        #    f.write("\n\nED wv is {}\n".format(wv))
+        #    f.close()
+    return wv,alpha
 
 
 def ed(path, attack, defense, log_name,grads, num_sybils=1):
@@ -755,9 +851,8 @@ def make_sim_timesteps(x_data, y_data, num_steps=3):
   x_array = np.array(X)
   y_array = np.vstack([np.array(i) for i in y])
 
-  print("Check outputs:\nx_array shape : {}\n{}\n\ny_array shape : {}\n{}\n".format(x_array.shape,x_array,y_array.shape,y_array))
+  #print("Check outputs:\nx_array shape : {}\n{}\n\ny_array shape : {}\n{}\n".format(x_array.shape,x_array,y_array.shape,y_array))
   return x_array, y_array
-
 
 
 # Takes in grad
@@ -776,9 +871,11 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     #Get Logits WV
     wv_lg = get_inv_logit(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
     #Get Jacard WV
-    wv_jc = jaccard(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    wv_jc, alpha = jaccard(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
     #Get Norm Dist T WV
-    wv_nd_T = get_norm_dist(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    wv_nd_T,alpha = get_norm_dist(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
+    #Get std T WV
+    wv_std,alpha = get_std(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,grads, config.NUM_SYBILS)
 
 
     #Make Train Test Data sets
@@ -812,23 +909,38 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
     wv_ed = np.array(wv_ed)
     print("\nwv_ed shape {}\n".format(wv_ed.shape))
     print(wv_ed)
+
+    ### Fix logits
     wv_lg = np.array(wv_lg)
+    #print("\nwv_lg shape {}\n".format(wv_lg.shape))
+    #print(wv_lg)
+
+    wv_lg = np.delete(wv_lg,0,axis=0)
+    #print("\nwv_lg shape {}\n".format(wv_lg.shape))
+    #print(wv_lg)
+
+    wv_lg = np.transpose(wv_lg)
     print("\nwv_lg shape {}\n".format(wv_lg.shape))
     print(wv_lg)
+        
     wv_jc = np.array(wv_jc)
     print("\nwv_jc shape {}\n".format(wv_jc.shape))
     print(wv_jc)
     wv_nd_T = np.array(wv_nd_T)
     print("\nwv_nd_T shape {}\n".format(wv_nd_T.shape))
     print(wv_nd_T)
+    wv_std = np.array(wv_std)
+    print("\nwv_std shape {}\n".format(wv_std.shape))
+    print(wv_std)
 
     x = np.column_stack((wv_asf,wv_fg))
     xmn = np.column_stack((x,wv_mn))
-    xed = np.column_stack((xmn,wv_ed))
+    xed = np.column_stack((xmn,wv_ed))    
     xlg = np.column_stack((xed,wv_lg))
     xjc = np.column_stack((xlg,wv_jc))
     xndT = np.column_stack((xjc,wv_nd_T))
-    xy = np.column_stack((xndT,y))
+    xstd = np.column_stack((xndT,wv_std))
+    xy = np.column_stack((xstd,y))
 
     print("\nxy shape: {}\n{}".format(xy.shape,xy))
     rows, cols = xy.shape
@@ -841,8 +953,9 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
         lg_val = xy[i][4]
         jc_val = xy[i][5]
         ndT_val = xy[i][6]
+        std_val = xy[i][7]
         y_val = xy[i][8]
-        list_data = [asf_val,fg_val,mn_val,ed_val,lg_val,jc_val,ndT_val,y_val]
+        list_data = [asf_val,fg_val,mn_val,ed_val,lg_val,jc_val,ndT_val,std_val,y_val]
         with open(config.PATH +'poison_training.csv' ,'a',newline='') as f_object:
             writer_object = writer(f_object)
             writer_object.writerow(list_data)
@@ -865,8 +978,8 @@ def sim(path, attack, defense, log_name,grads, num_sybils=1):
         f.write(str(wv_jc))
         f.write("\nwv_ndT shape {}\n".format(wv_nd_T.shape))
         f.write(str(wv_nd_T))
-        f.write("\nwv_nd shape {}\n".format(wv_nd.shape))
-        f.write(str(wv_nd))
+        f.write("\nwv_std shape {}\n".format(wv_std.shape))
+        f.write(str(wv_std))
         f.write("\nxy shape: {}\n{}".format(xy.shape,xy))
     f.close()
 

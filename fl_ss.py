@@ -258,7 +258,7 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             #Set Global model weights
             global_sim_model.set_weights(scaled_sim_weights)
             # saving the model in tensorflow format
-            global_sim_model.save('./persistent_model_tf',save_format='tf')
+            global_sim_model.save('./POISON_Persistent_Model/persistent_model_tf',save_format='tf')
             
             #Evaluate Performance of Poison Model
             xp_train = np.asarray(xp_train)
@@ -276,7 +276,7 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled,poison_scaling, config.NUM_SYBILS)
             # 6. update global model
             global_model.set_weights(average_weights)
-
+            global_model.save('./IDS_Persistent_Model/persistent_model_tf',save_format='tf')
             # 7. test global model and print out metrics after each communications round
             model_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_model,x_train,y_train,x_test,y_test,comm_round, config.NUM_SYBILS)
         
