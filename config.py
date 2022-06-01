@@ -8,7 +8,7 @@ import numpy as np
 PATH = 'C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\output\\'
 PATH_IN = 'C:\\Users\\ChristianDunham\\source\\repos\\Intrusion_Detection\\data\\input\\'
 ATTACK_LIST = ['label','backdoor','dba']
-ATTACK = ATTACK_LIST[1]
+ATTACK = ATTACK_LIST[0]
 NO_ATTACK = 'none'
 DEFENSE_LIST = ['none','fg', 'asf', 'sim']
 DEFENSE = DEFENSE_LIST[3]

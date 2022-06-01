@@ -275,10 +275,13 @@ def simulation(path, path_in, log_name, table_name, comms_round, attack='label',
             #Get the average weights for the IDS to update global model
             average_weights = sum_scaled_weights(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,client_grads_scaled,poison_scaling, config.NUM_SYBILS)
             # 6. update global model
-            global_model.set_weights(average_weights)
-            global_model.save('./IDS_Persistent_Model/persistent_model_tf',save_format='tf')
-            # 7. test global model and print out metrics after each communications round
-            model_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_model,x_train,y_train,x_test,y_test,comm_round, config.NUM_SYBILS)
+            if len(average_weights) == 0:
+                print("bad prediction killed all nodes")
+            else:
+                global_model.set_weights(average_weights)
+                global_model.save('./IDS_Persistent_Model/persistent_model_tf',save_format='tf')
+                # 7. test global model and print out metrics after each communications round
+                model_evaluate(config.PATH, config.ATTACK, config.DEFENSE, config.LOG_NAME,global_model,x_train,y_train,x_test,y_test,comm_round, config.NUM_SYBILS)
         
 # 1. 
 ###############################################################################

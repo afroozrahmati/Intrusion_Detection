@@ -31,8 +31,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def get_sim_model(timesteps,n_features):
     # loading the saved model
-    #loaded_model = tf.keras.models.load_model('./persistent_model_tf')
+    loaded_model = tf.keras.models.load_model('./POISON_Persistent_Model/persistent_model_tf')
     #then call fit
+    
+    '''
     sgd = gradient_descent_v2.SGD(learning_rate=0.001, momentum=0.9, nesterov=True)
     
     model = Sequential()
@@ -53,15 +55,15 @@ def get_sim_model(timesteps,n_features):
     #        f.write(str(model.summary()))
     #        f.close()
     #print(model.summary())
-    
+    '''
 
-    #return loaded_model
-    return model
+    return loaded_model
+    #return model
 
 def model_sim_training(model,x_train,y_train,x_test,y_test,epochs=1):
     callbacks = EarlyStopping(monitor='binary_accuracy', mode='max', verbose=0, patience=75,
                               restore_best_weights=True)
-    checkpoint_filepath = './epoch_models/POISON/best_model.h5'
+    checkpoint_filepath = './poison_epoch_models/POISON/best_model.h5'
     mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
     batch_size = 1
     X_train = x_train.copy()
@@ -120,7 +122,7 @@ def model_sim_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_t
     print('\n############################################################################################\n')
     print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_f1: {} | global_test_precision: {}'.format(epochs, trainAcc, testAcc, f1, precision))
     print(classes_report)
-    print("\nAccuracy per class:\n{}\n{}\n".format(matrix,matrix.diagonal()/matrix.sum(axis=1)))
+    print("\nAccuracy per class:\n{}\n{}\n".format(matrix,(matrix.diagonal()/matrix.sum(axis=1))))
 
 classes = ['1.0','0.0']
 class AccuracyCallback(tf.keras.callbacks.Callback):

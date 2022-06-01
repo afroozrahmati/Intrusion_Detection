@@ -310,21 +310,23 @@ def replace_1_with_0(path, attack, num_sybils, defense, log_name,data):
 
 def get_model(timesteps,n_features):
     # loading the saved model
-    #loaded_model = tf.keras.models.load_model('./persistent_model_tf')
+    loaded_model = tf.keras.models.load_model('./IDS_Persistent_Model/persistent_model_tf')
     #then call fit
+        
+    '''
     sgd = gradient_descent_v2.SGD(learning_rate=0.001, momentum=0.9, nesterov=True)
     
     model = Sequential()
-    '''
-    model.add(LSTM(256, return_sequences=True, input_shape=(timesteps, n_features)))
-    model.add(Dense(128, activation='relu'))
-    model.add(Dropout(.2))
-    model.add(LSTM(128, return_sequences=True))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dropout(.25))
-    model.add(LSTM(64))
-    model.add(Dropout(.25))
-    '''
+    
+    #model.add(LSTM(256, return_sequences=True, input_shape=(timesteps, n_features)))
+    #model.add(Dense(128, activation='relu'))
+    #model.add(Dropout(.2))
+    #model.add(LSTM(128, return_sequences=True))
+    #model.add(Dense(64, activation='relu'))
+    #model.add(Dropout(.25))
+    #model.add(LSTM(64))
+    #model.add(Dropout(.25))
+    
     model.add(Bidirectional(LSTM(29, return_sequences=True), input_shape=(timesteps, n_features)))
     model.add(Dense(29, activation='relu'))
     model.add(Dropout(.2))
@@ -343,16 +345,16 @@ def get_model(timesteps,n_features):
     #        f.write(str(model.summary()))
     #        f.close()
     #print(model.summary())
-
-    #return loaded_model
-    return model
+    '''
+    return loaded_model
+    #return model
 
 
 def model_training(model,x_train,y_train,epochs=4000):
     #callbacks = EarlyStopping(monitor='accuracy', mode='max', verbose=0, patience=10,
     callbacks = EarlyStopping(monitor='binary_accuracy', mode='max', verbose=0, patience=75,
                               restore_best_weights=True)
-    checkpoint_filepath = './epoch_models/IDS/best_model.h5'
+    checkpoint_filepath = './ids_epoch_models/IDS/best_model.h5'
     mc = ModelCheckpoint(filepath=checkpoint_filepath, monitor='binary_accuracy', mode='max', verbose=0, save_best_only=True)
     batch_size = 5
     X_train = x_train.copy()
@@ -411,7 +413,7 @@ def model_evaluate(path, attack, defense, log_name,model,x_train,y_train,x_test,
     print('\n############################################################################################\n')
     print('\ncomm_round: {} |global_train_acc: {:.3%}|| global_test_acc: {:.3%} | global_f1: {} | global_test_precision: {}'.format(epochs, trainAcc, testAcc, f1, precision))
     print(classes_report)
-    print("\nAccuracy per class:\n{}\n{}\n".format(matrix,matrix.diagonal()/matrix.sum(axis=1)))
+    print("\nAccuracy per class:\n{}\n{}\n".format(matrix,(matrix.diagonal()/matrix.sum(axis=1))))
 
 classes = ['normal','attack']
 class AccuracyCallback(tf.keras.callbacks.Callback):
@@ -558,7 +560,8 @@ def norm_dist_a_set(a_set):
         norm_dist_set[x] = norm_dist(a_set[x])
 
     return norm_dist_set
-
+### shows the distrubtion of points by desnity 
+### gets the 
 def get_norm_dist(path, attack, defense, log_name,grads, num_sybils=1):
     #### could use scipy logit(grads) here?
     n_clients = len(grads)
@@ -602,12 +605,20 @@ def jaccard_a_set(a_set):
     """computes jaccard for all vectors in a set"""
     jaccard_set = np.zeros(a_set.shape)    
 
-    length = len(a_set) - 2
+    length = len(a_set) - 1
+    best = 0.0
     for x in range(length):
-        jaccard_set[x] = jaccard_similarity(a_set[x], a_set[x+1])
+        for y in range(length):
+            if x == y:
+                continue
+            temp = jaccard_similarity(a_set[x], a_set[y])
+            if temp > best:
+                best = temp
+            jaccard_set[x] = best 
 
     return jaccard_set
 
+## values of 0 to 1 with 1 being similar 0 is not so we dont' want to pardon these the same way
 def jaccard(path, attack, defense, log_name,grads, num_sybils=1):
     #### could use scipy logit(grads) here?
     n_clients = len(grads)
@@ -643,7 +654,7 @@ def jaccard(path, attack, defense, log_name,grads, num_sybils=1):
 
 def softmax(a_vector):
     """Compute a logit for a vector."""
-    denom = sum(np.exp(a_vector))
+    denom = (1 + sum(np.exp(a_vector)))
     logit = np.exp(a_vector)/denom
     return logit
 
@@ -656,6 +667,9 @@ def inv_log_a_set(a_set):
 
     return softmax_set
 
+## probability of logit 0 to 1 mapped in real numbers neg inf to inf...
+## however the inverse of that 0 = negative inf and 1 = pos inf..
+## no need to pardon this either?
 def get_inv_logit(path, attack, defense, log_name,grads, num_sybils=1):
     #### could use scipy logit(grads) here?
     n_clients = len(grads)
@@ -664,9 +678,7 @@ def get_inv_logit(path, attack, defense, log_name,grads, num_sybils=1):
     #    1.  Logit
     sm = inv_log_a_set(grads)
     prc = 1 
-    #sm = np.delete(sm,0,1)
-    print("\nwv_lg shape {}\n".format(sm.shape))
-    print(sm)
+
 
     maxsm = np.max(sm, axis=1)
     #print("Maxsm is\n {}".format(maxsm))
@@ -796,7 +808,7 @@ def asf(path, attack, defense, log_name,grads, num_sybils=1):
     
     #    3.  TS-SS Triangle Area Similarity - Sector Area Similarity
     v = torch.tensor(grads)
-
+    print("ASF shape : {}\n {}".format(v))
     # TS-SS normalized
     distance_calc =  ts_ss(v).numpy()
     normalized = 2.*(distance_calc - np.min(distance_calc))/np.ptp(distance_calc)-1
@@ -1123,10 +1135,14 @@ def sum_scaled_weights(path, attack, defense, log_name,scaled_weight_list, poiso
             f.close()
             honest_clients.append(client_grad)
 
+    ##################################
+    ##################################
+    ##################################
+    #### uncomment when you find a way to ensure one honest client
     #print("After Nodes removed: Rows {} cols {}".format(len(honest_clients),len(honest_clients[0])))
-    with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
-            f.write("After Nodes removed: Rows {} cols {}".format(len(honest_clients),len(honest_clients[0])))
-    f.close()
+    #with open(config.PATH + config.ATTACK +'_'+ str(config.NUM_SYBILS) +'_sybil_'+ config.DEFENSE +'_poison_model_'+ config.LOG_NAME,'a') as f:
+    #        f.write("After Nodes removed: Rows {} cols {}".format(len(honest_clients),len(honest_clients[0])))
+    #f.close()
 
 
     avg_grad = []

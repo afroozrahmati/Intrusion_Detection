@@ -7676,3 +7676,363 @@ poison scaling shape: (30, 1)
  [1]
  [1]
  [1]]scaled_weight_list: Rows 30 cols 21Adding node: 0 value: [1] to honest_clientsAdding node: 1 value: [1] to honest_clientsAdding node: 2 value: [1] to honest_clientsAdding node: 3 value: [1] to honest_clientsAdding node: 4 value: [1] to honest_clientsAdding node: 5 value: [1] to honest_clientsAdding node: 6 value: [1] to honest_clientsAdding node: 7 value: [1] to honest_clientsAdding node: 8 value: [1] to honest_clientsAdding node: 9 value: [1] to honest_clientsAdding node: 10 value: [1] to honest_clientsAdding node: 11 value: [1] to honest_clientsAdding node: 12 value: [1] to honest_clientsAdding node: 13 value: [1] to honest_clientsAdding node: 14 value: [1] to honest_clientsAdding node: 15 value: [1] to honest_clientsAdding node: 16 value: [1] to honest_clientsAdding node: 17 value: [1] to honest_clientsAdding node: 18 value: [1] to honest_clientsAdding node: 19 value: [1] to honest_clientsAdding node: 20 value: [1] to honest_clientsAdding node: 21 value: [1] to honest_clientsAdding node: 22 value: [1] to honest_clientsAdding node: 23 value: [1] to honest_clientsAdding node: 24 value: [1] to honest_clientsAdding node: 25 value: [1] to honest_clientsAdding node: 26 value: [1] to honest_clientsAdding node: 27 value: [1] to honest_clientsAdding node: 28 value: [1] to honest_clientsAdding node: 29 value: [1] to honest_clientsAfter Nodes removed: Rows 30 cols 21
+y shape (30,)
+[0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+wv_asf shape (30,)
+[0. 0. 0. 0. 0. 1. 0. 1. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 1. 0. 0. 1. 0.]
+wv_fg shape (30,)
+[0.         0.         0.         0.         0.         0.
+ 0.         0.6403959  1.         0.98871593 1.         0.
+ 0.         0.         0.         0.87233139 0.         0.98871593
+ 0.87233139 0.         0.         0.83418467 0.         0.2363751
+ 0.83418467 0.         0.         0.         0.94359057 0.        ]
+wv_mn shape (30,)
+[0.         0.         0.         0.         0.         0.74338141
+ 1.         0.41251346 1.         0.         0.19813725 1.
+ 1.         1.         1.         1.         1.         0.
+ 0.50765601 1.         1.         1.         0.6800975  1.
+ 1.         0.24708626 1.         1.         0.68599947 0.83642482]
+wv_ed shape (30,)
+[0.         0.         0.         0.         0.         1.
+ 1.         1.         1.         0.         0.09822437 1.
+ 1.         1.         1.         1.         1.         0.
+ 1.         1.         1.         1.         1.         1.
+ 1.         0.91898958 1.         1.         1.         1.        ]
+wv_lg shape (30, 1)
+[[0.22488361]
+ [0.22497878]
+ [0.22482902]
+ [0.22502559]
+ [0.22495562]
+ [0.22825268]
+ [0.22804109]
+ [0.2281879 ]
+ [0.22722038]
+ [0.22930398]
+ [0.22869486]
+ [0.22758257]
+ [0.22777766]
+ [0.22753382]
+ [0.22820887]
+ [0.22772864]
+ [0.22808515]
+ [0.22883813]
+ [0.2277568 ]
+ [0.2276906 ]
+ [0.22769648]
+ [0.22742386]
+ [0.22814999]
+ [0.22740997]
+ [0.22765615]
+ [0.22827737]
+ [0.22734403]
+ [0.22748969]
+ [0.22836794]
+ [0.22824761]]
+wv_jc shape (30,)
+[1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1.]
+wv_ndT shape (30,)
+[1.         1.         1.         1.         1.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.69366996 0.         0.13522591
+ 0.22176244 0.         0.         0.         0.41867215 0.        ]
+wv_std shape (30,)
+[1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1.]
+xy shape: (30, 9)
+[[0.         0.         0.         0.         0.22488361 1.
+  1.         1.         0.        ]
+ [0.         0.         0.         0.         0.22497878 1.
+  1.         1.         0.        ]
+ [0.         0.         0.         0.         0.22482902 1.
+  1.         1.         0.        ]
+ [0.         0.         0.         0.         0.22502559 1.
+  1.         1.         0.        ]
+ [0.         0.         0.         0.         0.22495562 1.
+  1.         1.         0.        ]
+ [1.         0.         0.74338141 1.         0.22825268 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.22804109 1.
+  0.         1.         1.        ]
+ [1.         0.6403959  0.41251346 1.         0.2281879  1.
+  0.         1.         1.        ]
+ [0.         1.         1.         1.         0.22722038 1.
+  0.         1.         1.        ]
+ [0.         0.98871593 0.         0.         0.22930398 1.
+  0.         0.         1.        ]
+ [0.         1.         0.19813725 0.09822437 0.22869486 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.22758257 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.22777766 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.22753382 1.
+  0.         1.         1.        ]
+ [1.         0.         1.         1.         0.22820887 1.
+  0.         1.         1.        ]
+ [0.         0.87233139 1.         1.         0.22772864 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.22808515 1.
+  0.         1.         1.        ]
+ [0.         0.98871593 0.         0.         0.22883813 1.
+  0.         1.         1.        ]
+ [0.         0.87233139 0.50765601 1.         0.2277568  1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.2276906  1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.22769648 1.
+  0.         1.         1.        ]
+ [0.         0.83418467 1.         1.         0.22742386 1.
+  0.69366996 1.         1.        ]
+ [0.         0.         0.6800975  1.         0.22814999 1.
+  0.         1.         1.        ]
+ [0.         0.2363751  1.         1.         0.22740997 1.
+  0.13522591 1.         1.        ]
+ [0.         0.83418467 1.         1.         0.22765615 1.
+  0.22176244 1.         1.        ]
+ [1.         0.         0.24708626 0.91898958 0.22827737 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.22734403 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.22748969 1.
+  0.         1.         1.        ]
+ [1.         0.94359057 0.68599947 1.         0.22836794 1.
+  0.41867215 1.         1.        ]
+ [0.         0.         0.83642482 1.         0.22824761 1.
+  0.         1.         1.        ]]
+
+Best Training Poisoning Accuracy:
+0.9285714030265808
+#####################         POISON         ###############################################
+
+############################################################################################
+
+comm_round: 0 | global_test_acc: 80.000% | global_f1: 0.888888888888889 | global_precision: 0.8
+              precision    recall  f1-score   support
+
+           0       0.00      0.00      0.00         2
+           1       0.80      1.00      0.89         8
+
+    accuracy                           0.80        10
+   macro avg       0.40      0.50      0.44        10
+weighted avg       0.64      0.80      0.71        10
+
+Accuracy per class:
+[[8 0]
+ [2 0]]
+[1. 0.]
+poison scaling shape: (30, 1)
+[[1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]scaled_weight_list: Rows 30 cols 21Adding node: 0 value: [1] to honest_clientsAdding node: 1 value: [1] to honest_clientsAdding node: 2 value: [1] to honest_clientsAdding node: 3 value: [1] to honest_clientsAdding node: 4 value: [1] to honest_clientsAdding node: 5 value: [1] to honest_clientsAdding node: 6 value: [1] to honest_clientsAdding node: 7 value: [1] to honest_clientsAdding node: 8 value: [1] to honest_clientsAdding node: 9 value: [1] to honest_clientsAdding node: 10 value: [1] to honest_clientsAdding node: 11 value: [1] to honest_clientsAdding node: 12 value: [1] to honest_clientsAdding node: 13 value: [1] to honest_clientsAdding node: 14 value: [1] to honest_clientsAdding node: 15 value: [1] to honest_clientsAdding node: 16 value: [1] to honest_clientsAdding node: 17 value: [1] to honest_clientsAdding node: 18 value: [1] to honest_clientsAdding node: 19 value: [1] to honest_clientsAdding node: 20 value: [1] to honest_clientsAdding node: 21 value: [1] to honest_clientsAdding node: 22 value: [1] to honest_clientsAdding node: 23 value: [1] to honest_clientsAdding node: 24 value: [1] to honest_clientsAdding node: 25 value: [1] to honest_clientsAdding node: 26 value: [1] to honest_clientsAdding node: 27 value: [1] to honest_clientsAdding node: 28 value: [1] to honest_clientsAdding node: 29 value: [1] to honest_clients
+y shape (30,)
+[0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+wv_asf shape (30,)
+[0.         0.         0.         0.         0.         0.
+ 0.         0.         0.         0.         0.         0.
+ 1.         0.         1.         0.         1.         0.
+ 0.         0.         0.         0.         0.         0.
+ 1.         0.         0.         0.         0.0897935  0.41284321]
+wv_fg shape (30,)
+[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.
+ 0. 1. 0. 0. 0. 0.]
+wv_mn shape (30,)
+[0.         0.         0.         0.         0.         0.5624967
+ 0.         1.         1.         1.         0.63856481 0.64614247
+ 1.         1.         1.         1.         1.         0.70976709
+ 1.         0.44210024 1.         1.         1.         1.
+ 1.         0.         1.         0.55872757 1.         1.        ]
+wv_ed shape (30,)
+[0.         0.         0.         0.         0.         0.81852996
+ 0.50679675 1.         1.         1.         0.91687508 1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         1.         1.         1.
+ 1.         0.         1.         1.         1.         1.        ]
+wv_lg shape (30, 1)
+[[0.16900213]
+ [0.16900828]
+ [0.1690347 ]
+ [0.16901142]
+ [0.16900423]
+ [0.1703377 ]
+ [0.17035423]
+ [0.17012207]
+ [0.17038202]
+ [0.16993681]
+ [0.17024851]
+ [0.1693318 ]
+ [0.17009064]
+ [0.17044566]
+ [0.16979687]
+ [0.17008911]
+ [0.17035247]
+ [0.16987969]
+ [0.17058931]
+ [0.17018223]
+ [0.16968526]
+ [0.16996571]
+ [0.17040544]
+ [0.17047735]
+ [0.17010327]
+ [0.17088706]
+ [0.170406  ]
+ [0.17026727]
+ [0.16978516]
+ [0.16990977]]
+wv_jc shape (30,)
+[1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.
+ 1. 1. 1. 1. 1. 1.]
+wv_ndT shape (30,)
+[0.71893524 0.6819206  0.63907898 0.66945874 0.60884419 0.
+ 0.         0.12586633 1.         1.         1.         0.
+ 0.96867626 0.         0.         0.04440604 1.         1.
+ 1.         0.         1.         0.         0.03216351 1.
+ 0.06618415 0.         0.1837188  0.         0.         1.        ]
+wv_std shape (30,)
+[0.         0.         0.         0.         0.         0.84737846
+ 0.         0.39685894 1.         0.91382275 1.         0.
+ 0.82164262 0.81263865 1.         1.         1.         0.26267188
+ 1.         1.         1.         1.         1.         1.
+ 1.         1.         1.         0.82164063 1.         1.        ]
+xy shape: (30, 9)
+[[0.         0.         0.         0.         0.16900213 1.
+  0.71893524 0.         0.        ]
+ [0.         0.         0.         0.         0.16900828 1.
+  0.6819206  0.         0.        ]
+ [0.         0.         0.         0.         0.1690347  1.
+  0.63907898 0.         0.        ]
+ [0.         0.         0.         0.         0.16901142 1.
+  0.66945874 0.         0.        ]
+ [0.         0.         0.         0.         0.16900423 1.
+  0.60884419 0.         0.        ]
+ [0.         0.         0.5624967  0.81852996 0.1703377  1.
+  0.         0.84737846 1.        ]
+ [0.         0.         0.         0.50679675 0.17035423 1.
+  0.         0.         1.        ]
+ [0.         0.         1.         1.         0.17012207 1.
+  0.12586633 0.39685894 1.        ]
+ [0.         0.         1.         1.         0.17038202 1.
+  1.         1.         1.        ]
+ [0.         0.         1.         1.         0.16993681 1.
+  1.         0.91382275 1.        ]
+ [0.         0.         0.63856481 0.91687508 0.17024851 1.
+  1.         1.         1.        ]
+ [0.         1.         0.64614247 1.         0.1693318  1.
+  0.         0.         1.        ]
+ [1.         0.         1.         1.         0.17009064 1.
+  0.96867626 0.82164262 1.        ]
+ [0.         0.         1.         1.         0.17044566 1.
+  0.         0.81263865 1.        ]
+ [1.         0.         1.         1.         0.16979687 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.17008911 1.
+  0.04440604 1.         1.        ]
+ [1.         0.         1.         1.         0.17035247 1.
+  1.         1.         1.        ]
+ [0.         0.         0.70976709 1.         0.16987969 1.
+  1.         0.26267188 1.        ]
+ [0.         0.         1.         1.         0.17058931 1.
+  1.         1.         1.        ]
+ [0.         0.         0.44210024 1.         0.17018223 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.16968526 1.
+  1.         1.         1.        ]
+ [0.         0.         1.         1.         0.16996571 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.17040544 1.
+  0.03216351 1.         1.        ]
+ [0.         0.         1.         1.         0.17047735 1.
+  1.         1.         1.        ]
+ [1.         0.         1.         1.         0.17010327 1.
+  0.06618415 1.         1.        ]
+ [0.         1.         0.         0.         0.17088706 1.
+  0.         1.         1.        ]
+ [0.         0.         1.         1.         0.170406   1.
+  0.1837188  1.         1.        ]
+ [0.         0.         0.55872757 1.         0.17026727 1.
+  0.         0.82164063 1.        ]
+ [0.0897935  0.         1.         1.         0.16978516 1.
+  0.         1.         1.        ]
+ [0.41284321 0.         1.         1.         0.16990977 1.
+  1.         1.         1.        ]]
+
+Best Training Poisoning Accuracy:
+0.7142857313156128
+#####################         POISON         ###############################################
+
+############################################################################################
+
+comm_round: 0 | global_test_acc: 100.000% | global_f1: 1.0 | global_precision: 1.0
+              precision    recall  f1-score   support
+
+           1       1.00      1.00      1.00        10
+
+    accuracy                           1.00        10
+   macro avg       1.00      1.00      1.00        10
+weighted avg       1.00      1.00      1.00        10
+
+Accuracy per class:
+[[10  0]
+ [ 0  0]]
+[ 1. nan]
+poison scaling shape: (30, 1)
+[[1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]
+ [1]]scaled_weight_list: Rows 30 cols 21Adding node: 0 value: [1] to honest_clientsAdding node: 1 value: [1] to honest_clientsAdding node: 2 value: [1] to honest_clientsAdding node: 3 value: [1] to honest_clientsAdding node: 4 value: [1] to honest_clientsAdding node: 5 value: [1] to honest_clientsAdding node: 6 value: [1] to honest_clientsAdding node: 7 value: [1] to honest_clientsAdding node: 8 value: [1] to honest_clientsAdding node: 9 value: [1] to honest_clientsAdding node: 10 value: [1] to honest_clientsAdding node: 11 value: [1] to honest_clientsAdding node: 12 value: [1] to honest_clientsAdding node: 13 value: [1] to honest_clientsAdding node: 14 value: [1] to honest_clientsAdding node: 15 value: [1] to honest_clientsAdding node: 16 value: [1] to honest_clientsAdding node: 17 value: [1] to honest_clientsAdding node: 18 value: [1] to honest_clientsAdding node: 19 value: [1] to honest_clientsAdding node: 20 value: [1] to honest_clientsAdding node: 21 value: [1] to honest_clientsAdding node: 22 value: [1] to honest_clientsAdding node: 23 value: [1] to honest_clientsAdding node: 24 value: [1] to honest_clientsAdding node: 25 value: [1] to honest_clientsAdding node: 26 value: [1] to honest_clientsAdding node: 27 value: [1] to honest_clientsAdding node: 28 value: [1] to honest_clientsAdding node: 29 value: [1] to honest_clients
